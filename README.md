@@ -65,7 +65,19 @@ api-key=Dev-Key
 then you simply place the `index.html` from this project into the directory `/opt/websites/pdns/powerdns-webui`,
 or whatever you chose in the Apache conf, and request the URL `https://192.168.1.126/`
 
-
+If it worked correctly, you should see a screen like this.
 
 ![Frist Screen](/first.png)
 
+
+NOTE: you can use this single page app to access any PowerDNS RestAPI, but your browser will impose certain
+restrictions.
+
+* If you obtained the `index.html` over HTTPS, then the RestAPI must be accessed over HTTPS - this is where
+a web proxy interface is useful, as PowerDNS does not natively support HTTPS
+
+* You must be CORS compliant - this means the web server that gave you the page must list all the other web server
+you are allowed to access from the pages it has served you. Again, this is where having the page served from the
+same site as the web proxy to the api provides a solution to this issue.
+
+These issues are generic browser security restrictions, and nothing specifically to do with this code.
