@@ -9,7 +9,7 @@ Particularly [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
 Because it access the PowerDNS RestAPI directly from your browser, rather than giving everybody the PSK
 its almost certainly safer to use a web server proxy and enforce per-user authentication in the proxy.
 
-I used Apache - here's a suptable setup, assuming your PowerDNS webUI is listening on IP Address 127.1.0.1
+I used Apache - here's a suitable setup, assuming your PowerDNS webUI is listening on IP Address 127.1.0.1
 and your Apache Server can listen on 192.168.1.126
 
 The PowerDNS IP Address is probably fine for you, but you will need to change the Apache IP Address to match
@@ -32,4 +32,21 @@ what your server is using. You will also need all the SSL configuration lines to
 	</location>
 
 </VirtualHost>
+```
+
+So, here's the corresponding PowerDNS `pdns.conf` settings for the WebUI
+
+
+```
+...
+
+webserver=yes
+webserver-address=127.1.0.1
+webserver-allow-from=127.0.0.0/8
+webserver-password=Dev-Key
+api=yes
+api-key=Dev-Key
+
+...
+
 ```
