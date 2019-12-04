@@ -169,7 +169,7 @@ function zoneMetaDetailsHTML(item)
 	x = "<tr class=zoneListItem>";
 	x = x + "<td>" + item.kind + "</td>";
 	x = x + "<td>";
-	item.metadata.forEach(function(i) { x = x + i + "<br>"; });
+	for(i of item.metadata) { x = x + i + "<br>"; };
 	return x + "</td></tr>";
 }
 
@@ -183,7 +183,7 @@ function zoneMetaDetails(data)
 		return 0;
 		})
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	data.forEach(function(i) { x = x + zoneMetaDetailsHTML(i) });
+	for(i of data) { x = x + zoneMetaDetailsHTML(i) };
 	globals.bot.innerHTML = x + "</table>";
 }
 
@@ -212,7 +212,7 @@ function zoneDetailsHTML(zone,item)
 			return 0;
 			})
 
-		item.records.forEach(function(rrs) { x = x + "&nbsp;" + rrs.content + "&nbsp;<br>"; });
+		for(rrs of item.records) { x = x + "&nbsp;" + rrs.content + "&nbsp;<br>"; };
 		}
 	return x + "</td></tr>";
 }
@@ -240,7 +240,7 @@ function zoneDetails(data)
 		})
 
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	data.rrsets.forEach(function(i) { x = x + zoneDetailsHTML(data.id,i) });
+	for(i of data.rrsets) { x = x + zoneDetailsHTML(data.id,i) };
 	globals.bot.innerHTML = x + "</table>";
 }
 
@@ -291,7 +291,7 @@ function searchResults(data)
 		}
 
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	data.forEach(function(i) { x = x + searchResultsHTML(i) });
+	for(i of data) { x = x + searchResultsHTML(i) };
 	globals.bot.innerHTML = x + "</table>";
 }
 
@@ -336,7 +336,7 @@ function zoneListDetails(data)
 		})
 
 	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
-	data.forEach(function(i) { x = x + zoneListDetailsHTML(i) });
+	for(i of data) { x = x + zoneListDetailsHTML(i) };
 	x = x + "</table>";
 	globals.bot.innerHTML = x;
 }
