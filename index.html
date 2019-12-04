@@ -221,9 +221,12 @@ function clickRR(idx,rrs)
 	s = document.getElementById("rrs"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
+	drawOneRecord(rrs);
+	s = document.getElementById("rrs"+idx);
+
 	x = "<form onSubmit='return changeRR("+idx+","+JSON.stringify(rrs)+");' name=rrForm>"
 		+ "<input type=hidden name=old value=\""+rrs.records[idx].content+"\">"
-		+ "<input name=new value=\""+rrs.records[idx].content+"\">"
+		+ "<input size=50 name=new value=\""+rrs.records[idx].content+"\">"
 		+ "</form>";
 
 	s.innerHTML = x;
@@ -239,7 +242,7 @@ function oneRecordHTML(rrs,idx)
 		+ "<td>" + rrs.name + "</td>"
 		+ "<td valign=top align=right>" + rrs.ttl + "</td>"
 		+ "<td valign=top>" + rrs.type + "</td>"
-		+ "<td><span id=rrs"+idx+">" + i.content + "</span></td>";
+		+ "<td width=60%><span id=rrs"+idx+">" + i.content + "</span></td>";
 	return x + "</tr>"
 }
 
@@ -265,7 +268,11 @@ function oneRecord(data)
 		if (a.content > b.content) return 1;
 		return 0;
 		})
+	drawOneRecord(rrs)
+}
 
+function drawOneRecord(rrs)
+{
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(idx in rrs.records) 
 		x = x + oneRecordHTML(rrs,idx);
