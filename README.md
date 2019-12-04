@@ -76,7 +76,7 @@ restrictions.
 * If you obtained the `index.html` over HTTPS, then the RestAPI must be accessed over HTTPS - this is where
 a web proxy interface is useful, as PowerDNS does not natively support HTTPS
 
-* You must be CORS compliant - this means the web server that gave you the page must list all the other web server
+* You must be CORS compliant - this means the web server that gave you the page must list all the other web servers
 you are allowed to access from the pages it has served you. Again, this is where having the page served from the
 same site as the web proxy to the api provides a solution to this issue.
 
