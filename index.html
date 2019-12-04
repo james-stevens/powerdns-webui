@@ -81,15 +81,15 @@ form {
 	font-weight: bold;
 	border-radius: 25px;
 	padding: 5px;
-	padding-left: 15px;
-	padding-right: 15px;
+	padding-left: 10px;
+	padding-right: 10px;
 	cursor: pointer;
-	margin-right: 10px;
+	margin-left: 10px;
 	}
 
 td {
-	padding-left: 10px;
-	padding-right: 10px;
+	padding-left: 7px;
+	padding-right: 7px;
 	}
 
 .zoneListItem {
@@ -123,10 +123,15 @@ var globals = {
 	apikey: null,
 	with_https: true,
 	thisZone: null,
+
+	tick: "&#x2611;",
+	cross: "&#x2612;",
 	};
+
 
 function callAPI(sfx,callback)
 {
+	showLoading();
 	p = "https"
 	if (!globals.with_https) p = "http"
 	url = p + "://" + globals.server + "/api/v1/servers/localhost/" + sfx
@@ -139,18 +144,17 @@ function callAPI(sfx,callback)
 		};
 
 	fetch(url,http_cmd).then(function(response) {
-			if (response.status !== 200) {
-				globals.bot.innerHTML("ERROR: "+response.status);
-				return;
+		if (response.status !== 200) {
+			globals.bot.innerHTML("ERROR: "+response.status);
+			return;
 			}
 
-			response.json().then(function(data) { callback(data); });
-		}
-		)
-		.catch(function(err) {
-			console.log('Fetch Error :-S', err);
-		});
+		response.json().then(function(data) { callback(data); });
 
+		}).catch(function(err) {
+			console.log('Fetch Error :-S', err);
+			}
+		);
 }
 
 
@@ -162,7 +166,6 @@ function zoneMeta(zone)
 {
 	topLine("<span class=topBlob onClick='return zoneDetailsLoad(\""+zone+"\")'>"+zone+"</span>" +
 		"<span class=topBlob onClick='return zoneMeta(\""+zone+"\")'>META</span>");
-	globals.bot.innerHTML = "Loading...";
 	callAPI("zones/"+zone+"/metadata",zoneMetaDetails);
 	return false;
 }
@@ -198,9 +201,89 @@ function zoneMetaDetails(data)
 // Zone Details Handling
 //=============================================================================================
 
+
+function changeRR(idx,rrs)
+{
+	new_val = document.rrForm.new.value;
+	old_val = document.rrForm.old.value;
+	s = document.getElementById("rrs"+idx);
+	s.innerHTML = new_val;
+
+	return false
+}
+
+
+
+
+function clickRR(idx,rrs)
+{
+	x = "<form onSubmit='return changeRR("+idx+","+JSON.stringify(rrs)+");' name=rrForm>"
+		+ "<input type=hidden name=old value=\""+rrs.records[idx].content+"\">"
+		+ "<input name=new value=\""+rrs.records[idx].content+"\">"
+		+ "</form>";
+
+	s = document.getElementById("rrs"+idx);
+	s.innerHTML = x;
+	document.rrForm.new.focus();
+}
+
+
+
+function oneRecordHTML(rrs,idx)
+{
+	i = rrs.records[idx];
+	x = "<tr onClick='clickRR("+idx+","+JSON.stringify(rrs)+");' class=zoneListItem>"
+		+ "<td>" + rrs.name + "</td>"
+		+ "<td valign=top align=right>" + rrs.ttl + "</td>"
+		+ "<td valign=top>" + rrs.type + "</td>"
+		+ "<td><span id=rrs"+idx+">" + i.content + "</span></td>";
+	return x + "</tr>"
+}
+
+
+
+function oneRecord(data)
+{
+	if (data.id != this.zone)
+		return showError("ERROR: Zone does not match loaded data");
+
+	findrec = function(rrsets,my) {
+		for(tag of rrsets)
+			if ((tag.name == my.name)&&(tag.type == my.type)) return tag;
+		return null; }
+
+	rrs = findrec(data.rrsets,this);
+
+	if (rrs == null)
+		return showError("ERROR: Data for "+name+" not returned");
+
+	rrs.records.sort(function(a,b) {
+		if (a.content < b.content) return -1;
+		if (a.content > b.content) return 1;
+		return 0;
+		})
+
+	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	for(idx in rrs.records) 
+		x = x + oneRecordHTML(rrs,idx);
+	globals.bot.innerHTML = x + "</table>";
+}
+
+
+
+function clickZoneRecord(zone,name,type)
+{
+	topLine("<span class=topBlob onClick=\"zoneDetailsLoad('"+zone+"')\">"+zone+"</span>"
+		+ "<span class=topBlob onClick=\"clickZoneRecord('"+zone+"','"+name+"','"+type+"')\">"+name+"/"+type+"</span></td>" 
+		+ "<td><span class=topBlob onClick='return zoneMeta(\""+zone+"\")'>TTL</span></td>" );
+	callAPI("zones/"+zone,oneRecord.bind({ zone: zone, name: name, type: type}));
+}
+
+
+
 function zoneDetailsHTML(zone,item)
 {
-	x = "<tr class=zoneListItem>"
+	x = "<tr onClick=\"clickZoneRecord('"+zone+"','"+item.name+"','"+item.type+"');\" class=zoneListItem>"
 		+ "<td valign=top>" + item.name.substr(0,item.name.length - zone.length - 1) + "</td>"
 		+ "<td valign=top align=right>" + item.ttl + "</td>"
 		+ "<td valign=top>" + item.type + "</td>"
@@ -209,8 +292,7 @@ function zoneDetailsHTML(zone,item)
 	if (item.type == "SOA") {
 		x = x + formatSOA(item.records[0].content);
 		}
-	else
-		{
+	else {
 		item.records.sort(function(a,b) {
 			if (a.content < b.content) return -1;
 			if (a.content > b.content) return 1;
@@ -256,7 +338,6 @@ function zoneDetailsLoad(zone)
 {
 	topLine("<span class=topBlob onClick='return zoneDetailsLoad(\""+zone+"\")'>"+zone+"</span></td>" +
 		"<td><span class=topBlob onClick='return zoneMeta(\""+zone+"\")'>META</span></td>" );
-	globals.bot.innerHTML = "Loading...";
 	callAPI("zones/"+zone,zoneDetails);
 	return false;
 }
@@ -271,17 +352,16 @@ function searchResultsHTML(item)
 {
 	x = "<tr class=zoneListItem>";
 	if (item.object_type != "zone") {
-		x = x + "<td valign=top>" + item.name + "</td>";
-		x = x + "<td valign=top align=right>" + item.ttl + "</td>";
-		x = x + "<td valign=top>" + item.type + "</td>";
+		x = x + "<td valign=top>" + item.name + "</td>"
+			+ "<td valign=top align=right>" + item.ttl + "</td>"
+			+ "<td valign=top>" + item.type + "</td>";
 		if (item.type == "SOA")
 			x = x + "<td valign=top>" + formatSOA(item.content) + "</td>";
-		else
-			x = x + "<td valign=top>" + item.content + "</td>";
-		}
+		els
+			x = x + "<td valign=top>" + item.content + "</td>"; }
 	else {
-		x = x + "<td><a href=# onClick='return zoneDetailsLoad(\""+item.name+"\")'>" + item.name + "</a></td>";
-		x = x + "<td colspan=3>[Zone Apex]</td>";
+		x = x + "<td><a href=# onClick='return zoneDetailsLoad(\""+item.name+"\")'>" + item.name + "</a></td>"
+			+ "<td colspan=3>[Zone Apex]</td>";
 		}
 	return x + "</tr>";
 }
@@ -307,7 +387,6 @@ function searchFormSubmit()
 {
 	s = document.searchForm.searchTerm.value;
 	document.searchForm.searchTerm.value = "";
-	globals.bot.innerHTML = "Loading...";
 	callAPI("search-data?q=" + s,searchResults);
 	return false;
 }
@@ -320,14 +399,15 @@ function searchFormSubmit()
 
 function zoneListDetailsHTML(item) 
 {
-	x = "<tr class=zoneListItem onClick='zoneDetailsLoad(\""+item.id+"\")'>";
-	x = x + "<td>" + item.id + "</td>";
-	x = x + "<td>" + item.kind + "</td>";
-	if (item.dnssec) t = "2611"; else t="2612";
-	x = x + "<td>&#x" + t + ";</td>";
-	x = x + "<td>" + item.serial + "</td>";
-	if (item.notified_serial == item.serial) t = "2611"; else t="2612";
-	x = x + "<td>&#x" + t + ";</td>";
+	name = item.id;
+	x = "<tr class=zoneListItem onClick='zoneDetailsLoad(\""+name+"\")'>"
+		+ "<td>" + name + "</td>"
+		+ "<td>" + item.kind + "</td>";
+	if (item.dnssec) t = globals.tick; else t = globals.cross;
+	x = x + "<td>" + t + "</td>"
+		+ "<td>" + item.serial + "</td>";
+	if (item.notified_serial == item.serial) t = globals.tick; else t = globals.cross;
+	x = x + "<td>" + t + "</td>";
 	return x + "</tr>";
 }
 
@@ -343,8 +423,7 @@ function zoneListDetails(data)
 
 	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 	for(i of data) x = x + zoneListDetailsHTML(i);
-	x = x + "</table>";
-	globals.bot.innerHTML = x;
+	globals.bot.innerHTML = x + "</table>";
 }
 
 
@@ -352,7 +431,6 @@ function zoneListDetails(data)
 function zoneList()
 {
 	topLine("");
-	globals.bot.innerHTML = "Loading...";
 	callAPI("zones",zoneListDetails);
 	return false;
 }
@@ -398,7 +476,7 @@ function initialLogin()
 function formatSOA(soa_txt)
 {
 	i = soa_txt.split(" ");
-	soa = i[0] + " " +  i[1] + "<br>";
+	soa = i[0] + " " + i[1] + "<br>";
 	idx = 2;
 	for(tag of ["serial","refresh","retry","expire","minimum"]) {
 		soa = soa + "<span style='display: inline-block; width:50px'></span>";
@@ -406,6 +484,22 @@ function formatSOA(soa_txt)
 		}
 	return soa;
 }
+
+
+
+function showError(err)
+{
+	globals.bot.innerHTML = "<h1>"+err+"</h1>";
+}
+
+
+
+function showLoading()
+{
+	globals.bot.innerHTML = "Loading...";
+}
+
+
 
 
 //=============================================================================================
