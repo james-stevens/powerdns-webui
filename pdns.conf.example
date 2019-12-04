@@ -2,11 +2,6 @@ master=yes
 
 cache-ttl=5
 
-# loglevel=6
-
-# also-notify=192.168.5.230
-# only-notify=192.168.5.230
-
 query-local-address=192.168.1.125
 local-address=192.168.1.125,127.0.0.1,127.1.0.1
 local-ipv6=
@@ -25,7 +20,7 @@ api-key=Dev-Key
 launch=gmysql
 gmysql-socket=/tmp/mysql.sock
 gmysql-user=pdns
-gmysql-password=X7XI2xlVQubHE
+gmysql-password=*************
 gmysql-dbname=pdns
 gmysql-dnssec=yes
 
