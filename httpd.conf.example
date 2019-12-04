@@ -2,7 +2,7 @@
 
 	DocumentRoot /opt/websites/pdns/powerdns-webui
 
-	<Proxy http://192.168.5.233:8081/*>
+	<Proxy http://127.1.0.1:8081/*>
 		Allow from all
 	</Proxy>
 
