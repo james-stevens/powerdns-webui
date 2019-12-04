@@ -12,6 +12,8 @@ its almost certainly safer to use a web proxy (e.g. Apache or nginx) and enforce
 I used Apache - here's a suitable setup. It assumes your PowerDNS WebUI is listening on IP Address 127.1.0.1
 and your Apache Server can listen on 192.168.1.126 (this will be host dependant, of course).
 
+I haven't included the per-user authentication config lines, you will need to add whatever you prefer.
+
 ```
 <VirtualHost 192.168.1.126:443>
 
