@@ -214,15 +214,16 @@ function changeRR(idx,rrs)
 
 
 
-
 function clickRR(idx,rrs)
 {
+	s = document.getElementById("rrs"+idx);
+	if (s.innerHTML.indexOf("<form") >= 0) return;
+
 	x = "<form onSubmit='return changeRR("+idx+","+JSON.stringify(rrs)+");' name=rrForm>"
 		+ "<input type=hidden name=old value=\""+rrs.records[idx].content+"\">"
 		+ "<input name=new value=\""+rrs.records[idx].content+"\">"
 		+ "</form>";
 
-	s = document.getElementById("rrs"+idx);
 	s.innerHTML = x;
 	document.rrForm.new.focus();
 }
