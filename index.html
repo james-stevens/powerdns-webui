@@ -1,0 +1,425 @@
+<html>
+<style type='text/css'>
+
+html {
+	color: black;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size:10pt;
+	background-color:#666688;
+	scrollbar-base-color:#666699;
+	scrollbar-arrow-color:#ddddff;
+	}
+
+select {
+	color: black;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size: 8pt;
+	}
+
+input {
+	color: black;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size: 8pt;
+	}
+
+textarea {
+	color: black;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size: 8pt;
+	word-wrap:break-word;
+	text-wrap:unrestricted;
+	}
+
+body {
+	color: black;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size:10pt;
+	background-color:#666688;
+	scrollbar-base-color:#666699;
+	scrollbar-arrow-color:#ddddff;
+	}
+
+xmp {
+	color: black;
+	font-family: Courier New, Courier;
+	font-size: 10pt;
+	white-space: word-wrap: break-word;
+	white-space: pre-wrap;
+	}
+
+pre {
+	color: black;
+	font-family: Courier New, Courier;
+	font-size: 10pt;
+	white-space: word-wrap: break-word;
+	white-space: pre-wrap;
+	}
+
+a {
+	color: darkblue;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-weight:normal;
+	font-size:10pt;
+	text-decoration:none;
+	}
+
+a:hover {
+	color:darkblue;
+	text-decoration: underline;
+	} 
+
+form {
+	margin:0px;
+	}
+
+.topBlob {
+	display: inline-block;
+	background-color: #d0d0ff;
+	color: black;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size: 10pt;
+	font-weight: bold;
+	border-radius: 25px;
+	padding: 5px;
+	padding-left: 15px;
+	padding-right: 15px;
+	cursor: pointer;
+	margin-right: 10px;
+	}
+
+.zoneListItem {
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size: 10pt;
+	cursor: pointer;
+	color: white;
+	background-color: #666688;
+	}
+
+.zoneListItem:hover {
+	background-color: #444466;
+	}
+
+
+.formPrompt {
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size:10pt;
+	color: white;
+	text-align: right;
+	}
+
+</style>
+
+<script language="Javascript">
+
+console.clear()
+
+var globals = {
+	server: null,
+	apikey: null,
+	with_https: true,
+	thisZone: null,
+	};
+
+function callAPI(sfx,callback)
+{
+	p = "https"
+	if (!globals.with_https) p = "http"
+	url = p + "://" + globals.server + "/api/v1/servers/localhost/" + sfx
+
+	http_cmd = {
+		headers: {
+			'X-API-Key': globals.apikey,
+			},
+		method: 'GET',
+		};
+
+	fetch(url,http_cmd).then(function(response) {
+			if (response.status !== 200) {
+				globals.bot.innerHTML("ERROR: "+response.status);
+				return;
+			}
+
+			response.json().then(function(data) { callback(data); });
+		}
+		)
+		.catch(function(err) {
+			console.log('Fetch Error :-S', err);
+		});
+
+}
+
+
+//=============================================================================================
+// Zone META data handling
+//=============================================================================================
+
+function zoneMeta(zone)
+{
+	topLine("<span class=topBlob onClick='return zoneDetailsLoad(\""+zone+"\")'>"+zone+"</span>" +
+		"<span class=topBlob onClick='return zoneMeta(\""+zone+"\")'>META</span>");
+	globals.bot.innerHTML = "Loading...";
+	callAPI("zones/"+zone+"/metadata",zoneMetaDetails);
+	return false;
+}
+
+
+
+function zoneMetaDetailsHTML(item)
+{
+	x = "<tr class=zoneListItem>";
+	x = x + "<td>" + item.kind + "</td>";
+	x = x + "<td>";
+	item.metadata.forEach(function(i) { x = x + i + "<br>"; });
+	return x + "</td></tr>";
+}
+
+
+
+function zoneMetaDetails(data)
+{
+	data.sort(function(a,b) {
+		if (a.kind < b.kind) return -1;
+		if (a.kind > b.kind) return 1;
+		return 0;
+		})
+	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	data.forEach(function(i) { x = x + zoneMetaDetailsHTML(i) });
+	globals.bot.innerHTML = x + "</table>";
+}
+
+
+
+//=============================================================================================
+// Zone Details Handling
+//=============================================================================================
+
+function zoneDetailsHTML(zone,item)
+{
+	x = "<tr class=zoneListItem>";
+	x = x + "<td valign=top>&nbsp;" + item.name.substr(0,item.name.length - zone.length - 1) + "&nbsp;</td>";
+	x = x + "<td valign=top align=right>&nbsp;" + item.ttl + "&nbsp;</td>";
+	x = x + "<td valign=top>&nbsp;" + item.type + "&nbsp;</td>";
+	x = x + "<td valign=top>";
+
+	if (item.type == "SOA") {
+		x = x + formatSOA(item.records[0].content);
+		}
+	else
+		{
+		item.records.sort(function(a,b) {
+			if (a.content < b.content) return -1;
+			if (a.content > b.content) return 1;
+			return 0;
+			})
+
+		item.records.forEach(function(rrs) { x = x + "&nbsp;" + rrs.content + "&nbsp;<br>"; });
+		}
+	return x + "</td></tr>";
+}
+
+
+
+function zoneDetails(data)
+{
+	data.rrsets.sort(function(a,b) {
+		if ((a.name == data.id)&&(b.name == data.id)) {
+			for(tag of ["SOA","NS","MX"]) {
+				if (a.type == tag) return -1;
+				if (b.type == tag) return 1;
+				}
+			}
+		else {
+			if (a.name == data.id) return -1;
+			if (b.name == data.id) return 1;
+			if (a.name < b.name) return -1;
+			if (a.name > b.name) return 1;
+			}
+		if (a.type < b.type) return -1;
+		if (a.type > b.type) return 1;
+		return 0;
+		})
+
+	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	data.rrsets.forEach(function(i) { x = x + zoneDetailsHTML(data.id,i) });
+	globals.bot.innerHTML = x + "</table>";
+}
+
+
+
+function zoneDetailsLoad(zone)
+{
+	topLine("<span class=topBlob onClick='return zoneDetailsLoad(\""+zone+"\")'>"+zone+"</span></td>" +
+		"<td><span class=topBlob onClick='return zoneMeta(\""+zone+"\")'>META</span></td>" );
+	globals.bot.innerHTML = "Loading...";
+	callAPI("zones/"+zone,zoneDetails);
+	return false;
+}
+
+
+
+//=============================================================================================
+// Search handling code
+//=============================================================================================
+
+function searchResultsHTML(item)
+{
+	x = "<tr class=zoneListItem>";
+	if (item.object_type != "zone") {
+		x = x + "<td valign=top>" + item.name + "</td>";
+		x = x + "<td valign=top align=right>&nbsp;" + item.ttl + "&nbsp;</td>";
+		x = x + "<td valign=top>&nbsp;" + item.type + "&nbsp;</td>";
+		if (item.type == "SOA")
+			x = x + "<td valign=top>" + formatSOA(item.content) + "</td>";
+		else
+			x = x + "<td valign=top>&nbsp;" + item.content + "</td>";
+		}
+	else {
+		x = x + "<td><a href=# onClick='return zoneDetailsLoad(\""+item.name+"\")'>" + item.name + "</a></td>";
+		x = x + "<td colspan=3>[Zone Apex]</td>";
+		}
+	return x + "</tr>";
+}
+
+
+
+function searchResults(data)
+{
+	topLine("");
+	if (data.length <= 0) {
+		globals.bot.innerHTML = "No search results";
+		return;
+		}
+
+	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	data.forEach(function(i) { x = x + searchResultsHTML(i) });
+	globals.bot.innerHTML = x + "</table>";
+}
+
+
+
+function searchFormSubmit()
+{
+	s = document.searchForm.searchTerm.value;
+	document.searchForm.searchTerm.value = "";
+	globals.bot.innerHTML = "Loading...";
+	callAPI("search-data?q=" + s,searchResults);
+	return false;
+}
+
+
+
+//=============================================================================================
+// Code to handle the list of zones
+//=============================================================================================
+
+function zoneListDetailsHTML(item) 
+{
+	x = "<tr class=zoneListItem onClick='zoneDetailsLoad(\""+item.id+"\")'>";
+	x = x + "<td>" + item.id + "</td>";
+	x = x + "<td>" + item.kind + "</td>";
+	if (item.dnssec) t = "2611"; else t="2612";
+	x = x + "<td>&#x" + t + ";</td>";
+	x = x + "<td>" + item.serial + "</td>";
+	if (item.notified_serial == item.serial) t = "2611"; else t="2612";
+	x = x + "<td>&#x" + t + ";</td>";
+	return x + "</tr>";
+}
+
+
+
+function zoneListDetails(data)
+{
+	data.sort(function(a,b) {
+		if (a.id < b.id) return -1;
+		if (a.id > b.id) return 1;;
+		return 0;
+		})
+
+	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
+	data.forEach(function(i) { x = x + zoneListDetailsHTML(i) });
+	x = x + "</table>";
+	globals.bot.innerHTML = x;
+}
+
+
+
+function zoneList()
+{
+	topLine("");
+	globals.bot.innerHTML = "Loading...";
+	callAPI("zones",zoneListDetails);
+	return false;
+}
+
+
+
+//=============================================================================================
+// Common functions
+//=============================================================================================
+
+function topLine(extra)
+{
+	x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=100%>";
+	x = x + "<span class=topBlob onClick='location.reload(); return false;'>" + globals.server + "</span>";
+	x = x + "<span class=topBlob onClick='return zoneList()'>Zones</span>";
+	x = x + extra + "</td>";
+	x = x + "<td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>";
+	x = x + "<input placeholder='Search' size=40 name=searchTerm></form></td>";
+	x = x + "</tr><table><hr>";
+	globals.top.innerHTML = x;
+}
+
+
+
+function startUp()
+{
+	globals.top = document.getElementById("topSpan");
+	globals.bot = document.getElementById("lowerSpan");
+}
+
+
+
+function initialLogin()
+{
+	f = document.loginForm;
+	globals.server = f.server.value;
+	globals.apikey = f.apikey.value;
+	globals.with_https = f.with_https.checked;
+	zoneList();
+}
+
+
+
+function formatSOA(item)
+{
+	i = item.split(" ");
+	soa = i[0] + " " +  i[1] + "<br>";
+	idx = 2;
+	for(tag of ["serial","refresh","retry","expire","minimum"]) {
+		soa = soa + "<span style='display: inline-block; width:50px'>&nbsp;</span>";
+		soa = soa + "<span style='display: inline-block; width:100px'>" + i[idx++] + "</span>;&nbsp;" + tag + "<br>";
+		}
+	return soa;
+}
+
+
+//=============================================================================================
+</script>
+
+
+
+<body onLoad="startUp();">
+<span id="topSpan"></span>
+<span id="lowerSpan">
+	<table align=center>
+	<form action="/" name=loginForm>
+		<tr>
+		<tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr>
+		<tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value="Dev-Key"></td></tr>
+		<tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr>
+		<tr><td align=center colspan=2><span class=topBlob onClick="initialLogin()">Load Zone List</span></td></tr>
+		</tr>
+	</form>
+	</table>
+</span>
+</body></html>
