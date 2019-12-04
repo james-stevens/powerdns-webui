@@ -87,6 +87,11 @@ form {
 	margin-right: 10px;
 	}
 
+td {
+	padding-left: 10px;
+	padding-right: 10px;
+	}
+
 .zoneListItem {
 	font-family: Verdana,Arial,Helvetica,sans-serif;
 	font-size: 10pt;
@@ -166,10 +171,10 @@ function zoneMeta(zone)
 
 function zoneMetaDetailsHTML(item)
 {
-	x = "<tr class=zoneListItem>";
-	x = x + "<td>" + item.kind + "</td>";
-	x = x + "<td>";
-	for(i of item.metadata) { x = x + i + "<br>"; };
+	x = "<tr class=zoneListItem>"
+		+ "<td>" + item.kind + "</td>"
+		+ "<td>";
+	for(i of item.metadata) x = x + i + "<br>";
 	return x + "</td></tr>";
 }
 
@@ -183,7 +188,7 @@ function zoneMetaDetails(data)
 		return 0;
 		})
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	for(i of data) { x = x + zoneMetaDetailsHTML(i) };
+	for(i of data) x = x + zoneMetaDetailsHTML(i);
 	globals.bot.innerHTML = x + "</table>";
 }
 
@@ -195,11 +200,11 @@ function zoneMetaDetails(data)
 
 function zoneDetailsHTML(zone,item)
 {
-	x = "<tr class=zoneListItem>";
-	x = x + "<td valign=top>&nbsp;" + item.name.substr(0,item.name.length - zone.length - 1) + "&nbsp;</td>";
-	x = x + "<td valign=top align=right>&nbsp;" + item.ttl + "&nbsp;</td>";
-	x = x + "<td valign=top>&nbsp;" + item.type + "&nbsp;</td>";
-	x = x + "<td valign=top>";
+	x = "<tr class=zoneListItem>"
+		+ "<td valign=top>" + item.name.substr(0,item.name.length - zone.length - 1) + "</td>"
+		+ "<td valign=top align=right>" + item.ttl + "</td>"
+		+ "<td valign=top>" + item.type + "</td>"
+		+ "<td valign=top>"
 
 	if (item.type == "SOA") {
 		x = x + formatSOA(item.records[0].content);
@@ -212,7 +217,8 @@ function zoneDetailsHTML(zone,item)
 			return 0;
 			})
 
-		for(rrs of item.records) { x = x + "&nbsp;" + rrs.content + "&nbsp;<br>"; };
+		for(rrs of item.records) 
+			x = x + "" + rrs.content + "<br>";
 		}
 	return x + "</td></tr>";
 }
@@ -240,7 +246,7 @@ function zoneDetails(data)
 		})
 
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	for(i of data.rrsets) { x = x + zoneDetailsHTML(data.id,i) };
+	for(i of data.rrsets) x = x + zoneDetailsHTML(data.id,i);
 	globals.bot.innerHTML = x + "</table>";
 }
 
@@ -266,12 +272,12 @@ function searchResultsHTML(item)
 	x = "<tr class=zoneListItem>";
 	if (item.object_type != "zone") {
 		x = x + "<td valign=top>" + item.name + "</td>";
-		x = x + "<td valign=top align=right>&nbsp;" + item.ttl + "&nbsp;</td>";
-		x = x + "<td valign=top>&nbsp;" + item.type + "&nbsp;</td>";
+		x = x + "<td valign=top align=right>" + item.ttl + "</td>";
+		x = x + "<td valign=top>" + item.type + "</td>";
 		if (item.type == "SOA")
 			x = x + "<td valign=top>" + formatSOA(item.content) + "</td>";
 		else
-			x = x + "<td valign=top>&nbsp;" + item.content + "</td>";
+			x = x + "<td valign=top>" + item.content + "</td>";
 		}
 	else {
 		x = x + "<td><a href=# onClick='return zoneDetailsLoad(\""+item.name+"\")'>" + item.name + "</a></td>";
@@ -291,7 +297,7 @@ function searchResults(data)
 		}
 
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	for(i of data) { x = x + searchResultsHTML(i) };
+	for(i of data) x = x + searchResultsHTML(i);
 	globals.bot.innerHTML = x + "</table>";
 }
 
@@ -336,7 +342,7 @@ function zoneListDetails(data)
 		})
 
 	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
-	for(i of data) { x = x + zoneListDetailsHTML(i) };
+	for(i of data) x = x + zoneListDetailsHTML(i);
 	x = x + "</table>";
 	globals.bot.innerHTML = x;
 }
@@ -359,14 +365,13 @@ function zoneList()
 
 function topLine(extra)
 {
-	x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=100%>";
-	x = x + "<span class=topBlob onClick='location.reload(); return false;'>" + globals.server + "</span>";
-	x = x + "<span class=topBlob onClick='return zoneList()'>Zones</span>";
-	x = x + extra + "</td>";
-	x = x + "<td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>";
-	x = x + "<input placeholder='Search' size=40 name=searchTerm></form></td>";
-	x = x + "</tr><table><hr>";
-	globals.top.innerHTML = x;
+	globals.top.innerHTML = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=100%>"
+		+ "<span class=topBlob onClick='location.reload(); return false;'>" + globals.server + "</span>"
+		+ "<span class=topBlob onClick='return zoneList()'>Zones</span>"
+		+ extra + "</td>"
+		+ "<td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
+		+ "<input placeholder='Search' size=40 name=searchTerm></form></td>"
+		+ "</tr><table><hr>"
 }
 
 
@@ -390,14 +395,14 @@ function initialLogin()
 
 
 
-function formatSOA(item)
+function formatSOA(soa_txt)
 {
-	i = item.split(" ");
+	i = soa_txt.split(" ");
 	soa = i[0] + " " +  i[1] + "<br>";
 	idx = 2;
 	for(tag of ["serial","refresh","retry","expire","minimum"]) {
-		soa = soa + "<span style='display: inline-block; width:50px'>&nbsp;</span>";
-		soa = soa + "<span style='display: inline-block; width:100px'>" + i[idx++] + "</span>;&nbsp;" + tag + "<br>";
+		soa = soa + "<span style='display: inline-block; width:50px'></span>";
+		soa = soa + "<span style='display: inline-block; width:100px'>" + i[idx++] + "</span>;" + tag + "<br>";
 		}
 	return soa;
 }
