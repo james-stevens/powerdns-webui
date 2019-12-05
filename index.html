@@ -24,14 +24,6 @@ input {
 	font-size: 8pt;
 	}
 
-textarea {
-	color: black;
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 8pt;
-	word-wrap:break-word;
-	text-wrap:unrestricted;
-	}
-
 body {
 	color: black;
 	font-family:Verdana,Arial,Helvetica,sans-serif;
@@ -39,22 +31,6 @@ body {
 	background-color:#666688;
 	scrollbar-base-color:#666699;
 	scrollbar-arrow-color:#ddddff;
-	}
-
-xmp {
-	color: black;
-	font-family: Courier New, Courier;
-	font-size: 10pt;
-	white-space: word-wrap: break-word;
-	white-space: pre-wrap;
-	}
-
-pre {
-	color: black;
-	font-family: Courier New, Courier;
-	font-size: 10pt;
-	white-space: word-wrap: break-word;
-	white-space: pre-wrap;
 	}
 
 a {
@@ -128,15 +104,19 @@ var gbl = {
 
 	tick: "&#x2611;",
 	cross: "&#x2612;",
+	timer: "&#x23f3;",
+	bin: "&#x1f5d1;",
 	};
 
 var ctx = {
 	};
 
 
-function callAPI(sfx,callback)
+
+function callApiGet(sfx,callback)
 {
 	showLoading();
+
 	p = "https"
 	if (!gbl.with_https) p = "http"
 	url = p + "://" + gbl.server + "/api/v1/servers/localhost/" + sfx
@@ -170,7 +150,7 @@ function callAPI(sfx,callback)
 function zoneMeta()
 {
 	ctx.meta = true; topLine();
-	callAPI("zones/"+ctx.zone+"/metadata",zoneMetaDetails);
+	callApiGet("zones/"+ctx.zone+"/metadata",zoneMetaDetails);
 	return false;
 }
 
@@ -209,10 +189,14 @@ function zoneMetaDetails(data)
 function changeRR()
 {
 	new_val = document.rrForm.new.value;
-	old_val = ctx.rrs.records[ctx.idx].content;
-	s = document.getElementById("rrs"+ctx.idx);
-	console.log("CHG",old_val,new_val);
-	s.innerHTML = new_val;
+
+	if (new_val != ctx.rrs.records[ctx.idx].content) {
+		ctx.needSave = "saveRRChanges"
+		topLine()
+		ctx.rrs.records[ctx.idx].content = new_val
+		s = document.getElementById("rrs"+ctx.idx);
+		s.innerHTML = new_val;
+		}
 
 	return false; // cancel the form submit
 }
@@ -224,8 +208,10 @@ function clickRR(idx)
 	s = document.getElementById("rrs"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
-	drawOneRecord();
-	s = document.getElementById("rrs"+idx);
+	if ("idx" in ctx) {
+		drawOneRecord();
+		s = document.getElementById("rrs"+idx);
+		}
 
 	ctx.idx = idx
 
@@ -238,15 +224,23 @@ function clickRR(idx)
 }
 
 
+function editNoRR(idx)
+{
+	delete ctx.idx;
+	s = document.getElementById("rrs"+idx);
+	s.innerHTML = ctx.rrs.records[idx].content;
+}
+
 
 function oneRecordHTML(idx)
 {
 	i = ctx.rrs.records[idx];
-	x = "<tr onClick='clickRR("+idx+","+JSON.stringify(ctx.rrs)+");' class=zoneListItem>"
-		+ "<td>" + ctx.rrs.name + "</td>"
+	x = "<tr class=zoneListItem>"
+		+ "<td width=10% align=center>" + gbl.bin + "</td>"
+		+ "<td width=25% onClick='editNoRR("+idx+");'>" + ctx.rrs.name + "</td>"
 		+ "<td valign=top align=right>" + ctx.rrs.ttl + "</td>"
 		+ "<td valign=top>" + ctx.rrs.type + "</td>"
-		+ "<td width=60%><span id=rrs"+idx+">" + i.content + "</span></td>";
+		+ "<td onClick='clickRR("+idx+","+JSON.stringify(ctx.rrs)+");' width=60%><span id=rrs"+idx+">" + i.content + "</span></td>";
 	return x + "</tr>";
 }
 
@@ -283,7 +277,7 @@ function oneRecord(data)
 function drawOneRecord(rrs)
 {
 	delete ctx.idx
-	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 	for(idx in ctx.rrs.records) 
 		x = x + oneRecordHTML(idx);
 	gbl.bot.innerHTML = x + "</table>";
@@ -296,14 +290,15 @@ function clickZoneRecord(name,type)
 	ctx.name = name;
 	ctx.type = type;
 	delete ctx.meta;
-	topLine();
 	getZoneRecord();
 }
 
 
 function getZoneRecord()
 {
-	callAPI("zones/" + ctx.zone,oneRecord);
+	delete ctx.needSave;
+	topLine();
+	callApiGet("zones/" + ctx.zone,oneRecord);
 }
 
 
@@ -316,9 +311,8 @@ function zoneDetailsHTML(zone,item)
 		+ "<td valign=top>" + item.type + "</td>"
 		+ "<td valign=top>"
 
-	if (item.type == "SOA") {
+	if (item.type == "SOA")
 		x = x + formatSOA(item.records[0].content);
-		}
 	else {
 		item.records.sort(function(a,b) {
 			if (a.content < b.content) return -1;
@@ -363,9 +357,15 @@ function zoneDetails(data)
 
 function zoneDetailsLoad(zone)
 {
-	ctx = { zone: zone }; topLine();
-	callAPI("zones/"+zone,zoneDetails);
-	return false;
+	ctx = { zone: zone };
+	topLine();
+	getZoneDetails();
+}
+
+
+function getZoneDetails()
+{
+	callApiGet("zones/" + ctx.zone,zoneDetails);
 }
 
 
@@ -376,18 +376,20 @@ function zoneDetailsLoad(zone)
 
 function searchResultsHTML(item)
 {
-	x = "<tr class=zoneListItem>";
+	x = "<tr class=zoneListItem";
 	if (item.object_type != "zone") {
-		x = x + "<td valign=top>" + item.name + "</td>"
+		x = x + "><td valign=top>" + item.name + "</td>"
 			+ "<td valign=top align=right>" + item.ttl + "</td>"
 			+ "<td valign=top>" + item.type + "</td>";
+
 		if (item.type == "SOA")
 			x = x + "<td valign=top>" + formatSOA(item.content) + "</td>";
-		els
+		else
 			x = x + "<td valign=top>" + item.content + "</td>"; }
+
 	else {
-		x = x + "<td><a href=# onClick='return zoneDetailsLoad(\""+item.name+"\")'>" + item.name + "</a></td>"
-			+ "<td colspan=3>[Zone Apex]</td>";
+		x = x + " onClick='return zoneDetailsLoad(\""+item.name+"\");'>";
+		x = x + "<td>" + item.name + "</td><td colspan=3>[Zone Apex]</td>";
 		}
 	return x + "</tr>";
 }
@@ -413,7 +415,7 @@ function searchFormSubmit()
 {
 	s = document.searchForm.searchTerm.value;
 	document.searchForm.searchTerm.value = "";
-	callAPI("search-data?q=" + s,searchResults);
+	callApiGet("search-data?q=" + s,searchResults);
 	return false;
 }
 
@@ -447,7 +449,7 @@ function zoneListDetails(data)
 		return 0;
 		})
 
-	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
+	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(i of data) x = x + zoneListDetailsHTML(i);
 	gbl.bot.innerHTML = x + "</table>";
 }
@@ -457,7 +459,7 @@ function zoneListDetails(data)
 function zoneList()
 {
 	ctx = { }; topLine();
-	callAPI("zones",zoneListDetails);
+	callApiGet("zones",zoneListDetails);
 	return false;
 }
 
@@ -480,9 +482,9 @@ function topLine()
 		+ btn("location.reload()",gbl.server) + btn("zoneList()","Zones");
 
 	if ("zone" in ctx) {
-		x = x + btn('zoneDetailsLoad(\""+ctx.zone+"\")',ctx.zone)
+		x = x + btn('getZoneDetails()',ctx.zone)
 		if (("name" in ctx)&&("type" in ctx))
-			x = x + btn('getZoneRecord()',ctx.name+'/'+ctx.type)
+			x = x + btn('getZoneRecord()',ctx.name+'/'+ctx.type);
 		else {
 			if ("meta" in ctx)
 				x = x + btn('zoneMeta()',"META");
@@ -491,6 +493,7 @@ function topLine()
 			}
 		}
 
+	if ("needSave" in ctx) x = x + "</td><td>" + btn(ctx.needSave+"()","SAVE");
 
 	x = x + "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=40 name=searchTerm></form></td>"
@@ -543,7 +546,7 @@ function showError(err)
 
 function showLoading()
 {
-	gbl.bot.innerHTML = "Loading...";
+	gbl.bot.innerHTML = "<h1>Loading... "+gbl.timer+"</h1>";
 }
 
 
