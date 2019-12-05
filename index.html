@@ -120,7 +120,7 @@ td {
 
 console.clear()
 
-var globals = {
+var gbl = {
 	server: null,
 	apikey: null,
 	with_https: true,
@@ -130,24 +130,27 @@ var globals = {
 	cross: "&#x2612;",
 	};
 
+var ctx = {
+	};
+
 
 function callAPI(sfx,callback)
 {
 	showLoading();
 	p = "https"
-	if (!globals.with_https) p = "http"
-	url = p + "://" + globals.server + "/api/v1/servers/localhost/" + sfx
+	if (!gbl.with_https) p = "http"
+	url = p + "://" + gbl.server + "/api/v1/servers/localhost/" + sfx
 
 	http_cmd = {
 		headers: {
-			'X-API-Key': globals.apikey,
+			'X-API-Key': gbl.apikey,
 			},
 		method: 'GET',
 		};
 
 	fetch(url,http_cmd).then(function(response) {
 		if (response.status !== 200) {
-			globals.bot.innerHTML("ERROR: "+response.status);
+			gbl.bot.innerHTML("ERROR: "+response.status);
 			return;
 			}
 
@@ -164,11 +167,10 @@ function callAPI(sfx,callback)
 // Zone META data handling
 //=============================================================================================
 
-function zoneMeta(zone)
+function zoneMeta()
 {
-	topLine("<span class=topBlob onClick='return zoneDetailsLoad(\""+zone+"\")'>"+zone+"</span>" +
-		"<span class=topBlob onClick='return zoneMeta(\""+zone+"\")'>META</span>");
-	callAPI("zones/"+zone+"/metadata",zoneMetaDetails);
+	ctx.meta = true; topLine();
+	callAPI("zones/"+ctx.zone+"/metadata",zoneMetaDetails);
 	return false;
 }
 
@@ -194,7 +196,7 @@ function zoneMetaDetails(data)
 		})
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(i of data) x = x + zoneMetaDetailsHTML(i);
-	globals.bot.innerHTML = x + "</table>";
+	gbl.bot.innerHTML = x + "</table>";
 }
 
 
@@ -204,29 +206,31 @@ function zoneMetaDetails(data)
 //=============================================================================================
 
 
-function changeRR(idx,rrs)
+function changeRR()
 {
 	new_val = document.rrForm.new.value;
-	old_val = document.rrForm.old.value;
-	s = document.getElementById("rrs"+idx);
+	old_val = ctx.rrs.records[ctx.idx].content;
+	s = document.getElementById("rrs"+ctx.idx);
+	console.log("CHG",old_val,new_val);
 	s.innerHTML = new_val;
 
-	return false
+	return false; // cancel the form submit
 }
 
 
 
-function clickRR(idx,rrs)
+function clickRR(idx)
 {
 	s = document.getElementById("rrs"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
-	drawOneRecord(rrs);
+	drawOneRecord();
 	s = document.getElementById("rrs"+idx);
 
-	x = "<form onSubmit='return changeRR("+idx+","+JSON.stringify(rrs)+");' name=rrForm>"
-		+ "<input type=hidden name=old value=\""+rrs.records[idx].content+"\">"
-		+ "<input size=50 name=new value=\""+rrs.records[idx].content+"\">"
+	ctx.idx = idx
+
+	x = "<form onSubmit='return changeRR("+idx+");' name=rrForm>"
+		+ "<input size=50 name=new value=\""+ctx.rrs.records[idx].content+"\">"
 		+ "</form>";
 
 	s.innerHTML = x;
@@ -235,30 +239,30 @@ function clickRR(idx,rrs)
 
 
 
-function oneRecordHTML(rrs,idx)
+function oneRecordHTML(idx)
 {
-	i = rrs.records[idx];
-	x = "<tr onClick='clickRR("+idx+","+JSON.stringify(rrs)+");' class=zoneListItem>"
-		+ "<td>" + rrs.name + "</td>"
-		+ "<td valign=top align=right>" + rrs.ttl + "</td>"
-		+ "<td valign=top>" + rrs.type + "</td>"
+	i = ctx.rrs.records[idx];
+	x = "<tr onClick='clickRR("+idx+","+JSON.stringify(ctx.rrs)+");' class=zoneListItem>"
+		+ "<td>" + ctx.rrs.name + "</td>"
+		+ "<td valign=top align=right>" + ctx.rrs.ttl + "</td>"
+		+ "<td valign=top>" + ctx.rrs.type + "</td>"
 		+ "<td width=60%><span id=rrs"+idx+">" + i.content + "</span></td>";
-	return x + "</tr>"
+	return x + "</tr>";
 }
 
 
 
 function oneRecord(data)
 {
-	if (data.id != this.zone)
+	if (data.id != ctx.zone)
 		return showError("ERROR: Zone does not match loaded data");
 
-	findrec = function(rrsets,my) {
-		for(tag of rrsets)
-			if ((tag.name == my.name)&&(tag.type == my.type)) return tag;
+	findrec = function() {
+		for(tag of data.rrsets)
+			if ((tag.name == ctx.name)&&(tag.type == ctx.type)) return tag;
 		return null; }
 
-	rrs = findrec(data.rrsets,this);
+	rrs = findrec();
 
 	if (rrs == null)
 		return showError("ERROR: Data for "+name+" not returned");
@@ -268,32 +272,45 @@ function oneRecord(data)
 		if (a.content > b.content) return 1;
 		return 0;
 		})
-	drawOneRecord(rrs)
+
+	ctx.rrs = rrs
+
+	drawOneRecord()
 }
+
+
 
 function drawOneRecord(rrs)
 {
+	delete ctx.idx
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	for(idx in rrs.records) 
-		x = x + oneRecordHTML(rrs,idx);
-	globals.bot.innerHTML = x + "</table>";
+	for(idx in ctx.rrs.records) 
+		x = x + oneRecordHTML(idx);
+	gbl.bot.innerHTML = x + "</table>";
 }
 
 
 
-function clickZoneRecord(zone,name,type)
+function clickZoneRecord(name,type)
 {
-	topLine("<span class=topBlob onClick=\"zoneDetailsLoad('"+zone+"')\">"+zone+"</span>"
-		+ "<span class=topBlob onClick=\"clickZoneRecord('"+zone+"','"+name+"','"+type+"')\">"+name+"/"+type+"</span></td>" 
-		+ "<td><span class=topBlob onClick='return zoneMeta(\""+zone+"\")'>TTL</span></td>" );
-	callAPI("zones/"+zone,oneRecord.bind({ zone: zone, name: name, type: type}));
+	ctx.name = name;
+	ctx.type = type;
+	delete ctx.meta;
+	topLine();
+	getZoneRecord();
+}
+
+
+function getZoneRecord()
+{
+	callAPI("zones/" + ctx.zone,oneRecord);
 }
 
 
 
 function zoneDetailsHTML(zone,item)
 {
-	x = "<tr onClick=\"clickZoneRecord('"+zone+"','"+item.name+"','"+item.type+"');\" class=zoneListItem>"
+	x = "<tr onClick=\"clickZoneRecord('"+item.name+"','"+item.type+"');\" class=zoneListItem>"
 		+ "<td valign=top>" + item.name.substr(0,item.name.length - zone.length - 1) + "</td>"
 		+ "<td valign=top align=right>" + item.ttl + "</td>"
 		+ "<td valign=top>" + item.type + "</td>"
@@ -339,15 +356,14 @@ function zoneDetails(data)
 
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(i of data.rrsets) x = x + zoneDetailsHTML(data.id,i);
-	globals.bot.innerHTML = x + "</table>";
+	gbl.bot.innerHTML = x + "</table>";
 }
 
 
 
 function zoneDetailsLoad(zone)
 {
-	topLine("<span class=topBlob onClick='return zoneDetailsLoad(\""+zone+"\")'>"+zone+"</span></td>" +
-		"<td><span class=topBlob onClick='return zoneMeta(\""+zone+"\")'>META</span></td>" );
+	ctx = { zone: zone }; topLine();
 	callAPI("zones/"+zone,zoneDetails);
 	return false;
 }
@@ -380,15 +396,15 @@ function searchResultsHTML(item)
 
 function searchResults(data)
 {
-	topLine("");
+	ctx = {}; topLine();
 	if (data.length <= 0) {
-		globals.bot.innerHTML = "No search results";
+		gbl.bot.innerHTML = "No search results";
 		return;
 		}
 
 	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(i of data) x = x + searchResultsHTML(i);
-	globals.bot.innerHTML = x + "</table>";
+	gbl.bot.innerHTML = x + "</table>";
 }
 
 
@@ -413,10 +429,10 @@ function zoneListDetailsHTML(item)
 	x = "<tr class=zoneListItem onClick='zoneDetailsLoad(\""+name+"\")'>"
 		+ "<td>" + name + "</td>"
 		+ "<td>" + item.kind + "</td>";
-	if (item.dnssec) t = globals.tick; else t = globals.cross;
+	if (item.dnssec) t = gbl.tick; else t = gbl.cross;
 	x = x + "<td>" + t + "</td>"
 		+ "<td>" + item.serial + "</td>";
-	if (item.notified_serial == item.serial) t = globals.tick; else t = globals.cross;
+	if (item.notified_serial == item.serial) t = gbl.tick; else t = gbl.cross;
 	x = x + "<td>" + t + "</td>";
 	return x + "</tr>";
 }
@@ -433,14 +449,14 @@ function zoneListDetails(data)
 
 	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 	for(i of data) x = x + zoneListDetailsHTML(i);
-	globals.bot.innerHTML = x + "</table>";
+	gbl.bot.innerHTML = x + "</table>";
 }
 
 
 
 function zoneList()
 {
-	topLine("");
+	ctx = { }; topLine();
 	callAPI("zones",zoneListDetails);
 	return false;
 }
@@ -451,23 +467,44 @@ function zoneList()
 // Common functions
 //=============================================================================================
 
-function topLine(extra)
+
+function btn(call,txt) {
+	return "<span class=topBlob onClick='"+call+"; return false;'>"+txt+"</span>"
+}
+
+
+
+function topLine()
 {
-	globals.top.innerHTML = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=100%>"
-		+ "<span class=topBlob onClick='location.reload(); return false;'>" + globals.server + "</span>"
-		+ "<span class=topBlob onClick='return zoneList()'>Zones</span>"
-		+ extra + "</td>"
-		+ "<td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
+	x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=100%>"
+		+ btn("location.reload()",gbl.server) + btn("zoneList()","Zones");
+
+	if ("zone" in ctx) {
+		x = x + btn('zoneDetailsLoad(\""+ctx.zone+"\")',ctx.zone)
+		if (("name" in ctx)&&("type" in ctx))
+			x = x + btn('getZoneRecord()',ctx.name+'/'+ctx.type)
+		else {
+			if ("meta" in ctx)
+				x = x + btn('zoneMeta()',"META");
+			else
+				x = x + "</td><td>" + btn('zoneMeta()',"META");
+			}
+		}
+
+
+	x = x + "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=40 name=searchTerm></form></td>"
-		+ "</tr><table><hr>"
+		+ "</tr><table><hr>";
+
+	gbl.top.innerHTML = x;
 }
 
 
 
 function startUp()
 {
-	globals.top = document.getElementById("topSpan");
-	globals.bot = document.getElementById("lowerSpan");
+	gbl.top = document.getElementById("topSpan");
+	gbl.bot = document.getElementById("lowerSpan");
 }
 
 
@@ -475,9 +512,9 @@ function startUp()
 function initialLogin()
 {
 	f = document.loginForm;
-	globals.server = f.server.value;
-	globals.apikey = f.apikey.value;
-	globals.with_https = f.with_https.checked;
+	gbl.server = f.server.value;
+	gbl.apikey = f.apikey.value;
+	gbl.with_https = f.with_https.checked;
 	zoneList();
 }
 
@@ -499,14 +536,14 @@ function formatSOA(soa_txt)
 
 function showError(err)
 {
-	globals.bot.innerHTML = "<h1>"+err+"</h1>";
+	gbl.bot.innerHTML = "<h1>"+err+"</h1>";
 }
 
 
 
 function showLoading()
 {
-	globals.bot.innerHTML = "Loading...";
+	gbl.bot.innerHTML = "Loading...";
 }
 
 
