@@ -68,6 +68,7 @@ form {
 td {
 	padding-left: 7px;
 	padding-right: 7px;
+	white-space: nowrap;
 	}
 
 .zoneListItem {
@@ -185,18 +186,35 @@ function zoneMetaDetails(data)
 // Zone Details Handling
 //=============================================================================================
 
+function saveRRChanges(withSave)
+{
+	if (withSave) {
+		for(idx in ctx.rrs.records) {
+			console.log(idx,ctx.rrs.records[idx]);
+			}
+		}
+	delete ctx.needSave;
+	delete ctx.idx;
+	topLine();
+	getZoneRecord();
+}
+
+
 
 function changeRR()
 {
 	new_val = document.rrForm.new.value;
 
 	if (new_val != ctx.rrs.records[ctx.idx].content) {
-		ctx.needSave = "saveRRChanges"
-		topLine()
-		ctx.rrs.records[ctx.idx].content = new_val
+		ctx.needSave = "saveRRChanges";
+		ctx.rrs.records[ctx.idx].content = new_val;
 		s = document.getElementById("rrs"+ctx.idx);
 		s.innerHTML = new_val;
 		}
+
+	delete ctx.idx;
+	delete ctx.needCancel;
+	topLine();
 
 	return false; // cancel the form submit
 }
@@ -221,26 +239,44 @@ function clickRR(idx)
 
 	s.innerHTML = x;
 	document.rrForm.new.focus();
+	ctx.needCancel = "editNoRR";
+	topLine();
 }
 
 
-function editNoRR(idx)
+
+function editNoRR()
 {
+	if (!("idx" in ctx)) return;
+	s = document.getElementById("rrs"+ctx.idx);
+	s.innerHTML = ctx.rrs.records[ctx.idx].content;
 	delete ctx.idx;
-	s = document.getElementById("rrs"+idx);
-	s.innerHTML = ctx.rrs.records[idx].content;
+	delete ctx.needCancel;
+	topLine()
 }
+
+
+
+function deleteRRitem(idx)
+{
+	if ("idx" in ctx) return editNoRR()
+	delete ctx.rrs.records[idx]
+	ctx.needSave = "saveRRChanges"
+	topLine()
+	drawOneRecord()
+}
+
 
 
 function oneRecordHTML(idx)
 {
 	i = ctx.rrs.records[idx];
 	x = "<tr class=zoneListItem>"
-		+ "<td width=10% align=center>" + gbl.bin + "</td>"
-		+ "<td width=25% onClick='editNoRR("+idx+");'>" + ctx.rrs.name + "</td>"
+		+ "<td width=10% onClick='deleteRRitem("+idx+");' align=center>" + gbl.bin + "</td>"
+		+ "<td width=25% onClick='editNoRR();'>" + ctx.rrs.name + "</td>"
 		+ "<td valign=top align=right>" + ctx.rrs.ttl + "</td>"
 		+ "<td valign=top>" + ctx.rrs.type + "</td>"
-		+ "<td onClick='clickRR("+idx+","+JSON.stringify(ctx.rrs)+");' width=60%><span id=rrs"+idx+">" + i.content + "</span></td>";
+		+ "<td onClick='clickRR("+idx+");' width=60%><span id=rrs"+idx+">" + i.content + "</span></td>";
 	return x + "</tr>";
 }
 
@@ -493,7 +529,13 @@ function topLine()
 			}
 		}
 
-	if ("needSave" in ctx) x = x + "</td><td>" + btn(ctx.needSave+"()","SAVE");
+	if ("needCancel" in ctx)
+		x = x + "</td><td>"
+			+ btn(ctx.needCancel+"(false)","Cancel");
+	else if ("needSave" in ctx)
+		x = x + "</td><td>"
+			+ btn(ctx.needSave+"(false)","Cancel")
+			+ btn(ctx.needSave+"(true)","Save");
 
 	x = x + "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=40 name=searchTerm></form></td>"
