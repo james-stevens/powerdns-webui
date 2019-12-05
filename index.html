@@ -115,10 +115,30 @@ var ctx = {
 
 
 
+function fileDownload(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
+
+
 function callApi(sfx,callback,inData)
 {
 	showLoading();
+	return doCallApi(sfx,callback,inData)
+}
 
+
+function doCallApi(sfx,callback,inData)
+{
 	p = "https"
 	if (!gbl.with_https) p = "http"
 	url = p + "://" + gbl.server + "/api/v1/servers/localhost/" + sfx
@@ -334,7 +354,7 @@ function clickRR(idx)
 	ctx.idx = idx
 
 	x = "<form onSubmit='return changeRR();' name=rrForm>"
-		+ "<input size=50 name=new value=\""+ctx.rrs.records[idx].content+"\">"
+		+ "<input size=50 name=new value='"+ctx.rrs.records[idx].content.replace(/'/g,"&apos;")+"'>"
 		+ "</form>";
 
 	s.innerHTML = x;
@@ -610,6 +630,23 @@ function zoneList()
 }
 
 
+//=============================================================================================
+// Zone AXFR
+//=============================================================================================
+
+function zoneAxfrData(data)
+{
+	name = ctx.zone.replace(/\./g,"_");
+	name = name.substr(0,name.length-1) + ".txt";
+	fileDownload(name,data);
+}
+
+
+function zoneAxfr()
+{
+	doCallApi("zones/"+ctx.zone+"/export",zoneAxfrData,null)
+}
+
 
 //=============================================================================================
 // Common functions
@@ -640,7 +677,7 @@ function topLine()
 	x = x + "</td><td>";
 
 	if (("zone" in ctx)&&(!("meta" in ctx))&&(!("name" in ctx)))
-		x = x + btn('zoneMeta()',"META");
+		x = x + btn("zoneAxfr()","AXFR") + btn('zoneMeta()',"META");
 
 	if ("needCancel" in ctx)
 		x = x + btn(ctx.needCancel+"(false)","Cancel");
