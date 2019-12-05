@@ -95,7 +95,8 @@ td {
 
 <script language="Javascript">
 
-console.clear()
+
+console.clear();
 
 var gbl = {
 	server: null,
@@ -106,7 +107,7 @@ var gbl = {
 	tick: "&#x2611;",
 	cross: "&#x2612;",
 	timer: "&#x23f3;",
-	bin: "&#x1f5d1;",
+	bin: "&#x2702;",
 	};
 
 var ctx = {
@@ -114,7 +115,7 @@ var ctx = {
 
 
 
-function callApiGet(sfx,callback)
+function callApi(sfx,callback,inData)
 {
 	showLoading();
 
@@ -122,20 +123,38 @@ function callApiGet(sfx,callback)
 	if (!gbl.with_https) p = "http"
 	url = p + "://" + gbl.server + "/api/v1/servers/localhost/" + sfx
 
-	http_cmd = {
-		headers: {
-			'X-API-Key': gbl.apikey,
-			},
+	okResp = 200;
+	httpCmd = {
+		headers: { 'X-API-Key': gbl.apikey },
 		method: 'GET',
 		};
 
-	fetch(url,http_cmd).then(function(response) {
-		if (response.status !== 200) {
-			gbl.bot.innerHTML("ERROR: "+response.status);
+	if (inData != null) {
+		httpCmd.method = inData.method;
+		httpCmd.body = inData.json;
+		okResp = 204;
+		}
+
+	fetch(url,httpCmd).then(function(response) {
+		if (response.status != okResp) {
+			if (inData != null) 
+				callback(false);
+			else
+				gbl.bot.innerHTML = "<h2>ERROR: " + response.status + "</h2>";
 			return;
 			}
 
-		response.json().then(function(data) { callback(data); });
+		response.text().then(function(data) { 
+			if (inData != null) 
+				callback(true);
+			else {
+				try {
+					param = JSON.parse(data); }
+				catch {
+					param = data; }
+				callback(param); 
+				}
+		});
 
 		}).catch(function(err) {
 			console.log('Fetch Error :-S', err);
@@ -151,7 +170,7 @@ function callApiGet(sfx,callback)
 function zoneMeta()
 {
 	ctx.meta = true; topLine();
-	callApiGet("zones/"+ctx.zone+"/metadata",zoneMetaDetails);
+	callApi("zones/"+ctx.zone+"/metadata",zoneMetaDetails,null);
 	return false;
 }
 
@@ -186,30 +205,66 @@ function zoneMetaDetails(data)
 // Zone Details Handling
 //=============================================================================================
 
+// '{"rrsets": [ {"name": "tst.test.net.", "ttl": 3600, "type": "A", "changetype": "REPLACE", "records": [ {"content": "192.168.9.9", "disabled": false } ] } ] }'
+
+function patchRRdata()
+{
+	rrset = {
+		"name": ctx.rrs.name,
+		"ttl": ctx.rrs.ttl,
+		"type": ctx.rrs.type,
+		"changetype": "REPLACE",
+		"records" : ctx.rrs.records,
+		}
+	return JSON.stringify({ "rrsets": [ rrset ] });
+}
+
+
+function addNewRR()
+{
+	ctx.rrs.records.push({ "content":"", "disabled": false });
+	drawOneRecord();
+	clickRR(ctx.rrs.records.length-1);
+}
+
+
+
+function madeChange(res)
+{
+	// check res ??
+	getZoneRecord();
+}
+
+
+
 function saveRRChanges(withSave)
 {
-	if (withSave) {
-		for(idx in ctx.rrs.records) {
-			console.log(idx,ctx.rrs.records[idx]);
-			}
-		}
 	delete ctx.needSave;
 	delete ctx.idx;
 	topLine();
-	getZoneRecord();
+
+	if (withSave)
+		callApi("zones/"+ctx.zone,madeChange,
+			{ "method": "PATCH", json: patchRRdata() } );
+	else
+		getZoneRecord();
 }
 
 
 
 function changeRR()
 {
-	new_val = document.rrForm.new.value;
-
-	if (new_val != ctx.rrs.records[ctx.idx].content) {
-		ctx.needSave = "saveRRChanges";
-		ctx.rrs.records[ctx.idx].content = new_val;
+	newVal = document.rrForm.new.value;
+	if (newVal == "") {
+		if (ctx.rrs.records[ctx.idx].content != "") ctx.needSave = "saveRRChanges";
+		ctx.rrs.records.splice(ctx.idx,1);
+		drawOneRecord();
+		}
+	else if (newVal != ctx.rrs.records[ctx.idx].content) {
+		ctx.rrs.records[ctx.idx].content = newVal;
 		s = document.getElementById("rrs"+ctx.idx);
-		s.innerHTML = new_val;
+		s.innerHTML = newVal;
+		ctx.needSave = "saveRRChanges";
 		}
 
 	delete ctx.idx;
@@ -221,19 +276,64 @@ function changeRR()
 
 
 
+function changeTTL()
+{
+	newVal = document.rrForm.new.value;
+	if (newVal != ctx.rrs.ttl) {
+		ctx.needSave = "saveRRChanges";
+		ctx.rrs.ttl = newVal;
+		drawOneRecord();
+		}
+
+	delete ctx.ttl;
+	delete ctx.needCancel;
+	topLine();
+
+	return false; // cancel the form submit
+}
+
+
+
+function clickTTL(idx)
+{
+	s = document.getElementById("ttl"+idx);
+	if (s.innerHTML.indexOf("<form") >= 0) return;
+
+	if ("idx" in ctx) {
+		drawOneRecord();
+		return;
+		}
+
+	if ("ttl" in ctx) return;
+
+	ctx.ttl = idx
+
+	x = "<form onSubmit='return changeTTL();' name=rrForm>"
+		+ "<input size=20 name=new value=\""+ctx.rrs.ttl+"\"></form>";
+
+	s.innerHTML = x;
+	document.rrForm.new.focus();
+	ctx.needCancel = "editNoRR";
+	topLine();
+}
+
+
+
 function clickRR(idx)
 {
 	s = document.getElementById("rrs"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
 	if ("idx" in ctx) {
+		if ((document.rrForm.new.value == "")&&(ctx.rrs.records[ctx.idx].content == ""))
+			ctx.rrs.records.pop();
 		drawOneRecord();
 		s = document.getElementById("rrs"+idx);
 		}
 
 	ctx.idx = idx
 
-	x = "<form onSubmit='return changeRR("+idx+");' name=rrForm>"
+	x = "<form onSubmit='return changeRR();' name=rrForm>"
 		+ "<input size=50 name=new value=\""+ctx.rrs.records[idx].content+"\">"
 		+ "</form>";
 
@@ -247,23 +347,37 @@ function clickRR(idx)
 
 function editNoRR()
 {
-	if (!("idx" in ctx)) return;
-	s = document.getElementById("rrs"+ctx.idx);
-	s.innerHTML = ctx.rrs.records[ctx.idx].content;
+	if ("ttl" in ctx) {
+		s = document.getElementById("ttl"+ctx.ttl);
+		s.innerHTML = ctx.rrs.ttl
+		}
+
+	if ("idx" in ctx) {
+		if ((document.rrForm.new.value == "")&&(ctx.rrs.records[ctx.idx].content == "")) {
+			ctx.rrs.records.pop();
+			drawOneRecord();
+			}
+		else {
+			s = document.getElementById("rrs"+ctx.idx);
+			s.innerHTML = ctx.rrs.records[ctx.idx].content;
+			}
+		}
+
+	delete ctx.ttl;
 	delete ctx.idx;
 	delete ctx.needCancel;
-	topLine()
+	topLine();
 }
 
 
 
 function deleteRRitem(idx)
 {
-	if ("idx" in ctx) return editNoRR()
-	delete ctx.rrs.records[idx]
-	ctx.needSave = "saveRRChanges"
-	topLine()
-	drawOneRecord()
+	if ("idx" in ctx) return editNoRR();
+	ctx.rrs.records.splice(idx,1);
+	ctx.needSave = "saveRRChanges";
+	topLine();
+	drawOneRecord();
 }
 
 
@@ -274,7 +388,7 @@ function oneRecordHTML(idx)
 	x = "<tr class=zoneListItem>"
 		+ "<td width=10% onClick='deleteRRitem("+idx+");' align=center>" + gbl.bin + "</td>"
 		+ "<td width=25% onClick='editNoRR();'>" + ctx.rrs.name + "</td>"
-		+ "<td valign=top align=right>" + ctx.rrs.ttl + "</td>"
+		+ "<td valign=top align=right onClick='clickTTL("+idx+");'><span id=ttl"+idx+">" + ctx.rrs.ttl + "</span></td>"
 		+ "<td valign=top>" + ctx.rrs.type + "</td>"
 		+ "<td onClick='clickRR("+idx+");' width=60%><span id=rrs"+idx+">" + i.content + "</span></td>";
 	return x + "</tr>";
@@ -295,7 +409,7 @@ function oneRecord(data)
 	rrs = findrec();
 
 	if (rrs == null)
-		return showError("ERROR: Data for "+name+" not returned");
+		return showError("No matching data for " + ctx.name + "/" + ctx.type);
 
 	rrs.records.sort(function(a,b) {
 		if (a.content < b.content) return -1;
@@ -303,16 +417,18 @@ function oneRecord(data)
 		return 0;
 		})
 
-	ctx.rrs = rrs
+	ctx.rrs = rrs;
 
-	drawOneRecord()
+	drawOneRecord();
 }
 
 
 
 function drawOneRecord(rrs)
 {
-	delete ctx.idx
+	delete ctx.idx;
+	delete ctx.ttl;
+
 	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 	for(idx in ctx.rrs.records) 
 		x = x + oneRecordHTML(idx);
@@ -334,7 +450,7 @@ function getZoneRecord()
 {
 	delete ctx.needSave;
 	topLine();
-	callApiGet("zones/" + ctx.zone,oneRecord);
+	callApi("zones/" + ctx.zone,oneRecord,null);
 }
 
 
@@ -395,13 +511,7 @@ function zoneDetailsLoad(zone)
 {
 	ctx = { zone: zone };
 	topLine();
-	getZoneDetails();
-}
-
-
-function getZoneDetails()
-{
-	callApiGet("zones/" + ctx.zone,zoneDetails);
+	callApi("zones/" + ctx.zone,zoneDetails,null);
 }
 
 
@@ -451,7 +561,7 @@ function searchFormSubmit()
 {
 	s = document.searchForm.searchTerm.value;
 	document.searchForm.searchTerm.value = "";
-	callApiGet("search-data?q=" + s,searchResults);
+	callApi("search-data?q=" + s,searchResults,null);
 	return false;
 }
 
@@ -495,7 +605,7 @@ function zoneListDetails(data)
 function zoneList()
 {
 	ctx = { }; topLine();
-	callApiGet("zones",zoneListDetails);
+	callApi("zones",zoneListDetails,null);
 	return false;
 }
 
@@ -518,24 +628,30 @@ function topLine()
 		+ btn("location.reload()",gbl.server) + btn("zoneList()","Zones");
 
 	if ("zone" in ctx) {
-		x = x + btn('getZoneDetails()',ctx.zone)
+		x = x + btn('zoneDetailsLoad("'+ctx.zone+'")',ctx.zone)
 		if (("name" in ctx)&&("type" in ctx))
 			x = x + btn('getZoneRecord()',ctx.name+'/'+ctx.type);
 		else {
 			if ("meta" in ctx)
 				x = x + btn('zoneMeta()',"META");
-			else
-				x = x + "</td><td>" + btn('zoneMeta()',"META");
 			}
 		}
 
+	x = x + "</td><td>";
+
+	if (("zone" in ctx)&&(!("meta" in ctx))&&(!("name" in ctx)))
+		x = x + btn('zoneMeta()',"META");
+
 	if ("needCancel" in ctx)
-		x = x + "</td><td>"
-			+ btn(ctx.needCancel+"(false)","Cancel");
-	else if ("needSave" in ctx)
-		x = x + "</td><td>"
-			+ btn(ctx.needSave+"(false)","Cancel")
-			+ btn(ctx.needSave+"(true)","Save");
+		x = x + btn(ctx.needCancel+"(false)","Cancel");
+	else {
+		if (("zone" in ctx)&&("name" in ctx)&&("type" in ctx))
+			x = x + btn("addNewRR()","Add");
+
+		if ("needSave" in ctx)
+			x = x + btn(ctx.needSave+"(false)","Cancel")
+				+ btn(ctx.needSave+"(true)","Save");
+		}
 
 	x = x + "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=40 name=searchTerm></form></td>"
