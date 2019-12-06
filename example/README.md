@@ -10,12 +10,15 @@ This set up assumes
 * You have Apache installed in `/usr/local/apache2` 
 * You have your Lets-Encrypt key & certs in `/opt/daemon/keys/letsencrypt` 
 * You are using `/opt/pid` as the Apache PID & cgi-sock directory. 
+
 If any of these don't match what you want, just change the settings in `httpd.conf`.
 
 With this project installed as `/opt/websites/pdns/powerdns-webui`, run the following
 
+```
 $ sudo httpd -f /opt/websites/pdns/powerdns-webui/example/httpd.conf
 $ sudo pdns_server --config-dir=/opt/websites/pdns/powerdns-webui/example
+```
 
 then point your browser to `https://<this-servers-ip>/`
 
