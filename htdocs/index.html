@@ -249,24 +249,23 @@ function zoneMetaDetails(data)
 // Zone Details Handling
 //=============================================================================================
 
-// '{"rrsets": [ {"name": "tst.test.net.", "ttl": 3600, "type": "A", "changetype": "REPLACE", "records": [ {"content": "192.168.9.9", "disabled": false } ] } ] }'
 
 function patchRRdata()
 {
 	rrset = {
-		"name": ctx.rec.rrs.name,
-		"ttl": ctx.rec.rrs.ttl,
-		"type": ctx.rec.rrs.type,
-		"changetype": "REPLACE",
-		"records" : ctx.rec.rrs.records,
+		name: ctx.rec.rrs.name,
+		ttl: ctx.rec.rrs.ttl,
+		type: ctx.rec.rrs.type,
+		changetype: "REPLACE",
+		records : ctx.rec.rrs.records,
 		}
-	return JSON.stringify({ "rrsets": [ rrset ] });
+	return JSON.stringify({ rrsets: [ rrset ] });
 }
 
 
 function addNewRR()
 {
-	ctx.rec.rrs.records.push({ "content":"", "disabled": false });
+	ctx.rec.rrs.records.push({ content:"", disabled: false });
 	drawOneRecord();
 	clickRR(ctx.rec.rrs.records.length-1);
 }
@@ -292,7 +291,7 @@ function saveRRChanges(withSave)
 
 	if (withSave)
 		callApi("zones/"+ctx.zone,madeChange,
-			{ "method": "PATCH", json: patchRRdata() } );
+			{ method: "PATCH", json: patchRRdata() } );
 	else
 		getZoneRecord();
 }
@@ -503,8 +502,8 @@ function drawOneRecord(rrs)
 function clickZoneRecord(name,type)
 {
 	ctx.rec = {
-		"name": name,
-		"type": type,
+		name: name,
+		type: type,
 		};
 	delete ctx.meta;
 
@@ -543,16 +542,16 @@ function doNewName()
 	else 
 		name = f.rrName.value + "." + ctx.zone;
 
-	if (findRec(ctx.rrsets,{ "name": name, "type": f.rrType.value })!=null)
+	if (findRec(ctx.rrsets,{ name: name, type: f.rrType.value })!=null)
 		return clickZoneRecord(name,f.rrType.value);
 
 	ctx.rec = {
-		"name": name,
-		"type": f.rrType.value,
-		"rrs": {
-			"name": name,
-			"type": f.rrType.value,
-			"ttl": f.rrTTL.value,
+		name: name,
+		type: f.rrType.value,
+		rrs: {
+			name: name,
+			type: f.rrType.value,
+			ttl: f.rrTTL.value,
 			records: [ ],
 			},
 		};
@@ -636,7 +635,7 @@ function zoneDetails(data)
 
 function zoneDetailsLoad(zone)
 {
-	ctx = { "zone": zone };
+	ctx = { zone: zone };
 	topLine();
 	callApi("zones/" + ctx.zone,zoneDetails,null);
 }
@@ -888,11 +887,19 @@ function msg(myMsg)
 	<form action="/" name=newNameForm onSubmit="return doNewName();">
 		<tr><td class=formPrompt>Host name:</td><td><input name=rrName></td></tr>
 		<tr><td class=formPrompt>RR Type:</td><td><select name=rrType>
-		<option>A
-		<option>AAAA
-		<option>MX
-		<option>NS
-		<option>TXT
+		<option>A<option>AAAA<option>MX<option>NS<option>TXT
+
+		<option>A6<option>ADDR<option>AFSDB<option>ALIAS
+		<option>ANY<option>AXFR<option>CAA<option>CDNSKEY<option>CDS<option>CERT
+		<option>CNAME<option>DHCID<option>DLV<option>DNAME<option>DNSKEY<option>DS
+		<option>EUI48<option>EUI64<option>HINFO<option>IPSECKEY<option>IXFR<option>KEY
+		<option>KX<option>LOC<option>LUA<option>MAILA<option>MAILB<option>MB
+		<option>MG<option>MINFO<option>MR<option>MX<option>NAPTR<option>NS
+		<option>OPENPGPKEY<option>OPT<option>PTR
+		<option>RKEY<option>RP<option>RRSIG<option>SIG<option>SMIMEA<option>SOA
+		<option>SPF<option>SRV<option>SSHFP<option>TKEY<option>TLSA<option>TXT
+		<option>URI<option>WKS
+
 		</select></td></tr>
 		<tr><td class=formPrompt>TTL:</td><td><input name=rrTTL></td></tr>
 		<tr><td align=center colspan=2><span class=myBtn onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span class=myBtn onClick="doNewName();">Add Record</span></td></tr>
