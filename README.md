@@ -1,6 +1,6 @@
 # PowerDNS WebUI
 
-`index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript application 
+`htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript application 
 to allows you to browse and edit DNS data held in a PowerDNS Database using the PowerDNS RestAPI.
 
 Its super simple to use, but does require a little setting up to ensure your browser is happy with stuff.
@@ -17,7 +17,7 @@ I haven't included the per-user authentication config lines, you will need to ad
 ```
 <VirtualHost 192.168.1.126:443>
 
-	DocumentRoot /opt/websites/pdns/powerdns-webui
+	DocumentRoot /opt/websites/pdns/powerdns-webui/htdocs
 
 	<Proxy http://127.1.0.1:8081/*>
 		Allow from all
@@ -62,7 +62,7 @@ api-key=Dev-Key
 ```
 
 
-then you simply place the `index.html` from this project into the directory `/opt/websites/pdns/powerdns-webui`,
+then you simply place the `htdocs/index.html` from this project into the directory `/opt/websites/pdns/powerdns-webui`,
 or whatever you chose in the Apache conf, and request the URL `https://192.168.1.126/`
 
 If it worked correctly, you should see a screen like this.
@@ -81,3 +81,5 @@ you are allowed to access from the pages it has served you. Again, this is where
 same site as the web proxy to the api provides a solution to this issue.
 
 These issues are generic browser security restrictions, and nothing specifically to do with this code.
+
+A fully working example configuration, and instructions, are provided in the `example` directory.

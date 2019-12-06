@@ -13,7 +13,7 @@ This set up assumes
 
 If any of these don't match what you want, just change the settings in `httpd.conf`.
 
-With this project installed as `/opt/websites/pdns/powerdns-webui`, run the following
+With this project cloned to `/opt/websites/pdns/powerdns-webui`, run the following
 
 ```
 $ sudo httpd -f /opt/websites/pdns/powerdns-webui/example/httpd.conf
@@ -24,3 +24,7 @@ then point your browser to `https://<this-servers-ip>/`
 
 * Usernanme: `dns`
 * Password: `dns`
+
+
+NOTE: Keeping password & config files in directories available to a web server is not a good idea, 
+this example config is intended to just get you going.
