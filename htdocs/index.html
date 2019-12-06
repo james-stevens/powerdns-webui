@@ -172,6 +172,7 @@ function fileDownload(filename, text) {
 function callApi(sfx,callback,inData)
 {
 	gbl.frm.style.display = "none";
+	gbl.newZ.style.display = "none";
 	msg("Loading ... " + gbl.timer);
 
 	p = "https"
@@ -538,6 +539,18 @@ function getZoneRecord()
 // Zone detils code
 //=============================================================================================
 
+function addNewZone()
+{
+	ctx.addZone = true;
+	topLine();
+	gbl.bot.innerHTML = "";
+	gbl.newZ.style.display = "block";
+	f = document.newZoneForm;
+	f.zoneName.value = "";
+	f.zoneName.focus();
+}
+
+
 
 function doNewName()
 {
@@ -787,6 +800,7 @@ function btn(call,txt) {
 function topLine()
 {
 	gbl.frm.style.display = "none";
+	gbl.newZ.style.display = "none";
 
 	x = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td>"
 		+ btn("location.reload()",gbl.server) + btn("zoneList()","Zones");
@@ -809,18 +823,23 @@ function topLine()
 
 	x = x + "</td><td width=100% align=center><span id='showMsg'></span></td><td>";
 
-	if (("zone" in ctx)&&(!("meta" in ctx))&&(!("rec" in ctx))&&(!("addRR" in ctx)))
-		x = x + btn("zoneNameAdd()","Add") + btn("zoneAxfr()","AXFR") + btn('zoneMeta()',"META");
+	if ("zone" in ctx) {
+		if ((!("meta" in ctx))&&(!("rec" in ctx))&&(!("addRR" in ctx)))
+			x = x + btn("zoneNameAdd()","Add") + btn("zoneAxfr()","AXFR") + btn('zoneMeta()',"META");
 
-	if ("needCancel" in ctx)
-		x = x + btn(ctx.needCancel+"(false)","Cancel");
+		if ("needCancel" in ctx)
+			x = x + btn(ctx.needCancel+"(false)","Cancel");
+		else {
+			if ("rec" in ctx)
+				x = x + btn("addNewRR()","Add");
+
+			if ("needSave" in ctx)
+				x = x + btn(ctx.needSave+"(false)","Cancel")
+					+ btn(ctx.needSave+"(true)","Save");
+			}
+		}
 	else {
-		if ("rec" in ctx)
-			x = x + btn("addNewRR()","Add");
-
-		if ("needSave" in ctx)
-			x = x + btn(ctx.needSave+"(false)","Cancel")
-				+ btn(ctx.needSave+"(true)","Save");
+		if (!("addZone" in ctx)) x = x + btn("addNewZone()","Add");
 		}
 
 	x = x + "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
@@ -837,6 +856,7 @@ function startUp()
 	gbl.top = document.getElementById("topSpan");
 	gbl.bot = document.getElementById("lowerSpan");
 	gbl.frm = document.getElementById("addName");
+	gbl.newZ = document.getElementById("addZone");
 }
 
 
@@ -848,6 +868,8 @@ function initialLogin()
 	gbl.apikey = f.apikey.value;
 	gbl.with_https = f.with_https.checked;
 	zoneList();
+
+	return false; // block form submit
 }
 
 
@@ -889,23 +911,39 @@ function msg(myMsg)
 
 <body onLoad="startUp();">
 
-<div id="topSpan"></div>
+<div id="topSpan">
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+<tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr>
+</table>
+</div>
 
 <div id="lowerSpan">
 	<table align=center>
-	<form action="/" name=loginForm>
+	<form action="/" onSubmit="return initialLogin()" name=loginForm>
 		<tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr>
 		<tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value="Dev-Key"></td></tr>
 		<tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr>
 		<tr><td align=center colspan=2><span class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
+	<input type=submit style="display: none;">
+	</form>
+	</table>
+</div>
+
+<div id=addZone style="display: none;">
+	<table align=center>
+	<form method=post action="/" name=newZoneForm onSubmit="return doNewZone();">
+		<tr><td class=formPrompt>Zone name:</td><td><input name=zoneName></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn onClick="zoneList();">Cancel</span><span class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
+		</tr>
+	<input type=submit style="display: none;">
 	</form>
 	</table>
 </div>
 
 <div id=addName style="display: none;">
 	<table align=center>
-	<form action="/" name=newNameForm onSubmit="return doNewName();">
+	<form method=post action="/" name=newNameForm onSubmit="return doNewName();">
 		<tr><td class=formPrompt>Host name:</td><td><input name=rrName></td></tr>
 		<tr><td class=formPrompt>RR Type:</td><td><select name=rrType>
 		<option>A<option>AAAA<option>MX<option>NS<option>TXT
@@ -925,6 +963,7 @@ function msg(myMsg)
 		<tr><td class=formPrompt>TTL:</td><td><input name=rrTTL></td></tr>
 		<tr><td align=center colspan=2><span class=myBtn onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 		</tr>
+	<input type=submit style="display: none;">
 	</form>
 	</table>
 </div>
