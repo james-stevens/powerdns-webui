@@ -224,7 +224,7 @@ function callApi(sfx,callback,inData)
 function zoneMeta()
 {
 	ctx.meta = true; topLine();
-	callApi("zones/"+ctx.zone+"/metadata",zoneMetaDetails,null);
+	callApi("zones/"+ctx.zone+"/metadata",zoneMetaDetails);
 	return false;
 }
 
@@ -526,7 +526,7 @@ function getZoneRecord()
 	delete ctx.needSave;
 	delete ctx.needCancel;
 	topLine();
-	callApi("zones/" + ctx.zone,oneRecord,null);
+	callApi("zones/" + ctx.zone,oneRecord);
 }
 
 
@@ -660,7 +660,7 @@ function zoneDetailsLoad(zone)
 	document.body.scrollTop = 0;
 	ctx = { zone: zone };
 	topLine();
-	callApi("zones/" + ctx.zone,zoneDetails,null);
+	callApi("zones/" + ctx.zone,zoneDetails);
 }
 
 
@@ -713,7 +713,7 @@ function searchFormSubmit()
 {
 	s = document.searchForm.searchTerm.value;
 	document.searchForm.searchTerm.value = "";
-	callApi("search-data?q=" + s,searchResults,null);
+	callApi("search-data?q=" + s,searchResults);
 	return false;
 }
 
@@ -758,7 +758,7 @@ function zoneList()
 {
 	document.body.scrollTop = 0;
 	ctx = { }; topLine();
-	callApi("zones",zoneListDetails,null);
+	callApi("zones",zoneListDetails);
 	return false;
 }
 
@@ -777,7 +777,7 @@ function zoneAxfrData(data)
 
 function zoneAxfr()
 {
-	callApi("zones/"+ctx.zone+"/export",zoneAxfrData,null)
+	callApi("zones/"+ctx.zone+"/export",zoneAxfrData);
 }
 
 
