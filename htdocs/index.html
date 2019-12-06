@@ -3,6 +3,18 @@
 <html>
 <style type='text/css'>
 
+
+#topSpan{
+	background-color: #666688;
+	height: 50px;
+	line-height: 50px;
+	margin-top: 0px;
+	padding-left: 0px;
+	position: -webkit-sticky;
+	position: sticky;
+	top: 0px;
+	}
+
 html {
 	color: white;
 	font-family:Verdana,Arial,Helvetica,sans-serif;
@@ -36,6 +48,7 @@ body {
 	color: white;
 	font-family:Verdana,Arial,Helvetica,sans-serif;
 	font-size:10pt;
+	margin-top: 0px;
 	background-color:#666688;
 	scrollbar-base-color:#666699;
 	scrollbar-arrow-color:#ddddff;
@@ -274,7 +287,6 @@ function addNewRR()
 
 function madeChange(res)
 {
-	// check res ??
 	if (res) 
 		zoneDetailsLoad(ctx.zone);
 	else
@@ -528,6 +540,7 @@ function getZoneRecord()
 
 function doNewName()
 {
+	console.log("doNewName");
 	f = document.newNameForm;
 	if (f.rrTTL.value == "") {
 		f.rrTTL.class = "inputBad";
@@ -635,6 +648,7 @@ function zoneDetails(data)
 
 function zoneDetailsLoad(zone)
 {
+	document.body.scrollTop = 0;
 	ctx = { zone: zone };
 	topLine();
 	callApi("zones/" + ctx.zone,zoneDetails,null);
@@ -646,11 +660,14 @@ function zoneDetailsLoad(zone)
 // Search handling code
 //=============================================================================================
 
+
 function searchResultsHTML(item)
 {
 	x = "<tr class=zoneListItem";
 	if (item.object_type != "zone") {
-		x = x + "><td valign=top>" + item.name + "</td>"
+		x = x + " onClick='ctx = { zone: \""+item.zone+"\" }; "
+			+ " clickZoneRecord(\""+item.name+"\",\""+item.type+"\");'"
+			+ "><td valign=top>" + item.name + "</td>"
 			+ "<td valign=top align=right>" + item.ttl + "</td>"
 			+ "<td valign=top>" + item.type + "</td>";
 
@@ -730,6 +747,7 @@ function zoneListDetails(data)
 
 function zoneList()
 {
+	document.body.scrollTop = 0;
 	ctx = { }; topLine();
 	callApi("zones",zoneListDetails,null);
 	return false;
@@ -769,7 +787,7 @@ function topLine()
 {
 	gbl.frm.style.display = "none";
 
-	x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td>"
+	x = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td>"
 		+ btn("location.reload()",gbl.server) + btn("zoneList()","Zones");
 
 	if ("zone" in ctx) {
@@ -869,8 +887,10 @@ function msg(myMsg)
 
 
 <body onLoad="startUp();">
-<span id="topSpan"></span>
-<span id="lowerSpan">
+
+<div id="topSpan"></div>
+
+<div id="lowerSpan">
 	<table align=center>
 	<form action="/" name=loginForm>
 		<tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr>
@@ -880,9 +900,9 @@ function msg(myMsg)
 		</tr>
 	</form>
 	</table>
-</span>
+</div>
 
-<span id=addName style="display: none;">
+<div id=addName style="display: none;">
 	<table align=center>
 	<form action="/" name=newNameForm onSubmit="return doNewName();">
 		<tr><td class=formPrompt>Host name:</td><td><input name=rrName></td></tr>
@@ -906,6 +926,6 @@ function msg(myMsg)
 		</tr>
 	</form>
 	</table>
-</span>
+</div>
 
 </body></html>
