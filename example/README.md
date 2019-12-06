@@ -5,9 +5,12 @@ this single-page WebUI working.
 
 This is not intended as a tutorial or guide to best practice on Apache, Apache-SSL/TLS, PowerDNS or Let-Encrypt - for that, please use Google.
 
-This set up assumes you have Apache installed in `/usr/local/apache2` and you have your Lets-Encrypt key & certs
-in `/opt/daemon/keys/letsencrypt` and you are using `/opt/pid` as the Apache PID & cgi-sock directory. If
-any of these don't match what you want. please change the settings in `httpd.conf`.
+This set up assumes 
+* You have installed this project in `/opt/websites/pdns/powerdns-webui`
+* You have Apache installed in `/usr/local/apache2` 
+* You have your Lets-Encrypt key & certs in `/opt/daemon/keys/letsencrypt` 
+* You are using `/opt/pid` as the Apache PID & cgi-sock directory. 
+If any of these don't match what you want, just change the settings in `httpd.conf`.
 
 With this project installed as `/opt/websites/pdns/powerdns-webui`, run the following
 
