@@ -16,5 +16,5 @@ $ sudo pdns_server --config-dir=/opt/websites/pdns/powerdns-webui/example
 
 then point your browser to `https://<this-servers-ip>/`
 
-*Usernanme: `dns`
-*Password: `dns`
+* Usernanme: `dns`
+* Password: `dns`
