@@ -25,6 +25,3 @@ then point your browser to `https://<this-servers-ip>/`
 * Usernanme: `dns`
 * Password: `dns`
 
-
-NOTE: Keeping password & config files in directories available to a web server is not a good idea, 
-this example config is intended to just get you going.
