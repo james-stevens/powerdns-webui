@@ -3,6 +3,8 @@
 `htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript application 
 to allows you to browse and edit DNS data held in a PowerDNS Database using the PowerDNS RestAPI.
 
+`htdocs/min.html` is simply a minified version of the same file, minified using "jsmin".
+
 Its super simple to use, but does require a little setting up to ensure your browser is happy with stuff.
 Particularly [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
 
