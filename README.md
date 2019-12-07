@@ -17,7 +17,7 @@ I used Apache. Here's a snip of a suitable setup. It assumes your PowerDNS WebUI
 and your Apache Server can listen on port 443 (HTTPS).
 
 Below, I haven't included the SSL or per-user authentication config lines, you will need to add whatever you prefer, 
-but all the SSL & Basic Autentication configuration is included in `example/httpd.conf`.
+but all the SSL & Basic Authentication configuration is included in `example/httpd.conf`.
 
 ```
 <VirtualHost *:443>
@@ -73,7 +73,7 @@ If it worked correctly, you should see a screen like this.
 ![Frist Screen](/first.png)
 
 
-NOTE: Becuase it prompts you for a server name, you can use this single page app to access any PowerDNS RestAPI
+NOTE: Because it prompts you for a server name, you can use this single page app to access any PowerDNS RestAPI
 you can reach, but your browser will impose certain restrictions.
 
 * If you obtained the `index.html` over HTTPS, then the RestAPI must be accessed over HTTPS - this is where
