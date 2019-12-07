@@ -89,3 +89,9 @@ Having the page served from the same service as the web proxy to the api, provid
 These issues are generic browser security restrictions, and nothing specifically to do with this code.
 
 A fully working example configuration, and instructions, are provided in the `example` directory.
+
+
+# In Operation #
+
+I've tested this talking to a 95% idle PowerDNS server over an 18ms latency link and the response time for 
+loading a zone with 1000 records (500 names, 2 records per name) is virtually instant.

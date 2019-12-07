@@ -153,13 +153,13 @@ var ctx = { }; // will store the context of what the user is up to
 
 
 function fileDownload(filename, text) {
-  var element = document.createElement('DownLoad');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
+	let element = document.createElement('DownLoad');
+	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+	element.setAttribute('download', filename);
+	element.style.display = 'none';
+	document.body.appendChild(element);
+	element.click();
+	document.body.removeChild(element);
 }
 
 
@@ -170,12 +170,12 @@ function callApi(sfx,callback,inData)
 	gbl.newZ.style.display = "none";
 	msg("Loading ... " + gbl.timer);
 
-	p = "https"
+	let p = "https"
 	if (!gbl.with_https) p = "http"
 	url = p + "://" + gbl.server + "/api/v1/servers/localhost/" + sfx
 
-	okResp = 200;
-	httpCmd = {
+	let okResp = 200;
+	let httpCmd = {
 		headers: { 'X-API-Key': gbl.apikey },
 		method: 'GET',
 		};
@@ -201,6 +201,7 @@ function callApi(sfx,callback,inData)
 			if (inData != null) 
 				callback(true);
 			else {
+				let param = data;
 				try {
 					param = JSON.parse(data); }
 				catch {
@@ -232,10 +233,10 @@ function zoneMeta()
 
 function zoneMetaDetailsHTML(item)
 {
-	x = "<tr class=zoneListItem>"
+	let x = "<tr class=zoneListItem>"
 		+ "<td>" + item.kind + "</td>"
 		+ "<td>";
-	for(i of item.metadata) x = x + i + "<br>";
+	for(let i of item.metadata) x = x + i + "<br>";
 	return x + "</td></tr>";
 }
 
@@ -248,8 +249,8 @@ function zoneMetaDetails(data)
 		if (a.kind > b.kind) return 1;
 		return 0;
 		})
-	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	for(i of data) x = x + zoneMetaDetailsHTML(i);
+	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	for(let i of data) x = x + zoneMetaDetailsHTML(i);
 	gbl.bot.innerHTML = x + "</table>";
 }
 
@@ -262,10 +263,10 @@ function zoneMetaDetails(data)
 
 function patchRRdata()
 {
-	rrset = {
-		name: ctx.rec.rrs.name,
+	let rrset = {
+		name: ctx.rec.name,
 		ttl: ctx.rec.rrs.ttl,
-		type: ctx.rec.rrs.type,
+		type: ctx.rec.type,
 		changetype: "REPLACE",
 		records : ctx.rec.rrs.records,
 		}
@@ -294,8 +295,7 @@ function madeChange(res)
 
 function saveRRChanges(withSave)
 {
-	delete ctx.needSave;
-	delete ctx.rec.idx;
+	delete ctx.edit;
 	topLine();
 
 	if (withSave)
@@ -309,21 +309,20 @@ function saveRRChanges(withSave)
 
 function changeRR()
 {
-	newVal = document.rrForm.new.value;
+	let newVal = document.rrForm.new.value;
 	if (newVal == "") {
-		if (ctx.rec.rrs.records[ctx.rec.idx].content != "") ctx.needSave = "saveRRChanges";
-		ctx.rec.rrs.records.splice(ctx.rec.idx,1);
+		if (ctx.rec.rrs.records[ctx.edit.dta].content != "") ctx.needSave = "saveRRChanges";
+		ctx.rec.rrs.records.splice(ctx.edit.dta,1);
 		drawOneRecord();
 		}
-	else if (newVal != ctx.rec.rrs.records[ctx.rec.idx].content) {
-		ctx.rec.rrs.records[ctx.rec.idx].content = newVal;
-		s = document.getElementById("rrs"+ctx.rec.idx);
+	else if (newVal != ctx.rec.rrs.records[ctx.edit.dta].content) {
+		ctx.rec.rrs.records[ctx.edit.dta].content = newVal;
+		s = document.getElementById("rrs"+ctx.edit.dta);
 		s.innerHTML = newVal;
 		ctx.needSave = "saveRRChanges";
 		}
 
-	delete ctx.rec.idx;
-	delete ctx.needCancel;
+	delete ctx.edit;
 	topLine();
 
 	return false; // cancel the form submit
@@ -333,15 +332,14 @@ function changeRR()
 
 function changeTTL()
 {
-	newVal = document.rrForm.new.value;
+	let newVal = document.rrForm.new.value;
 	if (newVal != ctx.rec.rrs.ttl) {
 		ctx.needSave = "saveRRChanges";
 		ctx.rec.rrs.ttl = newVal;
 		drawOneRecord();
 		}
 
-	delete ctx.rec.ttl;
-	delete ctx.needCancel;
+	delete ctx.edit;
 	topLine();
 
 	return false; // cancel the form submit
@@ -351,24 +349,26 @@ function changeTTL()
 
 function clickTTL(idx)
 {
-	s = document.getElementById("ttl"+idx);
+	let s = document.getElementById("ttl"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
-	if ("idx" in ctx.rec) {
+	if ("dta" in ctx.edit) {
 		drawOneRecord();
 		return;
 		}
 
 	if ("ttl" in ctx.rec) return;
 
-	ctx.rec.ttl = idx
+	ctx.edit = {
+		ttl: idx,
+		needCancel: "cancelAllEdits",
+		};
 
-	x = "<form onSubmit='return changeTTL();' name=rrForm>"
+	let x = "<form onSubmit='return changeTTL();' name=rrForm>"
 		+ "<input size=10 name=new value=\""+ctx.rec.rrs.ttl+"\"></form>";
 
 	s.innerHTML = x;
 	document.rrForm.new.focus();
-	ctx.needCancel = "editNoRR";
 	topLine();
 }
 
@@ -376,40 +376,75 @@ function clickTTL(idx)
 
 function clickRR(idx)
 {
-	s = document.getElementById("rrs"+idx);
+    if ("edit" in ctx) cancelAllEdits();
+
+	let s = document.getElementById("rrs"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
-	if ("idx" in ctx.rec) {
-		if ((document.rrForm.new.value == "")&&(ctx.rec.rrs.records[ctx.rec.idx].content == ""))
-			ctx.rec.rrs.records.pop();
-
-		drawOneRecord();
-		s = document.getElementById("rrs"+idx);
-		}
-
-	ctx.rec.idx = idx
-
-	x = "<form onSubmit='return changeRR();' name=rrForm>"
+	let x = "<form onSubmit='return changeRR();' name=rrForm>"
 		+ "<input size=50 name=new value='"+ctx.rec.rrs.records[idx].content.replace(/'/g,"&apos;")+"'>"
 		+ "</form>";
 
+	ctx.edit = { 
+		dta: idx,
+		needCancel: "cancelAllEdits",
+		};
+
+	topLine();
 	s.innerHTML = x;
 	document.rrForm.new.focus();
-	ctx.needCancel = "editNoRR";
-	topLine();
 }
 
 
 
-function editNoRR()
+function changeName()
 {
-	if ("ttl" in ctx.rec) {
-		s = document.getElementById("ttl"+ctx.rec.ttl);
+	ctx.rec.name =  document.rrForm.new.value;
+	ctx.rec.rrs.name = ctx.rec.name;
+	delete ctx.edit;
+	ctx.needSave = "saveRRChanges";
+
+	topLine();
+	drawOneRecord();
+
+	return false; // block form submit
+}
+
+
+
+function clickRecName(idx)
+{
+    if ("edit" in ctx) cancelAllEdits();
+
+	let s = document.getElementById("nme"+idx);
+	if (s.innerHTML.indexOf("<form") >= 0) return;
+
+	let x = "<form onSubmit='return changeName();' name=rrForm>"
+		+ "<input size=50 name=new value='"+ctx.rec.name+"'></form>";
+
+	ctx.edit = { 
+		nme: idx,
+		needCancel: "cancelAllEdits",
+		};
+
+	topLine();
+	s.innerHTML = x;
+	document.rrForm.new.focus();
+}
+
+
+
+function cancelAllEdits()
+{
+	if (!("edit" in ctx)) return;
+
+	if ("ttl" in ctx.edit) {
+		let s = document.getElementById("ttl"+ctx.edit.ttl);
 		s.innerHTML = ctx.rec.rrs.ttl
 		}
 
-	if ("idx" in ctx.rec) {
-		if ((document.rrForm.new.value == "")&&(ctx.rec.rrs.records[ctx.rec.idx].content == "")) {
+	if ("dta" in ctx.edit) {
+		if ((document.rrForm.new.value == "")&&(ctx.rec.rrs.records[ctx.edit.dta].content == "")) {
 			ctx.rec.rrs.records.pop();
 
 			if ((ctx.rec.loadedRows==0)&&(ctx.rec.rrs.records.length==0))
@@ -418,14 +453,12 @@ function editNoRR()
 			drawOneRecord();
 			}
 		else {
-			s = document.getElementById("rrs"+ctx.rec.idx);
-			s.innerHTML = ctx.rec.rrs.records[ctx.rec.idx].content;
+			let s = document.getElementById("rrs"+ctx.edit.dta);
+			s.innerHTML = ctx.rec.rrs.records[ctx.edit.dta].content;
 			}
 		}
 
-	delete ctx.rec.ttl;
-	delete ctx.rec.idx;
-	delete ctx.needCancel;
+	delete ctx.edit;
 	topLine();
 }
 
@@ -433,7 +466,8 @@ function editNoRR()
 
 function deleteRRitem(idx)
 {
-	if ("idx" in ctx.rec) return editNoRR();
+	if ("edit" in ctx) return cancelAllEdits();
+
 	ctx.rec.rrs.records.splice(idx,1);
 	ctx.needSave = "saveRRChanges";
 	topLine();
@@ -444,13 +478,13 @@ function deleteRRitem(idx)
 
 function oneRecordHTML(idx)
 {
-	i = ctx.rec.rrs.records[idx];
-	x = "<tr class=zoneListItem>"
-		+ "<td width=10% onClick='deleteRRitem("+idx+");' align=center>" + gbl.bin + "</td>"
-		+ "<td width=25% onClick='editNoRR();'>" + ctx.rec.rrs.name + "</td>"
+	let i = ctx.rec.rrs.records[idx];
+	let x = "<tr class=zoneListItem>"
+		+ "<td onClick='deleteRRitem("+idx+");' align=center>" + gbl.bin + "</td>"
+		+ "<td onClick='clickRecName("+idx+");'><span id=nme"+idx+">" + ctx.rec.name + "</span></td>"
 		+ "<td valign=top align=right onClick='clickTTL("+idx+");'><span id=ttl"+idx+">" + ctx.rec.rrs.ttl + "</span></td>"
 		+ "<td valign=top>" + ctx.rec.rrs.type + "</td>"
-		+ "<td onClick='clickRR("+idx+");' width=60%><span id=rrs"+idx+">" + i.content + "</span></td>";
+		+ "<td onClick='clickRR("+idx+");'><span id=rrs"+idx+">" + i.content + "</span></td>";
 	return x + "</tr>";
 }
 
@@ -458,7 +492,7 @@ function oneRecordHTML(idx)
 
 function findRec(rrsets,rec)
 {
-	for(tag of rrsets)
+	for(let tag of rrsets)
 		if ((tag.name == rec.name)&&(tag.type == rec.type)) return tag;
 
 	return null;
@@ -471,7 +505,7 @@ function oneRecord(data)
 	if (data.id != ctx.zone)
 		return showError("ERROR: Zone does not match loaded data");
 
-	rrs = findRec(data.rrsets,ctx.rec);
+	let rrs = findRec(data.rrsets,ctx.rec);
 
 	if (rrs == null) {
 		if ("rrs" in ctx.rec) {
@@ -497,11 +531,12 @@ function oneRecord(data)
 
 function drawOneRecord(rrs)
 {
-	delete ctx.rec.idx;
-	delete ctx.rec.ttl;
+	delete ctx.edit;
 
-	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
-	for(idx in ctx.rec.rrs.records) 
+	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
+	x = x + '<colgroup><col width="10%" /><col width="25%" /><col /><col /><col width="60%" /></colgroup>'
+
+	for(let idx in ctx.rec.rrs.records) 
 		x = x + oneRecordHTML(idx);
 	gbl.bot.innerHTML = x + "</table>";
 }
@@ -523,8 +558,7 @@ function clickZoneRecord(name,type)
 
 function getZoneRecord()
 {
-	delete ctx.needSave;
-	delete ctx.needCancel;
+	delete ctx.edit;
 	topLine();
 	callApi("zones/" + ctx.zone,oneRecord);
 }
@@ -540,7 +574,7 @@ function addNewZone()
 	topLine();
 	gbl.bot.innerHTML = "";
 	gbl.newZ.style.display = "block";
-	f = document.newZoneForm;
+	let f = document.newZoneForm;
 	f.zoneName.value = "";
 	f.zoneName.focus();
 }
@@ -550,7 +584,7 @@ function addNewZone()
 function doNewName()
 {
 	console.log("doNewName");
-	f = document.newNameForm;
+	let f = document.newNameForm;
 	if (f.rrTTL.value == "") {
 		f.rrTTL.class = "inputBad";
 		return f.rrTTL.focus();
@@ -593,7 +627,7 @@ function zoneNameAdd()
 	topLine();
 	gbl.bot.innerHTML = "";
 	gbl.frm.style.display = "block";
-	f = document.newNameForm;
+	let f = document.newNameForm;
 	f.rrName.value = "";
 	f.rrTTL.value = "";
 	f.rrName.focus();
@@ -603,7 +637,7 @@ function zoneNameAdd()
 
 function zoneDetailsHTML(zone,item)
 {
-	x = "<tr onClick=\"clickZoneRecord('"+item.name+"','"+item.type+"');\" class=zoneListItem>"
+	let x = "<tr onClick=\"clickZoneRecord('"+item.name+"','"+item.type+"');\" class=zoneListItem>"
 		+ "<td valign=top>" + item.name.substr(0,item.name.length - zone.length - 1) + "</td>"
 		+ "<td valign=top align=right>" + item.ttl + "</td>"
 		+ "<td valign=top>" + item.type + "</td>"
@@ -618,7 +652,7 @@ function zoneDetailsHTML(zone,item)
 			return 0;
 			})
 
-		for(rrs of item.records) 
+		for(let rrs of item.records) 
 			x = x + "" + rrs.content + "<br>";
 		}
 	return x + "</td></tr>";
@@ -648,8 +682,8 @@ function zoneDetails(data)
 
 	ctx.rrsets = data.rrsets;
 
-	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	for(i of data.rrsets) x = x + zoneDetailsHTML(data.id,i);
+	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	for(let i of data.rrsets) x = x + zoneDetailsHTML(data.id,i);
 	gbl.bot.innerHTML = x + "</table>";
 }
 
@@ -672,7 +706,7 @@ function zoneDetailsLoad(zone)
 
 function searchResultsHTML(item)
 {
-	x = "<tr class=zoneListItem";
+	let x = "<tr class=zoneListItem";
 	if (item.object_type != "zone") {
 		x = x + " onClick='ctx = { zone: \""+item.zone+"\" }; "
 			+ " clickZoneRecord(\""+item.name+"\",\""+item.type+"\");'"
@@ -702,8 +736,8 @@ function searchResults(data)
 		return;
 		}
 
-	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	for(i of data) x = x + searchResultsHTML(i);
+	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	for(let i of data) x = x + searchResultsHTML(i);
 	gbl.bot.innerHTML = x + "</table>";
 }
 
@@ -711,7 +745,7 @@ function searchResults(data)
 
 function searchFormSubmit()
 {
-	s = document.searchForm.searchTerm.value;
+	let s = document.searchForm.searchTerm.value;
 	document.searchForm.searchTerm.value = "";
 	callApi("search-data?q=" + s,searchResults);
 	return false;
@@ -725,8 +759,8 @@ function searchFormSubmit()
 
 function zoneListDetailsHTML(item) 
 {
-	name = item.id;
-	x = "<tr class=zoneListItem onClick='zoneDetailsLoad(\""+name+"\")'>"
+	let name = item.id;
+	let x = "<tr class=zoneListItem onClick='zoneDetailsLoad(\""+name+"\")'>"
 		+ "<td>" + name + "</td>"
 		+ "<td>" + item.kind + "</td>";
 	if (item.dnssec) t = gbl.tick; else t = gbl.cross;
@@ -747,8 +781,10 @@ function zoneListDetails(data)
 		return 0;
 		})
 
-	x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	for(i of data) x = x + zoneListDetailsHTML(i);
+	ctx.zoneList = data;
+
+	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	for(let i of data) x = x + zoneListDetailsHTML(i);
 	gbl.bot.innerHTML = x + "</table>";
 }
 
@@ -769,7 +805,7 @@ function zoneList()
 
 function zoneAxfrData(data)
 {
-	name = ctx.zone.replace(/\./g,"_");
+	let name = ctx.zone.replace(/\./g,"_");
 	name = name.substr(0,name.length-1) + ".txt";
 	fileDownload(name,data);
 }
@@ -797,15 +833,15 @@ function topLine()
 	gbl.frm.style.display = "none";
 	gbl.newZ.style.display = "none";
 
-	x = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td>"
+	let x = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td>"
 		+ btn("location.reload()",gbl.server) + btn("zoneList()","Zones");
 
 	if ("zone" in ctx) {
 		x = x + btn('zoneDetailsLoad("'+ctx.zone+'")',ctx.zone.substr(0,ctx.zone.length-1))
 
 		if ("rec" in ctx) {
-			if (ctx.rec.name == ctx.zone) name = "@"
-			else
+			let name = "@"
+			if (ctx.rec.name != ctx.zone) 
 				name = ctx.rec.name.substr(0,ctx.rec.name.length - ctx.zone.length - 1);
 
 			x = x + btn('getZoneRecord()',name+'/'+ctx.rec.type);
@@ -822,8 +858,8 @@ function topLine()
 		if ((!("meta" in ctx))&&(!("rec" in ctx))&&(!("addRR" in ctx)))
 			x = x + btn("zoneNameAdd()","Add") + btn("zoneAxfr()","AXFR") + btn('zoneMeta()',"META");
 
-		if ("needCancel" in ctx)
-			x = x + btn(ctx.needCancel+"(false)","Cancel");
+		if (("edit" in ctx)&&("needCancel" in ctx.edit))
+			x = x + btn(ctx.edit.needCancel+"(false)","Cancel");
 		else {
 			if ("rec" in ctx)
 				x = x + btn("addNewRR()","Add");
@@ -858,7 +894,7 @@ function startUp()
 
 function initialLogin()
 {
-	f = document.loginForm;
+	let f = document.loginForm;
 	gbl.server = f.server.value;
 	gbl.apikey = f.apikey.value;
 	gbl.with_https = f.with_https.checked;
@@ -871,10 +907,10 @@ function initialLogin()
 
 function formatSOA(soa_txt)
 {
-	i = soa_txt.split(" ");
-	soa = i[0] + " " + i[1] + "<br>";
-	idx = 2;
-	for(tag of ["serial","refresh","retry","expire","minimum"]) {
+	let i = soa_txt.split(" ");
+	let soa = i[0] + " " + i[1] + "<br>";
+	let idx = 2;
+	for(let tag of ["serial","refresh","retry","expire","minimum"]) {
 		soa = soa + "<span style='display: inline-block; width:50px'></span>";
 		soa = soa + "<span style='display: inline-block; width:100px'>" + i[idx++] + "</span>;" + tag + "<br>";
 		}
@@ -892,7 +928,7 @@ function showError(err)
 
 function msg(myMsg)
 {
-	m = document.getElementById("showMsg");
+	let m = document.getElementById("showMsg");
 	m.innerHTML = myMsg;
 }
 
