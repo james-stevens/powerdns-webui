@@ -66,7 +66,8 @@ for(let n of ctx.zoneList){if((name.length>=n.name.length)&&(n.name.length>ret.l
 ret=n.name;}
 return ret;}
 function changeName()
-{let name=document.rrForm.new.value;let z=findZoneName(name);if(z!="")ctx.zone=z;else{msg(gbl.warn+" No matching zone");document.rrForm.new.focus();return false;}
+{let name=document.rrForm.new.value;if(name.substr(name.length-1)!=".")name=name+"."+ctx.zone
+let z=findZoneName(name);if(z!="")ctx.zone=z;else{msg(gbl.warn+" No matching zone");document.rrForm.new.focus();return false;}
 if(ctx.rec.name!=name){ctx.rec.name=name;ctx.rec.rrs.name=name;ctx.needSave="saveRRChanges";}
 delete ctx.edit;topLine();drawOneRecord();return false;}
 function clickRecName(idx)

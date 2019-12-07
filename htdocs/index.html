@@ -423,6 +423,7 @@ function findZoneName(name)
 function changeName()
 {
 	let name = document.rrForm.new.value;
+	if (name.substr(name.length-1)!=".") name = name + "." + ctx.zone
 
 	let z = findZoneName(name);
 	if (z != "") ctx.zone = z;
