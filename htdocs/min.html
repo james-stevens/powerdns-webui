@@ -28,22 +28,23 @@ function zoneMetaDetailsHTML(item)
 function zoneMetaDetails(data)
 {data.sort(function(a,b){if(a.kind<b.kind)return-1;if(a.kind>b.kind)return 1;return 0;})
 let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data)x=x+zoneMetaDetailsHTML(i);gbl.bot.innerHTML=x+"</table>";}
-function patchRRdata()
-{let rrset={name:ctx.rec.name,ttl:ctx.rec.rrs.ttl,type:ctx.rec.type,changetype:"REPLACE",records:ctx.rec.rrs.records,}
-return JSON.stringify({rrsets:[rrset]});}
 function addNewRR()
 {ctx.rec.rrs.records.push({content:"",disabled:false});drawOneRecord();clickData(ctx.rec.rrs.records.length-1);}
 function madeChange(res)
 {if(res)
 zoneDetailsLoad(ctx.zone);else
 msg(gbl.warn+" Update Failed");}
+function patchRRdata()
+{return JSON.stringify({rrsets:[{name:ctx.rec.name,ttl:ctx.rec.rrs.ttl,type:ctx.rec.type,changetype:"REPLACE",records:ctx.rec.rrs.records,}]});}
 function saveRRChanges(withSave)
 {delete ctx.edit;topLine();if(withSave)
 callApi("zones/"+ctx.zone,madeChange,{method:"PATCH",json:patchRRdata()});else
 getZoneRecord();}
 function changeRR()
 {let newVal=document.rrForm.new.value;if(newVal==""){if(ctx.rec.rrs.records[ctx.edit.dta].content!="")ctx.needSave="saveRRChanges";ctx.rec.rrs.records.splice(ctx.edit.dta,1);drawOneRecord();}
-else if(newVal!=ctx.rec.rrs.records[ctx.edit.dta].content){ctx.rec.rrs.records[ctx.edit.dta].content=newVal;s=document.getElementById("rrs"+ctx.edit.dta);s.innerHTML=newVal;ctx.needSave="saveRRChanges";}
+else{if((ctx.rec.type=="TXT")&&(newVal.substr(0,1)!='"')&&(newVal.substr(newVal.length-1)!='"'))
+newVal='"'+newVal+'"'
+if(newVal!=ctx.rec.rrs.records[ctx.edit.dta].content){ctx.rec.rrs.records[ctx.edit.dta].content=newVal;s=document.getElementById("rrs"+ctx.edit.dta);s.innerHTML=newVal;ctx.needSave="saveRRChanges";}}
 delete ctx.edit;topLine();return false;}
 function changeTTL()
 {let newVal=document.rrForm.new.value;if(newVal!=ctx.rec.rrs.ttl){ctx.needSave="saveRRChanges";ctx.rec.rrs.ttl=newVal;drawOneRecord();}

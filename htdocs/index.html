@@ -261,19 +261,6 @@ function zoneMetaDetails(data)
 //=============================================================================================
 
 
-function patchRRdata()
-{
-	let rrset = {
-		name: ctx.rec.name,
-		ttl: ctx.rec.rrs.ttl,
-		type: ctx.rec.type,
-		changetype: "REPLACE",
-		records : ctx.rec.rrs.records,
-		}
-	return JSON.stringify({ rrsets: [ rrset ] });
-}
-
-
 function addNewRR()
 {
 	ctx.rec.rrs.records.push({ content:"", disabled: false });
@@ -289,6 +276,23 @@ function madeChange(res)
 		zoneDetailsLoad(ctx.zone);
 	else
 		msg(gbl.warn + " Update Failed");
+}
+
+
+
+function patchRRdata()
+{
+	return JSON.stringify({
+		rrsets: [ 
+			{
+			name: ctx.rec.name,
+			ttl: ctx.rec.rrs.ttl,
+			type: ctx.rec.type,
+			changetype: "REPLACE",
+			records : ctx.rec.rrs.records,
+			}
+		] 
+		});
 }
 
 
@@ -310,16 +314,22 @@ function saveRRChanges(withSave)
 function changeRR()
 {
 	let newVal = document.rrForm.new.value;
+
 	if (newVal == "") {
 		if (ctx.rec.rrs.records[ctx.edit.dta].content != "") ctx.needSave = "saveRRChanges";
 		ctx.rec.rrs.records.splice(ctx.edit.dta,1);
 		drawOneRecord();
 		}
-	else if (newVal != ctx.rec.rrs.records[ctx.edit.dta].content) {
-		ctx.rec.rrs.records[ctx.edit.dta].content = newVal;
-		s = document.getElementById("rrs"+ctx.edit.dta);
-		s.innerHTML = newVal;
-		ctx.needSave = "saveRRChanges";
+	else {
+		if ((ctx.rec.type == "TXT")&&(newVal.substr(0,1)!='"')&&(newVal.substr(newVal.length-1)!='"'))
+			newVal = '"' + newVal + '"'
+
+		if (newVal != ctx.rec.rrs.records[ctx.edit.dta].content) {
+			ctx.rec.rrs.records[ctx.edit.dta].content = newVal;
+			s = document.getElementById("rrs"+ctx.edit.dta);
+			s.innerHTML = newVal;
+			ctx.needSave = "saveRRChanges";
+			}
 		}
 
 	delete ctx.edit;
