@@ -28,6 +28,11 @@ but all the SSL & Basic Authentication configuration is included in `example/htt
 		Allow from all
 	</Proxy>
 
+    <location /stats/>
+        ProxyPass http://admin,Dev-Key@127.1.0.1:8081/
+        ProxyPassReverse http://admin,Dev-Key@127.1.0.1:8081/
+    </location>
+
 	<location /api>
 		Header add X-API-Key "Dev-Key"
 		RequestHeader set X-API-Key "Dev-Key"
@@ -37,6 +42,9 @@ but all the SSL & Basic Authentication configuration is included in `example/htt
 
 </VirtualHost>
 ```
+
+Becuase I want the Web-App to live in the ROOT directory of the webs site, this overloads the PowerDNS stats page, so I have
+put in a rule that makes the stats page available from `https://<server-ip-address>/stats/`
 
 The PowerDNS IP Address will probably work for you.
 
