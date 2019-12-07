@@ -388,13 +388,40 @@ function clickData(idx)
 
 
 
+function findZoneName(name)
+{
+	let ret = "" 
+	for(let n of ctx.zoneList) {
+		if (
+			(name.length >= n.name.length)&&
+			(n.name.length > ret.length)&&
+			((name==n.name)||(name.substr(name.length - n.name.length)==n.name))
+			)
+			ret = n.name;
+		}
+	return ret;
+}
+
+
 function changeName()
 {
-	ctx.rec.name =  document.rrForm.new.value;
-	ctx.rec.rrs.name = ctx.rec.name;
-	delete ctx.edit;
-	ctx.needSave = "saveRRChanges";
+	let name =  document.rrForm.new.value;
 
+	let z = findZoneName(name);
+	if (z != "") ctx.zone = z;
+	else {
+		msg(gbl.warn + " No matching zone");
+		document.rrForm.new.focus();
+		return false;
+		}
+
+	if (ctx.rec.name != name) {
+		ctx.rec.name =  name;
+		ctx.rec.rrs.name = name;
+		ctx.needSave = "saveRRChanges";
+		}
+
+	delete ctx.edit;
 	topLine();
 	drawOneRecord();
 
@@ -407,14 +434,12 @@ function clickRecName(idx)
 {
     if ("edit" in ctx) { if (("nme" in ctx.edit)&&(ctx.edit.nme == idx)) return; else cancelAllEdits(); }
 
-	let s = document.getElementById("nme"+idx);
-	if (s.innerHTML.indexOf("<form") >= 0) return;
-
 	let x = "<form onSubmit='return changeName();' name=rrForm>"
 		+ "<input size=50 name=new value='"+ctx.rec.name+"'></form>";
 
 	ctx.edit = { nme: idx, };
 
+	let s = document.getElementById("nme"+idx);
 	topLine();
 	s.innerHTML = x;
 	document.rrForm.new.focus();
@@ -428,7 +453,7 @@ function cancelAllEdits()
 
 	if ("nme" in ctx.edit) {
 		let s = document.getElementById("nme"+ctx.edit.nme);
-		s.innerHTML = ctx.rec.rrs.nme
+		s.innerHTML = ctx.rec.name
 		}
 
 	if ("ttl" in ctx.edit) {
@@ -552,6 +577,8 @@ function clickZoneRecord(name,type)
 function getZoneRecord()
 {
 	delete ctx.edit;
+	delete ctx.needSave;
+
 	topLine();
 	callApi("zones/" + ctx.zone,oneRecord);
 }
@@ -576,7 +603,6 @@ function addNewZone()
 
 function doNewName()
 {
-	console.log("doNewName");
 	let f = document.newNameForm;
 	if (f.rrTTL.value == "") {
 		f.rrTTL.class = "inputBad";
@@ -685,7 +711,10 @@ function zoneDetails(data)
 function zoneDetailsLoad(zone)
 {
 	document.body.scrollTop = 0;
-	ctx = { zone: zone };
+	ctx = {
+		zone: zone,
+		zoneList: ctx.zoneList,
+		};
 	topLine();
 	callApi("zones/" + ctx.zone,zoneDetails);
 }
