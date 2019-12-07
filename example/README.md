@@ -25,3 +25,8 @@ then point your browser to `https://<this-servers-ip>/`
 * Username: `dns`
 * Password: `dns`
 
+To replace the username & password, use the following
+
+```
+htpasswd -bcB /opt/websites/pdns/powerdns-webui/example/passwd [user] [pass]
+```
