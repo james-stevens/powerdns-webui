@@ -1,23 +1,26 @@
 # PowerDNS WebUI
 
 `htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript application 
-to allows you to browse and edit DNS data held in a PowerDNS Database using the PowerDNS RestAPI.
+to allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
 
-`htdocs/min.html` is simply a minified version of the same file, minified using "jsmin".
+`htdocs/min.html` is a minified version of the same file, minified using `python -m jsmin index.html > min.html`
 
-Its super simple to use, but does require a little setting up to ensure your browser is happy with stuff.
-Particularly [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
+Its super simple to use, but does require a little setting up to ensure your browser is happy with stuff,
+particularly [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), 
+so we have provided a fully working example set-up in the `example` directory.
 
-Because it accesses the PowerDNS RestAPI directly from your browser, rather than giving everybody the `api-key`
+Because it accesses the PowerDNS RestAPI directly from your desktop's browser, instead of giving everybody the `api-key`,
 its almost certainly safer to use a web proxy (e.g. Apache or nginx) and enforce per-user authentication in the proxy.
+This means you will need to configure the proxy to add the `api-key` to each request (see below).
 
-I used Apache - here's a suitable setup. It assumes your PowerDNS WebUI is listening on IP Address 127.1.0.1
-and your Apache Server can listen on 192.168.1.126 (this will be host dependant, of course).
+I used Apache. Here's a snip of a suitable setup. It assumes your PowerDNS WebUI is listening on IP Address 127.1.0.1
+and your Apache Server can listen on port 443 (HTTPS).
 
-I haven't included the per-user authentication config lines, you will need to add whatever you prefer.
+Below, I haven't included the SSL or per-user authentication config lines, you will need to add whatever you prefer, 
+but all the SSL & Basic Autentication configuration is included in `example/httpd.conf`.
 
 ```
-<VirtualHost 192.168.1.126:443>
+<VirtualHost *:443>
 
 	DocumentRoot /opt/websites/pdns/powerdns-webui/htdocs
 
@@ -35,9 +38,7 @@ I haven't included the per-user authentication config lines, you will need to ad
 </VirtualHost>
 ```
 
-The PowerDNS IP Address is probably fine for you, but you will need to change the Apache IP Address to match
-what your host server is using. 
-You will need additional SSL configuration lines to set up the private key & certificate, etc.
+The PowerDNS IP Address will probably work for you.
 
 You will need to ensure you have loaded the Apache proxy modules, I used these
 
@@ -47,7 +48,7 @@ LoadModule proxy_connect_module modules/mod_proxy_connect.so
 LoadModule proxy_http_module modules/mod_proxy_http.so
 LoadModule rewrite_module  modules/mod_rewrite.so
 ```
-Here's the corresponding PowerDNS `pdns.conf` settings for the WebUI
+Here's the corresponding PowerDNS `pdns.conf` settings for the WebUI & Rest-API
 
 ```
 ...
@@ -64,23 +65,26 @@ api-key=Dev-Key
 ```
 
 
-then you simply place the `htdocs/index.html` from this project into the directory `/opt/websites/pdns/powerdns-webui`,
-or whatever you chose in the Apache conf, and request the URL `https://192.168.1.126/`
+Then you simply clone this project as the directory `/opt/websites/pdns/powerdns-webui`,
+or whatever you chose in the Apache conf, and request the URL `https://<server-ip-address>/`
 
 If it worked correctly, you should see a screen like this.
 
 ![Frist Screen](/first.png)
 
 
-NOTE: you can use this single page app to access any PowerDNS RestAPI, but your browser will impose certain
-restrictions.
+NOTE: Becuase it prompts you for a server name, you can use this single page app to access any PowerDNS RestAPI
+you can reach, but your browser will impose certain restrictions.
 
 * If you obtained the `index.html` over HTTPS, then the RestAPI must be accessed over HTTPS - this is where
-a web proxy interface is useful, as PowerDNS does not natively support HTTPS
+a web proxy interface is useful, as PowerDNS does not natively support HTTPS and sending all your
+data over HTTP is probably not what you want.
 
-* You must be CORS compliant - this means the web server that gave you the page must list all the other web servers
-you are allowed to access from the pages it has served you. Again, this is where having the page served from the
-same site as the web proxy to the api provides a solution to this issue.
+* You must be CORS compliant - in this context it means the web server that gave you `index.html` must list
+(in the header of the response) all the other HTTP/S servers
+you are allowed to access from the pages it has served you. 
+
+Having the page served from the same service as the web proxy to the api, provides a solution to both these issue.
 
 These issues are generic browser security restrictions, and nothing specifically to do with this code.
 
