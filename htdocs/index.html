@@ -366,7 +366,7 @@ function changeTTL()
 
 function clickTTL(idx)
 {
-    if ("edit" in ctx) { if (("ttl" in ctx.edit)&&(ctx.edit.ttl == idx)) return; else cancelAllEdits(); }
+	if ("edit" in ctx) { if (("ttl" in ctx.edit)&&(ctx.edit.ttl == idx)) return; else cancelAllEdits(); }
 
 	let s = document.getElementById("ttl"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
@@ -385,7 +385,7 @@ function clickTTL(idx)
 
 function clickData(idx)
 {
-    if ("edit" in ctx) { if (("dta" in ctx.edit)&&(ctx.edit.dta == idx)) return; else cancelAllEdits(); }
+	if ("edit" in ctx) { if (("dta" in ctx.edit)&&(ctx.edit.dta == idx)) return; else cancelAllEdits(); }
 
 	let s = document.getElementById("rrs"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
@@ -422,7 +422,7 @@ function findZoneName(name)
 
 function changeName()
 {
-	let name =  document.rrForm.new.value;
+	let name = document.rrForm.new.value;
 
 	let z = findZoneName(name);
 	if (z != "") ctx.zone = z;
@@ -433,7 +433,7 @@ function changeName()
 		}
 
 	if (ctx.rec.name != name) {
-		ctx.rec.name =  name;
+		ctx.rec.name = name;
 		ctx.rec.rrs.name = name;
 		ctx.needSave = "saveRRChanges";
 		}
@@ -449,7 +449,7 @@ function changeName()
 
 function clickRecName(idx)
 {
-    if ("edit" in ctx) { if (("nme" in ctx.edit)&&(ctx.edit.nme == idx)) return; else cancelAllEdits(); }
+	if ("edit" in ctx) { if (("nme" in ctx.edit)&&(ctx.edit.nme == idx)) return; else cancelAllEdits(); }
 
 	let x = "<form onSubmit='return changeName();' name=rrForm>"
 		+ "<input size=50 name=new value='"+ctx.rec.name+"'></form>";
