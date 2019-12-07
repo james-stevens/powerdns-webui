@@ -278,7 +278,7 @@ function addNewRR()
 {
 	ctx.rec.rrs.records.push({ content:"", disabled: false });
 	drawOneRecord();
-	clickRR(ctx.rec.rrs.records.length-1);
+	clickData(ctx.rec.rrs.records.length-1);
 }
 
 
@@ -349,20 +349,12 @@ function changeTTL()
 
 function clickTTL(idx)
 {
+    if ("edit" in ctx) { if (("ttl" in ctx.edit)&&(ctx.edit.ttl == idx)) return; else cancelAllEdits(); }
+
 	let s = document.getElementById("ttl"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
-	if ("dta" in ctx.edit) {
-		drawOneRecord();
-		return;
-		}
-
-	if ("ttl" in ctx.rec) return;
-
-	ctx.edit = {
-		ttl: idx,
-		needCancel: "cancelAllEdits",
-		};
+	ctx.edit = { ttl: idx, };
 
 	let x = "<form onSubmit='return changeTTL();' name=rrForm>"
 		+ "<input size=10 name=new value=\""+ctx.rec.rrs.ttl+"\"></form>";
@@ -374,21 +366,20 @@ function clickTTL(idx)
 
 
 
-function clickRR(idx)
+function clickData(idx)
 {
-    if ("edit" in ctx) cancelAllEdits();
+    if ("edit" in ctx) { if (("dta" in ctx.edit)&&(ctx.edit.dta == idx)) return; else cancelAllEdits(); }
 
 	let s = document.getElementById("rrs"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
+	let len = 50
+	if ((ctx.rec.type=="SOA")||(ctx.rec.type=="TXT")) len=100
 	let x = "<form onSubmit='return changeRR();' name=rrForm>"
-		+ "<input size=50 name=new value='"+ctx.rec.rrs.records[idx].content.replace(/'/g,"&apos;")+"'>"
+		+ "<input size="+len+" name=new value='"+ctx.rec.rrs.records[idx].content.replace(/'/g,"&apos;")+"'>"
 		+ "</form>";
 
-	ctx.edit = { 
-		dta: idx,
-		needCancel: "cancelAllEdits",
-		};
+	ctx.edit = { dta: idx, };
 
 	topLine();
 	s.innerHTML = x;
@@ -414,7 +405,7 @@ function changeName()
 
 function clickRecName(idx)
 {
-    if ("edit" in ctx) cancelAllEdits();
+    if ("edit" in ctx) { if (("nme" in ctx.edit)&&(ctx.edit.nme == idx)) return; else cancelAllEdits(); }
 
 	let s = document.getElementById("nme"+idx);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
@@ -422,10 +413,7 @@ function clickRecName(idx)
 	let x = "<form onSubmit='return changeName();' name=rrForm>"
 		+ "<input size=50 name=new value='"+ctx.rec.name+"'></form>";
 
-	ctx.edit = { 
-		nme: idx,
-		needCancel: "cancelAllEdits",
-		};
+	ctx.edit = { nme: idx, };
 
 	topLine();
 	s.innerHTML = x;
@@ -438,13 +426,18 @@ function cancelAllEdits()
 {
 	if (!("edit" in ctx)) return;
 
+	if ("nme" in ctx.edit) {
+		let s = document.getElementById("nme"+ctx.edit.nme);
+		s.innerHTML = ctx.rec.rrs.nme
+		}
+
 	if ("ttl" in ctx.edit) {
 		let s = document.getElementById("ttl"+ctx.edit.ttl);
 		s.innerHTML = ctx.rec.rrs.ttl
 		}
 
 	if ("dta" in ctx.edit) {
-		if ((document.rrForm.new.value == "")&&(ctx.rec.rrs.records[ctx.edit.dta].content == "")) {
+		if (ctx.rec.rrs.records[ctx.edit.dta].content == "") {
 			ctx.rec.rrs.records.pop();
 
 			if ((ctx.rec.loadedRows==0)&&(ctx.rec.rrs.records.length==0))
@@ -484,7 +477,7 @@ function oneRecordHTML(idx)
 		+ "<td onClick='clickRecName("+idx+");'><span id=nme"+idx+">" + ctx.rec.name + "</span></td>"
 		+ "<td valign=top align=right onClick='clickTTL("+idx+");'><span id=ttl"+idx+">" + ctx.rec.rrs.ttl + "</span></td>"
 		+ "<td valign=top>" + ctx.rec.rrs.type + "</td>"
-		+ "<td onClick='clickRR("+idx+");'><span id=rrs"+idx+">" + i.content + "</span></td>";
+		+ "<td onClick='clickData("+idx+");'><span id=rrs"+idx+">" + i.content + "</span></td>";
 	return x + "</tr>";
 }
 
@@ -534,7 +527,7 @@ function drawOneRecord(rrs)
 	delete ctx.edit;
 
 	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
-	x = x + '<colgroup><col width="10%" /><col width="25%" /><col /><col /><col width="60%" /></colgroup>'
+	x = x + '<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="50%" /></colgroup>'
 
 	for(let idx in ctx.rec.rrs.records) 
 		x = x + oneRecordHTML(idx);
@@ -858,8 +851,12 @@ function topLine()
 		if ((!("meta" in ctx))&&(!("rec" in ctx))&&(!("addRR" in ctx)))
 			x = x + btn("zoneNameAdd()","Add") + btn("zoneAxfr()","AXFR") + btn('zoneMeta()',"META");
 
-		if (("edit" in ctx)&&("needCancel" in ctx.edit))
-			x = x + btn(ctx.edit.needCancel+"(false)","Cancel");
+		if ("edit" in ctx) {
+			if ("needCancel" in ctx.edit)
+				x = x + btn(ctx.edit.needCancel+"(false)","Cancel");
+			else
+				x = x + btn("cancelAllEdits()","Cancel");
+			}
 		else {
 			if ("rec" in ctx)
 				x = x + btn("addNewRR()","Add");
