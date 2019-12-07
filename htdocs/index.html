@@ -140,6 +140,7 @@ var gbl = {
 	server: null,
 	apikey: null,
 	with_https: true,
+	default_ttl: 86400,
 
 	tick: "&#x2611;",
 	cross: "&#x2612;",
@@ -166,7 +167,7 @@ function fileDownload(filename, text) {
 
 function callApi(sfx,callback,inData)
 {
-	gbl.frm.style.display = "none";
+	gbl.addH.style.display = "none";
 	gbl.newZ.style.display = "none";
 	msg("Loading ... " + gbl.timer);
 
@@ -183,7 +184,7 @@ function callApi(sfx,callback,inData)
 	if (inData != null) {
 		httpCmd.method = inData.method;
 		httpCmd.body = inData.json;
-		okResp = 204;
+		if ("okResp" in inData) okResp = inData.okResp;
 		}
 
 	fetch(url,httpCmd).then(function(response) {
@@ -198,7 +199,8 @@ function callApi(sfx,callback,inData)
 			}
 
 		response.text().then(function(data) { 
-			if (inData != null) 
+			msg("");
+			if ((inData != null)&&(inData.noData))
 				callback(true);
 			else {
 				let param = data;
@@ -206,7 +208,6 @@ function callApi(sfx,callback,inData)
 					param = JSON.parse(data); }
 				catch {
 					param = data; }
-				msg("");
 				callback(param); 
 				}
 		});
@@ -304,7 +305,13 @@ function saveRRChanges(withSave)
 
 	if (withSave)
 		callApi("zones/"+ctx.zone,madeChange,
-			{ method: "PATCH", json: patchRRdata() } );
+			{ 
+			method: "PATCH",
+			noData: true,
+			okResp: 204,
+			json: patchRRdata()
+			}
+		 );
 	else
 		getZoneRecord();
 }
@@ -614,13 +621,14 @@ function addNewZone()
 function doNewName()
 {
 	let f = document.newNameForm;
-	if (f.rrTTL.value == "") {
-		f.rrTTL.class = "inputBad";
+
+	if ((f.rrTTL.value == "")||(isNaN(f.rrTTL.value))) {
 		return f.rrTTL.focus();
+		return f.rrTTL.select();
 		}
 
 	delete ctx.addRR;
-	gbl.frm.style.display = "none";
+	gbl.addH.style.display = "none";
 
 	if (f.rrName.value == "")
 		name = ctx.zone; 
@@ -655,10 +663,10 @@ function zoneNameAdd()
 	ctx.addRR = true;
 	topLine();
 	gbl.bot.innerHTML = "";
-	gbl.frm.style.display = "block";
+	gbl.addH.style.display = "block";
 	let f = document.newNameForm;
 	f.rrName.value = "";
-	f.rrTTL.value = "";
+	f.rrTTL.value = gbl.default_ttl;
 	f.rrName.focus();
 }
 
@@ -789,6 +797,34 @@ function searchFormSubmit()
 // Code to handle the list of zones
 //=============================================================================================
 
+function doMakeZone(data)
+{
+	zoneDetailsLoad(data.name);
+}
+
+
+
+function doNewZone()
+{
+	let name = document.newZoneForm.zoneName.value;
+	if (name.substr(name.length-1)!=".") name = name + "."
+
+	let kind = "Master";
+
+	data = {
+		name: name,
+		kind: kind,
+		masters: [],
+		nameservers: [],
+		};
+
+	callApi("zones",doMakeZone, { method: "POST", okResp: 201, json: JSON.stringify(data) } );
+
+	return false;
+}
+
+
+
 function zoneListDetailsHTML(item) 
 {
 	let name = item.id;
@@ -862,7 +898,7 @@ function btn(call,txt) {
 
 function topLine()
 {
-	gbl.frm.style.display = "none";
+	gbl.addH.style.display = "none";
 	gbl.newZ.style.display = "none";
 
 	let x = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td>"
@@ -922,7 +958,7 @@ function startUp()
 {
 	gbl.top = document.getElementById("topSpan");
 	gbl.bot = document.getElementById("lowerSpan");
-	gbl.frm = document.getElementById("addName");
+	gbl.addH = document.getElementById("addName");
 	gbl.newZ = document.getElementById("addZone");
 }
 
@@ -1027,7 +1063,7 @@ function msg(myMsg)
 		<option>URI<option>WKS
 
 		</select></td></tr>
-		<tr><td class=formPrompt>TTL:</td><td><input name=rrTTL></td></tr>
+		<tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr>
 		<tr><td align=center colspan=2><span class=myBtn onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
