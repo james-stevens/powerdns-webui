@@ -121,7 +121,7 @@ Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox
 
 # Security #
 
-There are deliberatly **no** security options in this JavaScript App, e.g. who can edit/delete zones/names etc.
+There are deliberatly **no** security options in this JavaScript App, e.g. who can edit/delete zones/names/records etc.
 
 When you have a JavaScript/RestAPI application the place to put the security is in the serverside RestAPI. 
 Any security put into the Javascript can usually be trivially circumvented and is therefore of no value.
