@@ -1,4 +1,11 @@
-# PowerDNS WebUI ---- Still Work-in-Progress
+# Work-in-Progress
+
+If you want to, please do report issues you find. 
+I'm always happy to fix them, but this code is still undergoing massive development change.
+
+The basic paradime of the UI will probably stay much as it is, but the underlyign code may change.
+
+# PowerDNS WebUI
 
 `htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript application 
 to allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
@@ -103,3 +110,14 @@ A fully working example configuration, and instructions, are provided in the `ex
 
 I've tested this talking to a 95% idle PowerDNS server over an 18ms latency link and the response time for 
 loading a zone with 1000 records (500 names, 2 records per name) is virtually instant.
+
+
+# Security #
+
+There are deliberatly *no* security options in this JavaScript App, e.g. who can edit/delete zones/names etc.
+
+When you have a JavaScript/RestAPI application the place to put the security is in the serverside RestAPI. 
+Any security put into the Javascript can usually be trivially circumvented and is therefore of no value.
+
+There are options to block certain METHODs in different web servers. For exmaple, by blocking all METHODs except GET, 
+you can stop a user from being able to do updates. For more information, please ask Google.
