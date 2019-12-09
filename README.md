@@ -123,8 +123,8 @@ Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox
 
 There are deliberatly **no** security options in this JavaScript App, e.g. who can edit/delete zones/names/records etc.
 
-When you have a JavaScript/RestAPI application the place to put the security is in the serverside RestAPI. 
+When you have a JavaScript/RestAPI application the place to put the security is in the server-side RestAPI. 
 Any security put into the Javascript can usually be trivially circumvented and is therefore of no value.
 
-There are options to block certain METHODs in different web servers. For exmaple, by blocking all METHODs except GET, 
+There are options to block certain `METHOD`s in different web servers. For exmaple, by blocking all `METHOD`s except `GET`, 
 you can stop a user from being able to do updates. For more information, please ask Google.
