@@ -21,7 +21,7 @@ If you are using this webapp for slave & native, please let me know if there are
 Its super simple to use, but does require a little setting up to ensure your browser is happy with stuff,
 particularly
 
-* If you obtained the `index.html` over HTTPS, then the RestAPI *must* be accessed over HTTPS - this is where
+* If you obtained the `index.html` over HTTPS, then the RestAPI **must** be accessed over HTTPS - this is where
 using a web proxy is useful, as PowerDNS does not natively support HTTPS and sending all your data over HTTP 
 is probably not what you want.
 
@@ -121,7 +121,7 @@ Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox
 
 # Security #
 
-There are deliberatly *no* security options in this JavaScript App, e.g. who can edit/delete zones/names etc.
+There are deliberatly **no** security options in this JavaScript App, e.g. who can edit/delete zones/names etc.
 
 When you have a JavaScript/RestAPI application the place to put the security is in the serverside RestAPI. 
 Any security put into the Javascript can usually be trivially circumvented and is therefore of no value.
