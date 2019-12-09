@@ -9,8 +9,10 @@ The basic paradime of the UI will probably stay much as it is, but the underlyin
 
 `htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript webapp 
 to allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
-That is, this one file is all you need in order to add a complete WebUI to your PowerDNS Server which gives you 
-the ability to browse & edit all your zone & record data.
+
+This one file is all you need in order to add a complete WebUI to your PowerDNS Server which gives you 
+the ability to browse & edit all your zone & record data. This webapp has no special server-side
+code, except the RestAPI that PowerDNS has built-in.
 
 It is (currently) primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
 but code for handling native & slave zone will probably be added later, or may just fall out in the process.
@@ -126,5 +128,5 @@ There are deliberatly **no** security options in this JavaScript App, e.g. who c
 When you have a JavaScript/RestAPI application the place to put the security is in the server-side RestAPI. 
 Any security put into the Javascript can usually be trivially circumvented and is therefore of no value.
 
-There are options to block certain `METHOD`s in different web servers. For exmaple, by blocking all `METHOD`s except `GET`, 
+There are options to block certain `METHOD` in different web servers. For exmaple, by blocking all `METHOD` except `GET`, 
 you can stop a user from being able to do updates. For more information, please ask Google.
