@@ -3,7 +3,7 @@
 If you want to, please do report issues you find. 
 I'm always happy to fix them, but this code is still undergoing massive development change.
 
-The basic paradime of the UI will probably stay much as it is, but the underlyign code may change.
+The basic paradime of the UI will probably stay much as it is, but the underlying code may change.
 
 # PowerDNS WebUI
 
