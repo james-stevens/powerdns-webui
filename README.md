@@ -5,6 +5,10 @@ I'm always happy to fix them, but this code is still undergoing massive developm
 
 The basic paradime of the UI will probably stay much as it is, but the underlying code may change.
 
+I will try and keep the `master` branch stable (i.e. functional / usable) and do all the development in the `dev` branch.
+
+Therefore, if you want to contribute to the development effort, please fork from the `dev` branch.
+
 # PowerDNS WebUI
 
 `htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript webapp 
