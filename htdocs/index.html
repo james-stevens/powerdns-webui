@@ -716,6 +716,19 @@ function zoneRectify()
 
 
 
+function zoneRetrieve()
+{
+	callApi("zones/"+ctx.zone+"/axfr-retrieve", function(ret) { 
+		if (ret) {
+			msg("Zone retrieval requested");
+			setTimeout(function() { msg(""); }, 2500);
+			}
+		else msg(gbl.warn + " Zone retrieval failed");
+		}, { method: "PUT" });
+}
+
+
+
 function addNewZone()
 {
 	ctx.addZone = true;
@@ -884,6 +897,9 @@ function zoneDetails(data)
 
 	if (ctx.zoneDetails.dnssec)
 		x = x + btn('zoneRectify()',"Rectify Zone","Rectify the data for "+ctx.zone,sz) + sp
+
+	if (ctx.zoneDetails.kind == "Slave")
+		x = x + btn('zoneRetrieve()',"Retrieve Zone","Retrieve "+ctx.zone+" from masters") + sp
 
 	x = x + btn('dropZone()',"Drop Zone","Delete "+ctx.zone+" and ALL its records",sz) + sp
 
