@@ -656,6 +656,8 @@ function drawOneRecord(rrs)
 
 function clickZoneRecord(name,type)
 {
+	if (ctx.zoneDetails.kind == "Slave") return;
+
 	ctx.rec = {
 		name: name,
 		type: type,
