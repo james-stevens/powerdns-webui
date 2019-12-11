@@ -37,10 +37,10 @@ To replace the username & password, use the following
 htpasswd -bcB /opt/websites/pdns/powerdns-webui/example/passwd [user] [pass]
 ```
 
-I have also included an exmaple config for `nginx` -> `nginx.conf`. The easiest way to get this 
+I have also included an example config for `nginx` -> `nginx.conf`. The easiest way to get this 
 working is to copy it into your `nginx/conf` directory. You might want to make a copy of the existing one first.
 
-On my platform, nginx would not support `bcrypt` encrypted passwords. I got an `Internal Server Error` and 
+On my platform, nginx would not support `bcrypt` encrypted passwords. In the browser I got an `Internal Server Error` and 
 `crypt_r() failed (22: Invalid argument)` in the `error.log`, so you would need to 
 repalce the password with one that is MD5 (yuck) encrypted. You can do this by dropping the `B`
 option from the `htpasswd` command.
