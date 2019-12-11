@@ -3,11 +3,12 @@
 If you want to, please do report issues you find. 
 I'm always happy to fix them, but this code is still undergoing massive development change.
 
-The basic paradime of the UI will probably stay much as it is, but the underlying code may change.
+The basic paradigm of the UI will probably stay much as it is, but the underlying code may change.
 
 I will try and keep the `master` branch stable (i.e. functional / usable) and do all the development in the `dev` branch.
 
 Therefore, if you want to contribute to the development effort, please fork from the `dev` branch.
+Although, my personal recommendation would be to wait until the code had stablised a lot more :)
 
 # PowerDNS WebUI
 
@@ -119,7 +120,7 @@ A fully working example configuration, and instructions, are provided in the `ex
 # In Operation #
 
 I've tested this with the latest Chrome & Firefox running on Xubuntu talking to a 95% idle PowerDNS server 
-over an 18ms latency link and the response time for all actions, including loading a zone with 1000 records
+running v4.2.0 over an 18ms latency link and the response time for all actions, including loading a zone with 1000 records
 (500 names, 2 records per name), is virtually instant.
 
 Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox was identical.

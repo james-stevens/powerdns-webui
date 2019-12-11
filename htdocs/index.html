@@ -28,6 +28,10 @@ html {
 	scrollbar-arrow-color:#ddddff;
 	}
 
+td {
+	vertical-align: top;
+	}
+
 select {
 	color: black;
 	font-family: Verdana,Arial,Helvetica,sans-serif;
@@ -58,17 +62,14 @@ body {
 	scrollbar-arrow-color:#ddddff;
 	}
 
+
 a {
-	color: darkblue;
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-weight:normal;
-	font-size:10pt;
+	color: white;
 	text-decoration:none;
 	}
 
 a:hover {
-	color:darkblue;
-	text-decoration: underline;
+	text-decoration: none;
 	}
 
 form {
@@ -150,6 +151,8 @@ var gbl = {
 	timer: "&#x23f3;",
 	bin: "&#x2702;",
 	warn: "&#x26a0;",
+	page: "&#x1F5CE;",
+	lock: "&#x1F512;",
 	};
 
 var ctx = { }; // will store the context of what the user is up to
@@ -157,13 +160,15 @@ var ctx = { }; // will store the context of what the user is up to
 
 var autoAddDot = { rrMX: true, rrNS: true, rrCNAME: true, };
 
+var fqdnCheck = /^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;
+
 var validations = {
 	rrAAAA: /^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,
 	   rrA: /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,
 	  rrMX: /^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,
-	  rrNS: /^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,
-   rrCNAME: /^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,
-	  rrDS: /^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i
+	  rrNS: fqdnCheck,
+   rrCNAME: fqdnCheck,
+	  rrDS: /^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,
 	};
 
 
@@ -174,9 +179,9 @@ function callApi(sfx,callback,inData)
 	gbl.newZ.style.display = "none";
 	msg("Loading ... " + gbl.timer);
 
-	let p = "https"
-	if (!gbl.with_https) p = "http"
-	url = p + "://" + gbl.server + "/api/v1/servers/localhost/" + sfx
+	let p = "https";
+	if (!gbl.with_https) p = "http";
+	url = p + "://" + gbl.server + "/api/v1/servers/localhost/" + sfx;
 
 	let okResp = 200;
 	let httpCmd = {
@@ -223,7 +228,8 @@ function callApi(sfx,callback,inData)
 
 
 
-// danallison/downloadString.js - https://gist.github.com/danallison/3ec9d5314788b337b682
+// This one function is danallison/downloadString.js
+// https://gist.github.com/danallison/3ec9d5314788b337b682
 
 function downloadFile(text, fileType, fileName) {
 	var blob = new Blob([text], { type: fileType });
@@ -238,6 +244,8 @@ function downloadFile(text, fileType, fileName) {
 	document.body.removeChild(a);
 	setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
 }
+
+// end of -> danallison/downloadString.js
 
 
 //=============================================================================================
@@ -261,15 +269,14 @@ function zoneMetaDetails(data)
 		return 0;
 		})
 
-	let newTitle = gbl.server + ": " + ctx.zone + ", META Data"
-	window.history.pushState(gbl.server + "/" +ctx.zone + "/META",newTitle,"/")
-	document.title = newTitle
+	let newTitle = gbl.server + ": " + ctx.zone + ", META Data";
+	window.history.pushState(gbl.server + "/" +ctx.zone + "/META",newTitle,"/");
+	document.title = newTitle;
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 
 	for(let i of data) {
-		x = x + "<tr class=zoneListItem>"
-			+ "<td valign=top>" + i.kind.toUpperCase() + "</td><td>";
+		x = x + "<tr class=zoneListItem><td>" + i.kind.toUpperCase() + "</td><td>";
 		for(let y of i.metadata) x = x + y + "<br>";
 		x = x + "</td></tr>";
 		}
@@ -351,14 +358,14 @@ function changeRR()
 		}
 	else {
 		if ((ctx.rec.type == "TXT")&&(newVal.substr(0,1)!='"')&&(newVal.substr(newVal.length-1)!='"'))
-			newVal = '"' + newVal + '"'
+			newVal = '"' + newVal + '"';
 
 		s = document.getElementById("rrs"+ctx.edit.dta);
 		if (newVal != ctx.rec.rrs.records[ctx.edit.dta].content) {
 
 			idx = "rr"+ctx.rec.type;
 			if ((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!="."))
-				newVal = newVal + "."
+				newVal = newVal + ".";
 
 			if (idx in validations) {
 				if (!validations[idx].test(newVal)) {
@@ -389,12 +396,12 @@ function changeTTL()
 {
 	let newVal = document.rrForm.new.value;
 
-    if (!validInt(newVal)) {
-        msg(gbl.warn+" Invalid TTL");
-        document.rrForm.new.focus();
-        document.rrForm.new.select();
+	if (!validInt(newVal)) {
+		msg(gbl.warn+" Invalid TTL");
+		document.rrForm.new.focus();
+		document.rrForm.new.select();
 		return false;
-        }
+		}
 
 	if (newVal != ctx.rec.rrs.ttl) {
 		ctx.needSave = "saveRRChanges";
@@ -437,10 +444,11 @@ function clickData(idx)
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
 	let len = 50
-	if ((ctx.rec.type=="SOA")||(ctx.rec.type=="TXT")) len=100
+	if ((ctx.rec.type=="SOA")||(ctx.rec.type=="TXT")) len=100;
+
 	let x = "<form onSubmit='return changeRR();' name=rrForm>"
-		+ "<input onkeydown=\"keyEsc(event);\" size="+len+" name=new value='"+ctx.rec.rrs.records[idx].content.replace(/'/g,"&apos;")+"'>"
-		+ "</form>";
+		+ "<input onkeydown=\"keyEsc(event);\" size="+len+" name=new"
+		+ " value='"+ctx.rec.rrs.records[idx].content.replace(/'/g,"&apos;")+"'></form>";
 
 	ctx.edit = { dta: idx, };
 
@@ -453,11 +461,11 @@ function clickData(idx)
 
 function findZoneName(name)
 {
-	let ret = ""
+	let ret = "";
 	for(let n of ctx.zoneList) {
 		if (
-			(name.length >= n.name.length)&&
-			(n.name.length > ret.length)&&
+			(name.length >= n.name.length) &&
+			(n.name.length > ret.length) &&
 			((name==n.name)||(name.substr(name.length - n.name.length)==n.name))
 			)
 			ret = n.name;
@@ -474,8 +482,8 @@ function changeName()
 	if (name.substr(name.length-1)!=".") {
 		let t = findZoneName(name + ".");
 		if (t != null) {
-			z = t
-			name = name + "."
+			z = t;
+			name = name + ".";
 			}
 		else {
 			name = name + "." + ctx.zone;
@@ -530,12 +538,12 @@ function cancelAllEdits()
 
 	if ("nme" in ctx.edit) {
 		let s = document.getElementById("nme"+ctx.edit.nme);
-		s.innerHTML = ctx.rec.name
+		s.innerHTML = ctx.rec.name;
 		}
 
 	if ("ttl" in ctx.edit) {
 		let s = document.getElementById("ttl"+ctx.edit.ttl);
-		s.innerHTML = ctx.rec.rrs.ttl
+		s.innerHTML = ctx.rec.rrs.ttl;
 		}
 
 	if ("dta" in ctx.edit) {
@@ -615,16 +623,16 @@ function drawOneRecord(rrs)
 {
 	delete ctx.edit;
 
-	let x = gbl.server + ": " + ctx.zone + ": "
+	let x = gbl.server + ": " + ctx.zone + ": ";
 	if ("showName" in ctx.rec)
 		x = x + ctx.rec.showName;
 	else
-		x = x + ctx.rec.name
+		x = x + ctx.rec.name;
 
 	x = x + "/" + ctx.rec.type;
 	if (!("param" in gbl))
 		window.history.pushState(gbl.server + "/" + ctx.zone + "/" + ctx.rec.name + ":" + ctx.rec.type,x,"/");
-	document.title = x
+	document.title = x;
 	delete gbl.param;
 
 
@@ -636,10 +644,9 @@ function drawOneRecord(rrs)
 		x = x + "<tr class=zoneListItem>"
 			+ "<td onClick='deleteRRitem("+idx+");' align=center>" + gbl.bin + "</td>"
 			+ "<td onClick='clickRecName("+idx+");'><span id=nme"+idx+">" + ctx.rec.name + "</span></td>"
-			+ "<td valign=top align=right onClick='clickTTL("+idx+");'><span id=ttl"+idx+">" + ctx.rec.rrs.ttl + "</span></td>"
-			+ "<td valign=top>" + ctx.rec.rrs.type + "</td>"
-			+ "<td onClick='clickData("+idx+");'><span id=rrs"+idx+">" + i.content + "</span></td>";
-		x = x + "</tr>";
+			+ "<td align=right onClick='clickTTL("+idx+");'><span id=ttl"+idx+">" + ctx.rec.rrs.ttl + "</span></td>"
+			+ "<td>" + ctx.rec.rrs.type + "</td>"
+			+ "<td onClick='clickData("+idx+");'><span id=rrs"+idx+">" + i.content + "</span></td></tr>";
 		}
 	gbl.bot.innerHTML = x + "</table>";
 }
@@ -673,6 +680,13 @@ function getZoneRecord()
 // Zone detils code
 //=============================================================================================
 
+
+function zoneKindChange(sel)
+{
+	s = document.getElementById("extraNewZonePrompt");
+	if (sel.value == "Master") s.innerHTML = "Name Servers :"; else s.innerHTML = "Masters :"
+}
+
 function addNewZone()
 {
 	ctx.addZone = true;
@@ -688,9 +702,13 @@ function addNewZone()
 
 function dropZone()
 {
-	let x = "<table align=center><tr><td align=center><h3>Are you sure you want to delete<br>the zone '"+ctx.zone+"' and all its records ?</h3></td></tr>"
-	x = x + "<tr><td align=center>" + btn("zoneDetailsLoad(\"" + ctx.zone + "\");","Cancel")+"&nbsp;"+btn("doDropZone()","Drop '"+ctx.zone+"'")
-	gbl.bot.innerHTML = x
+	let x = "<table align=center><tr><td align=center><h3>Are you sure you want to delete"
+		+ "<br>the zone '"+ctx.zone+"' and all its records ?</h3></td></tr>"
+		+ "<tr><td align=center>"
+		+ btn("zoneDetailsLoad(\"" + ctx.zone + "\");","Cancel","Do not delete the zone "+ctx.zone)
+		+ "&nbsp;"
+		+ btn("doDropZone()","Drop '"+ctx.zone+"'","Delete the zone "+ctx.zone+" and ALL its records");
+	gbl.bot.innerHTML = x;
 }
 
 
@@ -705,7 +723,7 @@ function doNewName()
 {
 	let f = document.newNameForm;
 
-    if (!validInt(f.rrTTL.value)) {
+	if (!validInt(f.rrTTL.value)) {
 		msg(gbl.warn+" Invalid TTL");
 		f.rrTTL.focus();
 		f.rrTTL.select();
@@ -719,6 +737,13 @@ function doNewName()
 		name = ctx.zone;
 	else
 		name = f.rrName.value + "." + ctx.zone;
+
+	if (!fqdnCheck.test(name)) {
+		msg(gbl.warn + " Invalid host name");
+		f.rrName.focus();
+		f.rrName.select();
+		return false;
+		}
 
 	if (findRec(ctx.zoneDetails.rrsets,{ name: name, type: f.rrType.value })!=null)
 		return clickZoneRecord(name,f.rrType.value);
@@ -866,7 +891,8 @@ function searchResults(data)
 			if (i.type == "SOA")
 				x = x + "<td valign=top>" + formatSOA(i.content) + "</td>";
 			else
-				x = x + "<td valign=top>" + i.content + "</td>"; }
+				x = x + "<td valign=top>" + i.content + "</td>";
+			}
 
 		else {
 			x = x + " onClick='return zoneDetailsLoad(\""+i.name+"\");'>";
@@ -904,7 +930,14 @@ function doMakeZone(data)
 function doNewZone()
 {
 	let name = document.newZoneForm.zoneName.value;
-	if (name.substr(name.length-1)!=".") name = name + "."
+	if (name.substr(name.length-1)!=".") name = name + ".";
+	if (!fqdnCheck.test(name)) {
+		msg(gbl.warn + " Invalid domain name");
+		document.newZoneForm.zoneName.focus();
+		document.newZoneForm.zoneName.select();
+		return false;
+		}
+
 	let kind = document.newZoneForm.zoneKind.value;
 
 	data = {
@@ -916,7 +949,7 @@ function doNewZone()
 
 	callApi("zones",doMakeZone, { method: "POST", okResp: 201, json: JSON.stringify(data) } );
 
-	return false;
+	return false; // block form submit
 }
 
 
@@ -937,20 +970,29 @@ function zoneListDetails(data)
 
 	let newTitle = gbl.server+": Zone List";
 	if (!("param" in gbl)) window.history.pushState(gbl.server,newTitle,"/");
-	document.title = newTitle
-	delete gbl.param
+	document.title = newTitle;
+	delete gbl.param;
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
 		let name = i.id;
 		x = x + "<tr class=zoneListItem onClick='zoneDetailsLoad(\""+name+"\")'>"
-			+ "<td>" + name + "</td>"
-			+ "<td>" + i.kind + "</td>";
-		if (i.dnssec) t = gbl.tick; else t = gbl.cross;
-		x = x + "<td>" + t + "</td>"
-			+ "<td>" + i.serial + "</td>";
-		if (i.notified_serial == i.serial) t = gbl.tick; else t = gbl.cross;
-		x = x + "<td>" + t + "</td></tr>";
+			+ "<td>" + name + "</td><td>" + i.kind + "</td>";
+
+		t = "";
+		hlp = "Zone is NOT dnssec signed";
+		if (i.dnssec) {
+			t = gbl.lock;
+			hlp = "Zone is DNSSEC signed"
+			}
+		x = x + "<td title='" + hlp + "'>" + t + "</td><td>" + i.serial + "</td>";
+
+		t = ""; hlp = "";
+		if (i.notified_serial != i.serial) {
+			t = gbl.timer;
+			hlp = "Zone has unnotified changes";
+			}
+		x = x + "<td title='" + hlp + "'>" + t + "</td></tr>";
 		}
 	gbl.bot.innerHTML = x + "</table>";
 }
@@ -998,8 +1040,8 @@ function validInt(x) {
 }
 
 
-function btn(call,txt) {
-	return "<span class=myBtn onClick='"+call+"; return false;'>"+txt+"</span>"
+function btn(call,txt,hlp) {
+	return "<span title='"+hlp+"' class=myBtn onClick='"+call+"; return false;'>"+txt+"</span>";
 }
 
 
@@ -1013,24 +1055,33 @@ function topLine()
 {
 	gbl.addH.style.display = "none";
 	gbl.newZ.style.display = "none";
+	let url = ""
 
-	let x = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td>"
-		+ btn("goLogin()",gbl.server) + btn("zoneList()","Zones");
+	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=zoneListItem>"
+		+ "<font size=+1><a title='Open this page in a new window' target=_blank href='" + window.origin + "?" + gbl.server;
+
+	let x = "'>" + gbl.page + "</a></font></td><td>"
+		+ btn("goLogin()",gbl.server,"Change server")
+		+ btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);
 
 	if ("zone" in ctx) {
-		x = x + btn('zoneDetailsLoad("'+ctx.zone+'")',ctx.zone.substr(0,ctx.zone.length-1))
+		url = "/" + ctx.zone;
+		x = x + btn('zoneDetailsLoad("'+ctx.zone+'")',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);
 
 		if ("rec" in ctx) {
-			let name = "@"
+			let name = "@";
+			url = url + "/" + ctx.rec.name + ":" + ctx.rec.type;
 			if (ctx.rec.name != ctx.zone)
 				name = ctx.rec.name.substr(0,ctx.rec.name.length - ctx.zone.length - 1);
 
 			ctx.rec.showName = name;
-			x = x + btn('getZoneRecord()',name+'/'+ctx.rec.type);
+			x = x + btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);
 			}
 		else {
-			if ("meta" in ctx)
-				x = x + btn('zoneMeta()',"META");
+			if ("meta" in ctx) {
+				url = url + "/META";
+				x = x + btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);
+				}
 			}
 		}
 
@@ -1039,40 +1090,40 @@ function topLine()
 	if ("zone" in ctx) {
 		if ((!("meta" in ctx))&&(!("rec" in ctx))&&(!("addRR" in ctx))) {
 			if (ctx.zoneDetails.kind != "Slave")
-				x = x + btn("zoneAddHost()","Add Host")
+				x = x + btn("zoneAddHost()","Add Host","Add a host to the zone "+ctx.zone);
 
-			x = x + btn("zoneAxfr()","AXFR")
-				+ btn('dropZone()',"Drop")
-				+ btn('zoneMeta()',"Meta");
+			x = x + btn("zoneAxfr()","AXFR","Download "+ctx.zone+" in RFC/AXFR format")
+				+ btn('dropZone()',"Drop","Delete "+ctx.zone+" and ALL its records")
+				+ btn('zoneMeta()',"Meta","Load the META data for "+ctx.zone);
 			}
 
 		if ("edit" in ctx) {
 			if ("needCancel" in ctx.edit)
-				x = x + btn(ctx.edit.needCancel+"(false)","Cancel");
+				x = x + btn(ctx.edit.needCancel+"(false)","Cancel","Cancel this edit");
 			else
-				x = x + btn("cancelAllEdits()","Cancel");
+				x = x + btn("cancelAllEdits()","Cancel","Cancel this edit");
 			}
 		else {
 			if ("rec" in ctx)
-				x = x + btn("addNewRR()","Add RR");
+				x = x + btn("addNewRR()","Add RR","Add another "+ctx.rec.type+" record to "+ctx.rec.name);
 
 			if ("needSave" in ctx)
-				x = x + btn(ctx.needSave+"(false)","Cancel")
-					+ btn(ctx.needSave+"(true)","Save");
+				x = x + btn(ctx.needSave+"(false)","Cancel","Abandom all changes")
+					+ btn(ctx.needSave+"(true)","Save","Save your changes to the zone file");
 
 			if ("meta" in ctx)
-				x = x + btn('clickAddMeta()',"Add Meta");
+				x = x + btn('clickAddMeta()',"Add Meta","Add a META data record to "+ctx.zone);
 			}
 		}
 	else {
-		if (!("addZone" in ctx)) x = x + btn("addNewZone()","Add Zone");
+		if (!("addZone" in ctx)) x = x + btn("addNewZone()","Add Zone","Add a new zone to the database");
 		}
 
 	x = x + "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=30 name=searchTerm></form></td>"
 		+ "</tr><table><hr>";
 
-	gbl.top.innerHTML = x;
+	gbl.top.innerHTML = y + url + x;
 }
 
 
@@ -1181,7 +1232,7 @@ function keyEsc(e) {
 		<tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr>
 		<tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr>
 		<tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
+		<tr><td align=center colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
@@ -1191,18 +1242,19 @@ function keyEsc(e) {
 
 
 <div id=addZone style="display: none;">
-	<table align=center>
-	<tr><td colspan=2><h2>Add a New Zone</h2></td></tr>
+	<table width=40% align=center>
+	<colgroup><col width=35%/><col width=65%/></colgroup>
+	<tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr>
 	<form method=post action="/" name=newZoneForm onSubmit="return doNewZone();">
 		<tr><td class=formPrompt>Name :</td><td><input onkeydown="keyEsc(event);" name=zoneName></td></tr>
-		<tr><td class=formPrompt>Type :</td><td><select name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr>
-		<tr><td class=formPrompt>Masters :</td><td>
-			<input name=master0><br>
-			<input name=master1><br>
-			<input name=master2><br>
-			<input name=master3><br></td></tr>
+		<tr><td class=formPrompt>Type :</td><td><select onChange="zoneKindChange(this);" name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr>
+		<tr><td class=formPrompt><span id="extraNewZonePrompt">Name Servers :</span></td><td>
+			<input size=40 name=extra0><br>
+			<input size=40 name=extra1><br>
+			<input size=40 name=extra2><br>
+			<input size=40 name=extra3><br></td></tr>
 		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn onClick="zoneList();">Cancel</span><span class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
+		<tr><td align=center colspan=2><span title="Cancel adding zone" class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone" class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
@@ -1231,7 +1283,7 @@ function keyEsc(e) {
 
 		</select></td></tr>
 		<tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span class=myBtn onClick="doNewName();">Add Record</span></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR" onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
