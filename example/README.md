@@ -1,9 +1,9 @@
 # Example Setup #
 
-This is intended to be the simplest example set-up you could use, with PowerDNS & Apache, to get
+This is intended to be the simplest example set-up you could use, with PowerDNS & Apache / nginx, to get
 this single-page webapp working.
 
-This is not intended as a tutorial or guide to best practice on Apache, Apache-SSL/TLS, PowerDNS or Lets-Encrypt - for that, please use Google.
+This is not intended as a tutorial or guide to best practice on Apache, nginx, Apache-SSL/TLS, PowerDNS or Lets-Encrypt - for that, please use Google.
 
 This set up assumes 
 * You have installed this project in `/opt/websites/pdns/powerdns-webui`
