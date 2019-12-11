@@ -1,20 +1,27 @@
+# General Disclaimer
+
+This project has no connection whatsoever with [PowerDNS.COM BV](https://www.powerdns.com/contact.html),
+[Open-Xchange Inc](https://www.open-xchange.com/) - or any other third party.
+It is an independently funded & maintained development effort.
+
 # Work-in-Progress
 
-If you want to, please do report issues you find. 
+If you want to, please do report issues you find.
 I'm always happy to fix them, but this code is still undergoing massive development change.
 
-The basic paradime of the UI will probably stay much as it is, but the underlying code may change.
+The basic paradigm of the UI will probably stay much as it is, but the underlying code may change.
 
 I will try and keep the `master` branch stable (i.e. functional / usable) and do all the development in the `dev` branch.
 
 Therefore, if you want to contribute to the development effort, please fork from the `dev` branch.
+Although, my personal recommendation would be to wait until the code had stablised a lot more :)
 
 # PowerDNS WebUI
 
-`htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript webapp 
+`htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript webapp
 to allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
 
-This one file is all you need in order to add a complete WebUI to your PowerDNS Server which gives you 
+This one file is all you need in order to add a complete WebUI to your PowerDNS Server which gives you
 the ability to browse & edit all your zone & record data. This webapp has no special server-side
 code, except the RestAPI that PowerDNS has built-in.
 
@@ -28,11 +35,11 @@ Its super simple to use, but does require a little setting up to ensure your bro
 particularly
 
 * If you obtained the `index.html` over HTTPS, then the RestAPI **must** be accessed over HTTPS - this is where
-using a web proxy is useful, as PowerDNS does not natively support HTTPS and sending all your data over HTTP 
+using a web proxy is useful, as PowerDNS does not natively support HTTPS and sending all your data over HTTP
 is probably not what you want.
 
-* You must be [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) - in this context it means the web server that gave you `index.html` must list
-(in the header of the response) all the other HTTP/S servers you are allowed to access from the pages it has served you. 
+* You must be [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) compliant - in this context it means the web server that gave you `index.html` must list
+(in the header of the response) all the other HTTP/S servers you are allowed to access from the pages it has served you.
 
 NOTE: For CORS, "itself", is always OK by default.
 
@@ -45,9 +52,9 @@ its almost certainly safer to use a web proxy (e.g. Apache or nginx) and enforce
 This means you will need to configure the proxy to add the `api-key` to each request (see below).
 
 I used Apache. Here's a snip of my setup. It assumes your PowerDNS WebUI is listening on IP Address 127.1.0.1
-and your Apache Server can listen on port 443 (HTTPS). The PowerDNS IP Address will probably work for you.  
+and your Apache Server can listen on port 443 (HTTPS). The PowerDNS IP Address will probably work for you.
 
-I haven't included the SSL or per-user authentication config lines, you will need to add whatever you prefer, 
+I haven't included the SSL or per-user authentication config lines, you will need to add whatever you prefer,
 but all the SSL & Basic Authentication configuration is included in `example/httpd.conf`.
 
 ```
@@ -118,19 +125,22 @@ A fully working example configuration, and instructions, are provided in the `ex
 
 # In Operation #
 
-I've tested this with the latest Chrome & Firefox running on Xubuntu talking to a 95% idle PowerDNS server 
-over an 18ms latency link and the response time for all actions, including loading a zone with 1000 records
+I've tested this with the latest Chrome & Firefox running on Xubuntu (Ubuntu + XFCE) talking to a 95% idle PowerDNS server
+running v4.2.0 over an 18ms latency link and the response time for all actions, including loading a zone with 1000 records
 (500 names, 2 records per name), is virtually instant.
 
 Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox was identical.
 
+nginx performed the same as Apache - virtuall instant.
+
 
 # Security #
 
-There are deliberatly **no** security options in this JavaScript App, e.g. who can edit/delete zones/names/records etc.
+There are deliberatly **NO** security options in this webapp, e.g. who can edit/delete zones/names/records etc.
 
-When you have a JavaScript/RestAPI application the place to put the security is in the server-side RestAPI. 
-Any security put into the Javascript can usually be trivially circumvented and is therefore of no value.
+When you have a JavaScript/RestAPI application the place to put the security is in the serverside RestAPI.
+Any security put into the Javascript can probably be trivially circumvented and is therefore of extremely limited value.
 
-There are options to block certain `METHOD` in different web servers. For exmaple, by blocking all `METHOD` except `GET`, 
+In various web proxies, there are options to block certain `METHOD`. For example, by blocking all `METHOD` except `GET`,
 you can stop a user from being able to do updates. For more information, please ask Google.
+
