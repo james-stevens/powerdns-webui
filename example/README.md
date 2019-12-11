@@ -11,10 +11,10 @@ This set up assumes
 * You have your Lets-Encrypt key & certs in `/opt/daemon/keys/letsencrypt` 
 * You are using `/opt/pid` as the Apache PID & cgi-sock directory. 
 
-Then copy the password fiel to the Apache `conf` directory
+Then copy the password file to the Apache `conf` directory
 
 ```
-sudo cp example/passwd /usr/local/apache2/conf/passwd
+$ sudo cp example/passwd /usr/local/apache2/conf/passwd
 ```
 
 If any of these don't match what you want, just change the settings in `httpd.conf`.
