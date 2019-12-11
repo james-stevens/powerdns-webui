@@ -177,6 +177,7 @@ function callApi(sfx,callback,inData)
 {
 	gbl.addH.style.display = "none";
 	gbl.newZ.style.display = "none";
+	gbl.newM.style.display = "none";
 	msg("Loading ... " + gbl.timer);
 
 	let p = "https";
@@ -251,6 +252,14 @@ function downloadFile(text, fileType, fileName) {
 // Zone META data handling
 //=============================================================================================
 
+function clickAddMeta()
+{
+	gbl.bot.innerHTML = "";
+	gbl.newM.style.display = "block";
+}
+
+
+
 function zoneMeta()
 {
 	ctx.meta = true; topLine();
@@ -272,10 +281,11 @@ function zoneMetaDetails(data)
 	window.history.pushState(gbl.server + "/" +ctx.zone + "/META",newTitle,"/");
 	document.title = newTitle;
 
-	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 
 	for(let i of data) {
-		x = x + "<tr class=zoneListItem><td>" + i.kind.toUpperCase() + "</td><td>";
+		x = x + "<tr class=zoneListItem><td align=center>" + gbl.bin
+			+ "</td><td>" + i.kind.toUpperCase() + "</td><td>";
 		for(let y of i.metadata) x = x + y + "<br>";
 		x = x + "</td></tr>";
 		}
@@ -1134,6 +1144,7 @@ function topLine()
 {
 	gbl.addH.style.display = "none";
 	gbl.newZ.style.display = "none";
+	gbl.newM.style.display = "none";
 	let url = ""
 
 	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=zoneListItem>"
@@ -1184,6 +1195,7 @@ function topLine()
 			if ("meta" in ctx)
 				x = x + btn('clickAddMeta()',"Add Meta","Add a META data record to "+ctx.zone);
 			}
+
 		}
 	else {
 		if (!("addZone" in ctx)) x = x + btn("addNewZone()","Add Zone","Add a new zone to the database");
@@ -1218,6 +1230,8 @@ function startUp()
 	gbl.bot = document.getElementById("lowerSpan");
 	gbl.addH = document.getElementById("addName");
 	gbl.newZ = document.getElementById("addZone");
+	gbl.newM = document.getElementById("addMeta");
+
 	if (window.location.search != "") {
 		gbl.param = window.location.search.substr(1).split("/");
 		if (gbl.param.length >= 1) {
@@ -1334,7 +1348,9 @@ function keyEsc(e) {
 
 
 <div id=addName style="display: none;">
-	<table align=center>
+	<table width=40% align=center>
+	<colgroup><col width=35%/><col width=65%/></colgroup>
+	<tr><td colspan=2 align=center><h2>Add a New Host</h2></td></tr>
 	<form method=post action="/" name=newNameForm onSubmit="return doNewName();">
 		<tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);" name=rrName></td></tr>
 		<tr><td class=formPrompt>RR Type:</td><td><select name=rrType>
@@ -1353,6 +1369,7 @@ function keyEsc(e) {
 
 		</select></td></tr>
 		<tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr>
+		<tr><td colspan=2><hr></td></tr>
 		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR" onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
@@ -1361,7 +1378,9 @@ function keyEsc(e) {
 </div>
 
 <div id=addMeta style="display: none;">
-	<table align=center>
+	<table width=40% align=center>
+	<colgroup><col width=35%/><col width=65%/></colgroup>
+	<tr><td colspan=2 align=center><h2>Add a New Meta Data</h2></td></tr>
 	<form method=post action="/" name=newMetaForm onSubmit="return doNewMeta();">
 		<tr><td><select metaName>
 		<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
@@ -1370,6 +1389,8 @@ function keyEsc(e) {
 		<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS
 		<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
 		</select></td></tr>
+		<tr><td colspan=2><hr></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 	<input type=submit style="display: none;">
 	</form>
 	</table>
