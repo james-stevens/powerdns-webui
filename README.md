@@ -38,7 +38,7 @@ particularly
 using a web proxy is useful, as PowerDNS does not natively support HTTPS and sending all your data over HTTP 
 is probably not what you want.
 
-* You must be [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) - in this context it means the web server that gave you `index.html` must list
+* You must be [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) compliant - in this context it means the web server that gave you `index.html` must list
 (in the header of the response) all the other HTTP/S servers you are allowed to access from the pages it has served you. 
 
 NOTE: For CORS, "itself", is always OK by default.

@@ -197,7 +197,6 @@ function callApi(sfx,callback,inData)
 
 	fetch(url,httpCmd).then(function(response) {
 		if (response.status != okResp) {
-			msg("");
 			if (inData != null)
 				callback(false);
 			else
@@ -206,7 +205,6 @@ function callApi(sfx,callback,inData)
 			}
 
 		response.text().then(function(data) {
-			msg("");
 			if ((inData != null)&&(inData.noData))
 				callback(true);
 			else {
@@ -649,6 +647,7 @@ function drawOneRecord(rrs)
 			+ "<td onClick='clickData("+idx+");'><span id=rrs"+idx+">" + i.content + "</span></td></tr>";
 		}
 	gbl.bot.innerHTML = x + "</table>";
+	topLine();
 }
 
 
@@ -995,6 +994,7 @@ function zoneListDetails(data)
 		x = x + "<td title='" + hlp + "'>" + t + "</td></tr>";
 		}
 	gbl.bot.innerHTML = x + "</table>";
+	topLine();
 }
 
 

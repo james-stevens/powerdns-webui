@@ -11,6 +11,10 @@ This set up assumes
 * You have your Lets-Encrypt key & certs in `/opt/daemon/keys/letsencrypt` 
 * You are using `/opt/pid` as the Apache PID & cgi-sock directory. 
 
+Then copy the password fiel to the Apache `conf` directory
+
+`sudo cp example/passwd /usr/local/apache2/conf/passwd`
+
 If any of these don't match what you want, just change the settings in `httpd.conf`.
 
 With this project cloned to `/opt/websites/pdns/powerdns-webui`, run the following
@@ -30,3 +34,20 @@ To replace the username & password, use the following
 ```
 htpasswd -bcB /opt/websites/pdns/powerdns-webui/example/passwd [user] [pass]
 ```
+
+I have also included an exmaple config for `nginx` -> `nginx.conf`. The easiest way to get this 
+working is to copy it into your `nginx/conf` directory. You might want to make a copy of the existing one first.
+
+On my platform, nginx would not support `bcrypt` encrypted passwords. I got an `Internal Server Error` and 
+`crypt_r() failed (22: Invalid argument)` in the `error.log`, so you would need to 
+repalce the password with one that is MD5 (yuck) encrypted. You can do this by dropping the `B`
+option from the `htpasswd` command.
+
+I found this bug documented [here](https://github.com/kubernetes/ingress-nginx/issues/3150).
+
+I also copied the Lets-Ecrypts files into the nginx `conf` directory
+
+* `letsencrypt/privkey.pem` -> `cert.key`
+* `letsencrypt/cert.pem` -> `cert.pem`
+
+
