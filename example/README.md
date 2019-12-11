@@ -13,7 +13,9 @@ This set up assumes
 
 Then copy the password fiel to the Apache `conf` directory
 
-`sudo cp example/passwd /usr/local/apache2/conf/passwd`
+```
+sudo cp example/passwd /usr/local/apache2/conf/passwd
+```
 
 If any of these don't match what you want, just change the settings in `httpd.conf`.
 
@@ -47,7 +49,7 @@ I found this bug documented [here](https://github.com/kubernetes/ingress-nginx/i
 
 I also copied the Lets-Ecrypts files into the nginx `conf` directory
 
-* `letsencrypt/privkey.pem` -> `cert.key`
-* `letsencrypt/cert.pem` -> `cert.pem`
+* `letsencrypt/privkey.pem` -> `nginx/conf/cert.key`
+* `letsencrypt/cert.pem` -> `nginx/conf/cert.pem`
 
 
