@@ -95,8 +95,8 @@ form {
 	}
 
 .myBtn:hover {
-	box-shadow: 3px 3px #444466;
-	text-shadow: 1px 1px #f0f0ff;
+	box-shadow: 3px 3px #222244;
+	text-shadow: 1px 1px #ffffff;
 	}
 
 .myBtn:active {
@@ -241,6 +241,7 @@ function downloadFile(text, fileType, fileName) {
 	a.click();
 	document.body.removeChild(a);
 	setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
+	msg("");
 }
 
 // end of -> danallison/downloadString.js
@@ -280,6 +281,7 @@ function zoneMetaDetails(data)
 		}
 
 	gbl.bot.innerHTML = x + "</table>";
+	topLine();
 }
 
 
@@ -686,6 +688,34 @@ function zoneKindChange(sel)
 	if (sel.value == "Master") s.innerHTML = "Name Servers :"; else s.innerHTML = "Masters :"
 }
 
+
+
+function zoneNotify()
+{
+	callApi("zones/"+ctx.zone+"/notify", function(ret) { 
+		if (ret) {
+			msg("Zone notified");
+			setTimeout(function() { msg(""); }, 2500);
+			}
+		else msg(gbl.warn + " Notify failed");
+		}, { method: "PUT" });
+}
+
+
+
+function zoneRectify()
+{
+	callApi("zones/"+ctx.zone+"/rectify", function(ret) { 
+		if (ret) {
+			msg("Zone rectified");
+			setTimeout(function() { msg(""); }, 2500);
+			}
+		else msg(gbl.warn + " Rectify failed");
+		}, { method: "PUT" });
+}
+
+
+
 function addNewZone()
 {
 	ctx.addZone = true;
@@ -817,6 +847,7 @@ function zoneDetails(data)
 	delete gbl.param
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	x = x + "<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";
 
 	for(let i of data.rrsets) {
 		x = x + "<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=zoneListItem>"
@@ -840,7 +871,23 @@ function zoneDetails(data)
 		x = x + "</td></tr>";
 		}
 
-	gbl.bot.innerHTML = x + "</table>";
+	let sp = "<div style='height: 7px;'></div>";
+	let sz = 100;
+
+	x = x + "</table></td><td align=center>"
+	if (ctx.zoneDetails.kind != "Slave")
+		x = x + btn("zoneAddHost()","Add Host","Add a host to the zone "+ctx.zone,sz) + sp;
+
+	x = x + btn("zoneAxfr()","Download","Download "+ctx.zone+" in RFC/AXFR format",sz) + sp
+		+ btn('zoneMeta()',"Meta Data","Load the META data for "+ctx.zone,sz) + sp
+		+ btn('zoneNotify()',"Notify Zone","Notify the slaves of "+ctx.zone,sz) + sp;
+
+	if (ctx.zoneDetails.dnssec)
+		x = x + btn('zoneRectify()',"Rectify Zone","Rectify the data for "+ctx.zone,sz) + sp
+
+	x = x + btn('dropZone()',"Drop Zone","Delete "+ctx.zone+" and ALL its records",sz) + sp
+
+	gbl.bot.innerHTML = x + "</td></tr></table>";
 
 	topLine();
 }
@@ -919,6 +966,7 @@ function searchFormSubmit()
 // Code to handle the list of zones
 //=============================================================================================
 
+
 function doMakeZone(data)
 {
 	zoneDetailsLoad(data.name);
@@ -939,11 +987,22 @@ function doNewZone()
 
 	let kind = document.newZoneForm.zoneKind.value;
 
-	data = {
+	let dt = []
+	for(i=0;i<4;i++) {
+		let v = document.newZoneForm["extra"+i].value;
+		if (v != "") dt.push(v);
+		}
+
+	let ns = [];
+	let ms = [];
+	if (document.newZoneForm.zoneKind.value == "Master")
+		ns = dt; else ms = dt;
+
+	let data = {
 		name: name,
 		kind: kind,
-		masters: [],
-		nameservers: [],
+		masters: ms,
+		nameservers: ns,
 		};
 
 	callApi("zones",doMakeZone, { method: "POST", okResp: 201, json: JSON.stringify(data) } );
@@ -1040,8 +1099,10 @@ function validInt(x) {
 }
 
 
-function btn(call,txt,hlp) {
-	return "<span title='"+hlp+"' class=myBtn onClick='"+call+"; return false;'>"+txt+"</span>";
+function btn(call,txt,hlp,sz) {
+	let ex=""
+	if (sz != null) ex = "style='width: " + sz + "px;'"
+	return "<span "+ex+" title='"+hlp+"' class=myBtn onClick='"+call+"; return false;'>"+txt+"</span>";
 }
 
 
@@ -1088,15 +1149,6 @@ function topLine()
 	x = x + "</td><td width=100% align=center><span id='showMsg'></span></td><td>";
 
 	if ("zone" in ctx) {
-		if ((!("meta" in ctx))&&(!("rec" in ctx))&&(!("addRR" in ctx))) {
-			if (ctx.zoneDetails.kind != "Slave")
-				x = x + btn("zoneAddHost()","Add Host","Add a host to the zone "+ctx.zone);
-
-			x = x + btn("zoneAxfr()","AXFR","Download "+ctx.zone+" in RFC/AXFR format")
-				+ btn('dropZone()',"Drop","Delete "+ctx.zone+" and ALL its records")
-				+ btn('zoneMeta()',"Meta","Load the META data for "+ctx.zone);
-			}
-
 		if ("edit" in ctx) {
 			if ("needCancel" in ctx.edit)
 				x = x + btn(ctx.edit.needCancel+"(false)","Cancel","Cancel this edit");
