@@ -2,6 +2,7 @@
 
 This project has no connection whatsoever with [PowerDNS.COM BV](https://www.powerdns.com/contact.html),
 [Open-Xchange Inc](https://www.open-xchange.com/) - or any other third party.
+
 It is an independently funded & maintained development effort.
 
 # Work-in-Progress

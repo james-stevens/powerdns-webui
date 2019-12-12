@@ -315,7 +315,7 @@ function madeChange(res)
 	if (res)
 		zoneDetailsLoad(ctx.zone);
 	else
-		msg(gbl.warn + " Update Failed");
+		popMsg(gbl.warn + " Update Failed");
 }
 
 
@@ -379,7 +379,7 @@ function changeRR()
 
 			if (idx in validations) {
 				if (!validations[idx].test(newVal)) {
-					msg(gbl.warn+" Invalid value");
+					popMsg(gbl.warn+" Invalid value");
 					document.rrForm.new.focus();
 					document.rrForm.new.select();
 					return false;
@@ -407,7 +407,7 @@ function changeTTL()
 	let newVal = document.rrForm.new.value;
 
 	if (!validInt(newVal)) {
-		msg(gbl.warn+" Invalid TTL");
+		popMsg(gbl.warn+" Invalid TTL");
 		document.rrForm.new.focus();
 		document.rrForm.new.select();
 		return false;
@@ -505,7 +505,7 @@ function changeName()
 
 	if (z != "") ctx.zone = z;
 	else {
-		msg(gbl.warn + " No matching zone");
+		popMsg(gbl.warn + " No matching zone");
 		document.rrForm.new.focus();
 		return false;
 		}
@@ -705,11 +705,7 @@ function zoneKindChange(sel)
 function zoneNotify()
 {
 	callApi("zones/"+ctx.zone+"/notify", function(ret) { 
-		if (ret) {
-			msg("Zone notified");
-			setTimeout(function() { msg(""); }, 2500);
-			}
-		else msg(gbl.warn + " Notify failed");
+		if (ret) popMsg("Zone notified"); else popMsg(gbl.warn + " Notify failed");
 		}, { method: "PUT" });
 }
 
@@ -718,11 +714,7 @@ function zoneNotify()
 function zoneRectify()
 {
 	callApi("zones/"+ctx.zone+"/rectify", function(ret) { 
-		if (ret) {
-			msg("Zone rectified");
-			setTimeout(function() { msg(""); }, 2500);
-			}
-		else msg(gbl.warn + " Rectify failed");
+		if (ret) popMsg("Zone rectified"); else popMsg(gbl.warn + " Rectify failed");
 		}, { method: "PUT" });
 }
 
@@ -731,11 +723,7 @@ function zoneRectify()
 function zoneRetrieve()
 {
 	callApi("zones/"+ctx.zone+"/axfr-retrieve", function(ret) { 
-		if (ret) {
-			msg("Zone retrieval requested");
-			setTimeout(function() { msg(""); }, 2500);
-			}
-		else msg(gbl.warn + " Zone retrieval failed");
+		if (ret) popMsg("Zone retrieval requested"); else popMsg(gbl.warn + " Zone retrieval failed");
 		}, { method: "PUT" });
 }
 
@@ -778,7 +766,7 @@ function doNewName()
 	let f = document.newNameForm;
 
 	if (!validInt(f.rrTTL.value)) {
-		msg(gbl.warn+" Invalid TTL");
+		popMsg(gbl.warn+" Invalid TTL");
 		f.rrTTL.focus();
 		f.rrTTL.select();
 		return;
@@ -793,7 +781,7 @@ function doNewName()
 		name = f.rrName.value + "." + ctx.zone;
 
 	if (!fqdnCheck.test(name)) {
-		msg(gbl.warn + " Invalid host name");
+		popMsg(gbl.warn + " Invalid host name");
 		f.rrName.focus();
 		f.rrName.select();
 		return false;
@@ -1007,7 +995,7 @@ function doNewZone()
 	let name = document.newZoneForm.zoneName.value;
 	if (name.substr(name.length-1)!=".") name = name + ".";
 	if (!fqdnCheck.test(name)) {
-		msg(gbl.warn + " Invalid domain name");
+		popMsg(gbl.warn + " Invalid domain name");
 		document.newZoneForm.zoneName.focus();
 		document.newZoneForm.zoneName.select();
 		return false;
@@ -1277,10 +1265,37 @@ function showError(err)
 
 
 
+function unpopMsg()
+{
+	let m = document.getElementById("showMsg");
+	let t1 = m.innerHTML;
+	let t2 = gbl.lastMsg;
+
+	if (t1.charCodeAt(0) > 255) { // uncode chars are decoded so must be excluded
+		t1 = t1.substr(t1.indexOf(" "));
+		t2 = t2.substr(t2.indexOf(" "));
+		}
+
+	if (t1 == t2) m.innerHTML = ""
+	delete gbl.lastMsg;
+}
+
+
+
+function popMsg(txt)
+{
+	msg(txt);
+	gbl.lastMsg = txt;
+	setTimeout(unpopMsg,2500);
+}
+
+
+
 function msg(myMsg)
 {
 	let m = document.getElementById("showMsg");
 	m.innerHTML = myMsg;
+	delete gbl.lastMsg;
 }
 
 
