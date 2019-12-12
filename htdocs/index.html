@@ -32,8 +32,14 @@ html {
 	scrollbar-arrow-color:#ddddff;
 	}
 
-td {
-	vertical-align: top;
+th {
+	color: black;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size:10pt;
+	background-color:#a0a0cc;
+	font-weight: bold;
+	padding-left: 3px;
+	padding-right: 3px;
 	}
 
 select {
@@ -81,6 +87,7 @@ form {
 	}
 
 .myBtn {
+	text-align: center;
 	display: inline-block;
 	background-color: #d0d0ff;
 	color: black;
@@ -112,6 +119,7 @@ form {
 	}
 
 td {
+	vertical-align: top;
 	padding-left: 7px;
 	padding-right: 7px;
 	white-space: nowrap;
@@ -719,11 +727,15 @@ function clickDS(txt)
 	return false;
 }
 
+
+
 function showKeys(data)
 {
 	data.sort(function(a,b) {
 		if (a.keytype < b.keytype) return -1;
 		if (a.keytype > b.keytype) return 1;
+		if (a.id < b.id) return -1;
+		if (a.id > b.id) return 1;
 		return 0;
 		})
 
@@ -743,36 +755,109 @@ function showKeys(data)
 	delete gbl.param;
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	x = x + "<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";
-	x = x + '<colgroup>'
-	for(let i=0;i<3;i++) x = x + '<col width="50px">'
-	x = x + "<col width='90%'/></colgroup>"
+	x = x + "<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0>";
+	x = x + '<colgroup>';
+	for(let i=0;i<5;i++) x = x + '<col width="50px">';
+	x = x + "</colgroup><tr>";
+	for (let i of ["Active","Id","Type","Bits","Algrythm",""])
+		x = x + "<th>"+i+"</th>";
+	x = x + "</tr>";
 
-	for(let i of data) {
+	let keyTypes = { num: 0 };
+
+	for(let idx in data) {
+		i = data[idx];
 		x = x + "<tr class=dataRow><td>"
-		if (i.active) x = x + gbl.tick; else x = x + gbl.cross;
+		let aflag = 0;
+		if (i.active) { aflag=1; x = x + gbl.tick; } else x = x + gbl.cross;
 		x = x + "</td>";
+		x = x + "<td>" + i.id + "</td>";
+
+		if (i.keytype in keyTypes) {
+			let k = keyTypes[i.keytype];
+			k.num++; k.active += aflag;
+			k.ids.push({ idx: parseInt(idx), id: i.id, act: i.active });
+			}
+		else {
+			keyTypes[i.keytype] = { ids: [], active: aflag, num: 1, }
+			keyTypes[i.keytype].ids.push({ idx: parseInt(idx), id: i.id, act: i.active });
+			keyTypes.num++;
+			}
+
 		x = x + "<td>" + i.keytype.toUpperCase() + "</td>";
 		x = x + "<td>" + i.bits + "</td>";
 		x = x + "<td align=left>" + i.algorithm;
-		x = x + "</td></tr>";
+		x = x + "</td><td>&nbsp;</td></tr>";
 		if ("ds" in i) {
 			for (let ds of i.ds) {
 				let dscol = ds.split(" ");
 				x = x + "<tr onClick=\"clickDS('"+ds+"');\" class=dataRow><td></td><td><li>DS"
-					+ "</td><td>" + dsAlg[parseInt(dscol[2])] + "</td><td>" + ds + "</td></tr>";
+					+ "</td><td>" + dsAlg[parseInt(dscol[2])] + "</td><td colspan=3>" + ds + "</td></tr>";
 				}
 			}
+		x = x + "<tr><td><div style='height: 5px;'></div></td></tr>"
 		}
 
 	let sp = "<div style='height: 7px;'></div>";
 	let sz = 100;
 
-	x = x + "</table></td><td align=center>";
+	x = x + "</table></td><td>"
+	x = x + btn('addKSK()',"Add KSK","Add a KSK to "+ctx.zone,sz) + sp;
+	x = x + btn('addZSK()',"Add ZSK","Add a ZSK to "+ctx.zone,sz) + sp;
+	x = x + btn('addCSK()',"Add CSK","Add a CSK to "+ctx.zone,sz) + sp;
+	x = x + "</td></tr></table>"
 
-	x = x + btn("someFn()","Some btn","some btn help",sz) + sp;
+	sz = 200
+	x = x + "<table align=center cellspacing=10 cellpadding=0 border=0>"
 
-	gbl.bot.innerHTML = x + "</td></tr></table>";
+	let notes = null;
+	if ((keyTypes.num==1)&&("csk" in keyTypes)) {
+		if (
+			([1,2].indexOf(keyTypes.csk.num) >= 0)&&
+			(keyTypes.csk.num == keyTypes.csk.active)
+			) {
+			if (keyTypes.csk.num == 1)
+				x = x + "<tr><Td>" + btn("someFn()","Start CSK Rollover","Start a CSK Rollover",sz) + "</td></tr>";
+			else if (keyTypes.csk.num == 2)
+				x = x + "<tr><Td>" + btn("someFn()","Complete CSK Rollover","Complete a CSK Rollover",sz) + "</td></tr>";
+			}
+		else x = x + "<tr><td><h2>A: Unknown DNSSEC State</h2></td></tr>"
+		}
+	else if ((keyTypes.num==2)&&("ksk" in keyTypes)&&("zsk" in keyTypes)) {
+
+		if (
+			([1,2].indexOf(keyTypes.ksk.num) >= 0)&&
+			([1,2].indexOf(keyTypes.zsk.num) >= 0)&&
+			(keyTypes.ksk.active == keyTypes.ksk.num)&&
+			(keyTypes.zsk.active == 1)
+			) {
+			if (keyTypes.ksk.num == 1)
+				x = x + "<tr><Td>" + btn("startKSK()","Start KSK Rollover","Start a KSK Rollover",sz) + "</td></tr>";
+
+			else if (keyTypes.ksk.num == 2) {
+				x = x + "<tr><Td>" + btn("deleteKey("+keyTypes.ksk.ids[0].id+")","Complete KSK Rollover","Complete the KSK Rollover",sz) + "</td></tr>";
+				notes = "The DS records for Key-Id: " + keyTypes.ksk.ids[1].id + ", should be the only ones present<br>"
+					+ "in the parent zone, for a few days, before completing the KSK rollover";
+				}
+
+			if (keyTypes.zsk.num == 1)
+				x = x + "<tr><Td>" + btn("startZSK()","Start ZSK Rollover","Start a ZSK Rollover",sz) + "</td></tr>";
+
+			else if (keyTypes.zsk.num == 2) {
+				if (keyTypes.zsk.ids[0].act)
+					x = x + "<tr><Td>" + btn("activateZSK("+keyTypes.zsk.ids[0].id+","+keyTypes.zsk.ids[1].id+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz) + "</td></tr>";
+				else if (keyTypes.zsk.ids[1].act)
+					x = x + "<tr><Td>" + btn("deleteKey("+keyTypes.zsk.ids[0].id+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz) + "</td></tr>";
+				}
+			}
+		else x = x + "<tr><td><h2>B: Unknown DNSSEC State</h2></td></tr>";
+	}
+	else x = x + "<tr><td><h2>Z: Unknown DNSSEC State</h2></td></tr>";
+
+	x = x + "</table>";
+	if (notes != null) x = x + "<center>"+notes+"</center>";
+
+	gbl.bot.innerHTML = x;
 
 	topLine();
 }
