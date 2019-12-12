@@ -1,4 +1,4 @@
-<!---(c)Copyright 2019,James Stevens...see LICENSE for details---><!---Alternative license arrangements are possible,contact me for more information---><html><head><title>PowerDNS WebUI-Login</title></head><style type='text/css'>#topSpan{background-color:#666688;height:55px;line-height:55px;margin-top:0px;padding-left:0px;padding-top:1px;position:-webkit-sticky;position:sticky;top:0px;}
+<!---(c)Copyright 2019,James Stevens...see LICENSE for details---><!---Alternative license arrangements are possible,contact me for more information---><html><head><title>PowerDNS WebUI-Login</title></head><style type='text/css'>.fullvis{visibility:visible;opacity:1;}.fadein{visibility:visible;opacity:1;transition:opacity 0.5s linear;}.fadeout{visibility:hidden;opacity:0;transition:visibility 0s 1s,opacity 1s linear;}#topSpan{background-color:#666688;height:55px;line-height:55px;margin-top:0px;padding-left:0px;padding-top:1px;position:-webkit-sticky;position:sticky;top:0px;}
 html{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;background-color:#666688;scrollbar-base-color:#666699;scrollbar-arrow-color:#ddddff;}
 td{vertical-align:top;}
 select{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}
@@ -6,29 +6,34 @@ input{color:black;background-color:white;font-family:Verdana,Arial,Helvetica,san
 body{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;margin-top:0px;background-color:#666688;scrollbar-base-color:#666699;scrollbar-arrow-color:#ddddff;}
 a{color:white;text-decoration:none;}
 a:hover{text-decoration:none;}
-form{margin:0px;}.myBtn{display:inline-block;background-color:#d0d0ff;color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;font-weight:bold;border-radius:25px;padding:5px;padding-left:10px;padding-right:10px;cursor:pointer;margin-top:0px;margin-left:10px;margin-bottom:2px;margin-right:2px;}.myBtn:hover{box-shadow:3px 3px#444466;text-shadow:1px 1px#f0f0ff;}.myBtn:active{position:relative;box-shadow:none;text-shadow:none;top:1px;left:1px;}
-td{padding-left:7px;padding-right:7px;white-space:nowrap;}.zoneListItem{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.zoneListItem:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",lock:"&#x1F512;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};function callApi(sfx,callback,inData)
-{gbl.addH.style.display="none";gbl.newZ.style.display="none";msg("Loading ... "+gbl.timer);let p="https";if(!gbl.with_https)p="http";url=p+"://"+gbl.server+"/api/v1/servers/localhost/"+sfx;let okResp=200;let httpCmd={headers:{'X-API-Key':gbl.apikey},method:'GET',};if(inData!=null){httpCmd.method=inData.method;httpCmd.body=inData.json;if("okResp"in inData)okResp=inData.okResp;}
-fetch(url,httpCmd).then(function(response){if(response.status!=okResp){msg("");if(inData!=null)
+form{margin:0px;}.myBtn{display:inline-block;background-color:#d0d0ff;color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;font-weight:bold;border-radius:25px;padding:5px;padding-left:10px;padding-right:10px;cursor:pointer;margin-top:0px;margin-left:10px;margin-bottom:2px;margin-right:2px;}.myBtn:hover{box-shadow:3px 3px#222244;text-shadow:1px 1px#ffffff;}.myBtn:active{position:relative;box-shadow:none;text-shadow:none;top:1px;left:1px;}
+td{padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",lock:"&#x1F512;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];function callApi(sfx,callback,inData)
+{gbl.addH.style.display="none";gbl.newZ.style.display="none";gbl.newM.style.display="none";if((inData!=null)&&(inData.method=="PUT"))
+msg("Requesting ... "+gbl.timer);else
+msg("Loading ... "+gbl.timer);let p="https";if(!gbl.with_https)p="http";url=p+"://"+gbl.server+"/api/v1/servers/localhost/"+sfx;let okResp=200;let httpCmd={headers:{'X-API-Key':gbl.apikey},method:'GET',};if(inData!=null){httpCmd.method=inData.method;httpCmd.body=inData.json;if("okResp"in inData)okResp=inData.okResp;}
+fetch(url,httpCmd).then(function(response){if(response.status!=okResp){if(inData!=null)
 callback(false);else
 showError("ERROR: "+response.status+" "+response.statusText);return;}
-response.text().then(function(data){msg("");if((inData!=null)&&(inData.noData))
+response.text().then(function(data){if((inData!=null)&&(inData.noData))
 callback(true);else{let param=data;try{param=JSON.parse(data);}
 catch{param=data;}
 callback(param);}});}).catch(function(err){msg("");showError('Fetch Error :-S',err);});}
-function downloadFile(text,fileType,fileName){var blob=new Blob([text],{type:fileType});var a=document.createElement('a');a.download=fileName;a.href=URL.createObjectURL(blob);a.dataset.downloadurl=[fileType,a.download,a.href].join(':');a.style.display="none";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(a.href);},1500);}
+function downloadFile(text,fileType,fileName){var blob=new Blob([text],{type:fileType});var a=document.createElement('a');a.download=fileName;a.href=URL.createObjectURL(blob);a.dataset.downloadurl=[fileType,a.download,a.href].join(':');a.style.display="none";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(a.href);},1500);msg("");}
+function clickAddMeta()
+{gbl.bot.innerHTML="";gbl.newM.style.display="block";}
 function zoneMeta()
 {ctx.meta=true;topLine();callApi("zones/"+ctx.zone+"/metadata",zoneMetaDetails);return false;}
 function zoneMetaDetails(data)
 {data.sort(function(a,b){if(a.kind<b.kind)return-1;if(a.kind>b.kind)return 1;return 0;})
-let newTitle=gbl.server+": "+ctx.zone+", META Data";window.history.pushState(gbl.server+"/"+ctx.zone+"/META",newTitle,"/");document.title=newTitle;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){x=x+"<tr class=zoneListItem><td>"+i.kind.toUpperCase()+"</td><td>";for(let y of i.metadata)x=x+y+"<br>";x=x+"</td></tr>";}
-gbl.bot.innerHTML=x+"</table>";}
+let newTitle=gbl.server+": "+ctx.zone+", META Data";window.history.pushState(gbl.server+"/"+ctx.zone+"/META",newTitle,"/");document.title=newTitle;let x="<table width=100% border=0 cellspacing=1 cellpadding=0>";for(let i of data){x=x+"<tr class=dataRow><td align=center>"+gbl.bin
++"</td><td>"+i.kind.toUpperCase()+"</td><td>";for(let y of i.metadata)x=x+y+"<br>";x=x+"</td></tr>";}
+gbl.bot.innerHTML=x+"</table>";topLine();}
 function addNewRR()
 {ctx.rec.rrs.records.push({content:"",disabled:false});drawOneRecord();clickData(ctx.rec.rrs.records.length-1);}
 function madeChange(res)
 {if(res)
 zoneDetailsLoad(ctx.zone);else
-msg(gbl.warn+" Update Failed");}
+popMsg(gbl.warn+" Update Failed");}
 function patchRRdata()
 {return JSON.stringify({rrsets:[{name:ctx.rec.name,ttl:ctx.rec.rrs.ttl,type:ctx.rec.type,changetype:"REPLACE",records:ctx.rec.rrs.records,}]});}
 function saveRRChanges(withSave)
@@ -39,13 +44,13 @@ function changeRR()
 {let newVal=document.rrForm.new.value;if(newVal==""){if(ctx.rec.rrs.records[ctx.edit.dta].content!="")ctx.needSave="saveRRChanges";ctx.rec.rrs.records.splice(ctx.edit.dta,1);drawOneRecord();}
 else{if((ctx.rec.type=="TXT")&&(newVal.substr(0,1)!='"')&&(newVal.substr(newVal.length-1)!='"'))
 newVal='"'+newVal+'"';s=document.getElementById("rrs"+ctx.edit.dta);if(newVal!=ctx.rec.rrs.records[ctx.edit.dta].content){idx="rr"+ctx.rec.type;if((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!="."))
-newVal=newVal+".";if(idx in validations){if(!validations[idx].test(newVal)){msg(gbl.warn+" Invalid value");document.rrForm.new.focus();document.rrForm.new.select();return false;}}
+newVal=newVal+".";if(idx in validations){if(!validations[idx].test(newVal)){popMsg(gbl.warn+" Invalid value");document.rrForm.new.focus();document.rrForm.new.select();return false;}}
 ctx.rec.rrs.records[ctx.edit.dta].content=newVal;s.innerHTML=newVal;ctx.needSave="saveRRChanges";}
 else
 s.innerHTML=ctx.rec.rrs.records[ctx.edit.dta].content;}
 delete ctx.edit;topLine();return false;}
 function changeTTL()
-{let newVal=document.rrForm.new.value;if(!validInt(newVal)){msg(gbl.warn+" Invalid TTL");document.rrForm.new.focus();document.rrForm.new.select();return false;}
+{let newVal=document.rrForm.new.value;if(!validInt(newVal)){popMsg(gbl.warn+" Invalid TTL");document.rrForm.new.focus();document.rrForm.new.select();return false;}
 if(newVal!=ctx.rec.rrs.ttl){ctx.needSave="saveRRChanges";ctx.rec.rrs.ttl=newVal;drawOneRecord();}
 delete ctx.edit;topLine();return false;}
 function clickTTL(idx)
@@ -66,7 +71,7 @@ function changeName()
 {let z=null;let name=document.rrForm.new.value;if(name.substr(name.length-1)!="."){let t=findZoneName(name+".");if(t!=null){z=t;name=name+".";}
 else{name=name+"."+ctx.zone;z=ctx.zone;}}
 else
-z=findZoneName(name);if(z!="")ctx.zone=z;else{msg(gbl.warn+" No matching zone");document.rrForm.new.focus();return false;}
+z=findZoneName(name);if(z!="")ctx.zone=z;else{popMsg(gbl.warn+" No matching zone");document.rrForm.new.focus();return false;}
 if(ctx.rec.name!=name){ctx.rec.name=name;ctx.rec.rrs.name=name;ctx.needSave="saveRRChanges";}
 delete ctx.edit;topLine();drawOneRecord();return false;}
 function clickRecName(idx)
@@ -97,19 +102,41 @@ function drawOneRecord(rrs)
 x=x+ctx.rec.showName;else
 x=x+ctx.rec.name;x=x+"/"+ctx.rec.type;if(!("param"in gbl))
 window.history.pushState(gbl.server+"/"+ctx.zone+"/"+ctx.rec.name+":"+ctx.rec.type,x,"/");document.title=x;delete gbl.param;x="<table width=100% border=0 cellspacing=1 cellpadding=0>";x=x+'<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="50%" /></colgroup>'
-for(let idx in ctx.rec.rrs.records){let i=ctx.rec.rrs.records[idx];x=x+"<tr class=zoneListItem>"
+for(let idx in ctx.rec.rrs.records){let i=ctx.rec.rrs.records[idx];x=x+"<tr class=dataRow>"
 +"<td onClick='deleteRRitem("+idx+");' align=center>"+gbl.bin+"</td>"
 +"<td onClick='clickRecName("+idx+");'><span id=nme"+idx+">"+ctx.rec.name+"</span></td>"
 +"<td align=right onClick='clickTTL("+idx+");'><span id=ttl"+idx+">"+ctx.rec.rrs.ttl+"</span></td>"
 +"<td>"+ctx.rec.rrs.type+"</td>"
 +"<td onClick='clickData("+idx+");'><span id=rrs"+idx+">"+i.content+"</span></td></tr>";}
-gbl.bot.innerHTML=x+"</table>";}
+gbl.bot.innerHTML=x+"</table>";topLine();}
 function clickZoneRecord(name,type)
-{ctx.rec={name:name,type:type,};delete ctx.meta;getZoneRecord();}
+{if(ctx.zoneDetails.kind=="Slave")return;ctx.rec={name:name,type:type,};delete ctx.meta;getZoneRecord();}
 function getZoneRecord()
 {delete ctx.edit;delete ctx.needSave;topLine();callApi("zones/"+ctx.zone,oneRecord);}
+function clickDS(txt)
+{let x=txt.split(" ");if(x.length<4){popMsg(gbl.warn+"Copy to clipboard failed");return false;}
+navigator.clipboard.writeText(x[x.length-1]).then(function(){popMsg("Digest copied to clipboard");},function(){popMsg(gbl.warn+"Copy to clipboard failed");});return false;}
+function showKeys(data)
+{data.sort(function(a,b){if(a.keytype<b.keytype)return-1;if(a.keytype>b.keytype)return 1;return 0;})
+ctx.zoneKeys=data;if("param"in gbl){if(gbl.param.length>=3){let x=gbl.param[2].split(":");if(x.length==2)return clickZoneRecord(x[0],x[1]);}}
+let newTitle=gbl.server+": "+ctx.zone+", DNSSEC Keys"
+if(!("param"in gbl))window.history.pushState(gbl.server+"/"+ctx.zone+"/KEYS",newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+'<colgroup>'
+for(let i=0;i<3;i++)x=x+'<col width="50px">'
+x=x+"<col width='90%'/></colgroup>"
+for(let i of data){x=x+"<tr class=dataRow><td>"
+if(i.active)x=x+gbl.tick;else x=x+gbl.cross;x=x+"</td>";x=x+"<td>"+i.keytype.toUpperCase()+"</td>";x=x+"<td>"+i.bits+"</td>";x=x+"<td align=left>"+i.algorithm;x=x+"</td></tr>";if("ds"in i){for(let ds of i.ds){let dscol=ds.split(" ");x=x+"<tr onClick=\"clickDS('"+ds+"');\" class=dataRow><td></td><td><li>DS"
++"</td><td>"+dsAlg[parseInt(dscol[2])]+"</td><td>"+ds+"</td></tr>";}}}
+let sp="<div style='height: 7px;'></div>";let sz=100;x=x+"</table></td><td align=center>";x=x+btn("someFn()","Some btn","some btn help",sz)+sp;gbl.bot.innerHTML=x+"</td></tr></table>";topLine();}
+function zoneKeys()
+{callApi("zones/"+ctx.zone+"/cryptokeys",showKeys);}
 function zoneKindChange(sel)
 {s=document.getElementById("extraNewZonePrompt");if(sel.value=="Master")s.innerHTML="Name Servers :";else s.innerHTML="Masters :"}
+function zoneNotify()
+{callApi("zones/"+ctx.zone+"/notify",function(ret){if(ret)popMsg("Zone notified");else popMsg(gbl.warn+" Notify failed");},{method:"PUT"});}
+function zoneRectify()
+{callApi("zones/"+ctx.zone+"/rectify",function(ret){if(ret)popMsg("Zone rectified");else popMsg(gbl.warn+" Rectify failed");},{method:"PUT"});}
+function zoneRetrieve()
+{callApi("zones/"+ctx.zone+"/axfr-retrieve",function(ret){if(ret)popMsg("Zone retrieval requested");else popMsg(gbl.warn+" Zone retrieval failed");},{method:"PUT"});}
 function addNewZone()
 {ctx.addZone=true;topLine();gbl.bot.innerHTML="";gbl.newZ.style.display="block";let f=document.newZoneForm;f.zoneName.value="";f.zoneName.focus();}
 function dropZone()
@@ -122,10 +149,10 @@ function dropZone()
 function doDropZone()
 {callApi("zones/"+ctx.zone,zoneList,{method:"DELETE",noData:true,okResp:204});}
 function doNewName()
-{let f=document.newNameForm;if(!validInt(f.rrTTL.value)){msg(gbl.warn+" Invalid TTL");f.rrTTL.focus();f.rrTTL.select();return;}
+{let f=document.newNameForm;if(!validInt(f.rrTTL.value)){popMsg(gbl.warn+" Invalid TTL");f.rrTTL.focus();f.rrTTL.select();return;}
 delete ctx.addRR;gbl.addH.style.display="none";if(f.rrName.value=="")
 name=ctx.zone;else
-name=f.rrName.value+"."+ctx.zone;if(!fqdnCheck.test(name)){msg(gbl.warn+" Invalid host name");f.rrName.focus();f.rrName.select();return false;}
+name=f.rrName.value+"."+ctx.zone;if(!fqdnCheck.test(name)){popMsg(gbl.warn+" Invalid host name");f.rrName.focus();f.rrName.select();return false;}
 if(findRec(ctx.zoneDetails.rrsets,{name:name,type:f.rrType.value})!=null)
 return clickZoneRecord(name,f.rrType.value);ctx.rec={name:name,type:f.rrType.value,rrs:{name:name,type:f.rrType.value,ttl:f.rrTTL.value,records:[],},};ctx.rec.loadedRows=0;ctx.needSave="saveRRChanges";addNewRR();return false;}
 function zoneAddHost()
@@ -136,8 +163,7 @@ else{if(a.name==data.id)return-1;if(b.name==data.id)return 1;if(a.name<b.name)re
 if(a.type<b.type)return-1;if(a.type>b.type)return 1;return 0;})
 ctx.zoneDetails=data;if("param"in gbl){if(gbl.param.length>=3){let x=gbl.param[2].split(":");if(x.length==2)return clickZoneRecord(x[0],x[1]);}}
 let newTitle=gbl.server+": "+ctx.zone
-if(!("param"in gbl))window.history.pushState(gbl.server+"/"+ctx.zone,newTitle,"/");document.title=newTitle;delete gbl.param
-let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data.rrsets){x=x+"<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=zoneListItem>"
+if(!("param"in gbl))window.history.pushState(gbl.server+"/"+ctx.zone,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data.rrsets){x=x+"<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=dataRow>"
 +"<td valign=top>"+i.name.substr(0,i.name.length-ctx.zone.length-1)+"</td>"
 +"<td valign=top align=right>"+i.ttl+"</td>"
 +"<td valign=top>"+i.type+"</td>"
@@ -147,15 +173,24 @@ x=x+formatSOA(i.records[0].content);else{i.records.sort(function(a,b){if(a.conte
 for(let rrs of i.records)
 x=x+""+rrs.content+"<br>";}
 x=x+"</td></tr>";}
-gbl.bot.innerHTML=x+"</table>";topLine();}
+let sp="<div style='height: 7px;'></div>";let sz=100;x=x+"</table></td><td align=center>";if(ctx.zoneDetails.kind!="Slave")
+x=x+btn("zoneAddHost()","Add Host","Add a host to the zone "+ctx.zone,sz)+sp;x=x+btn("zoneAxfr()","Download","Download "+ctx.zone+" in RFC/AXFR format",sz)+sp
++btn('zoneMeta()',"Meta Data","Load the META data for "+ctx.zone,sz)+sp
++btn('zoneNotify()',"Notify Zone","Notify the slaves of "+ctx.zone,sz)+sp;if(ctx.zoneDetails.dnssec)
+x=x+btn('zoneRectify()',"Rectify Zone","Rectify the data for "+ctx.zone,sz)+sp;if(ctx.zoneDetails.kind=="Slave")
+x=x+btn('zoneRetrieve()',"Retrieve Zone","Retrieve "+ctx.zone+" from masters",sz)+sp;x=x+btn('dropZone()',"Drop Zone","Delete "+ctx.zone+" and ALL its records",sz);x=x+"<hr>";if(ctx.zoneDetails.dnssec){x=x+btn('zoneKeys()',"DNSSEC Keys","View DNSSEC keys for "+ctx.zone,sz)+sp;}
+else
+x=x+btn('signZone()',"Sign Zone","DNSSEC sign "+ctx.zone,sz)+sp;gbl.bot.innerHTML=x+"</td></tr></table>";topLine();}
 function zoneDetailsLoad(zone)
 {document.body.scrollTop=0;ctx={zone:zone,zoneList:ctx.zoneList,};callApi("zones/"+ctx.zone,zoneDetails);}
+function searchLoadRecord(zone,name,type)
+{gbl.param=[gbl.server,zone,name+":"+type];zoneDetailsLoad(zone);}
 function searchResults(data)
-{ctx={};topLine();if(data.length<=0){gbl.bot.innerHTML="No search results";return;}
-let newTitle=gbl.server+": Search Results"
+{if(data.length<=0){popMsg("No search results");return;}
+ctx={};topLine();let newTitle=gbl.server+": Search Results"
 window.history.pushState(gbl.server+"/SEARCH/"+ctx.searchTerm,newTitle,"/");document.title=newTitle
-let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){x=x+"<tr class=zoneListItem";if(i.object_type!="zone"){x=x+" onClick='ctx = { zone: \""+i.zone+"\" }; "
-+" clickZoneRecord(\""+i.name+"\",\""+i.type+"\");'"
+let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){x=x+"<tr class=dataRow";if(i.object_type!="zone"){x=x+" onClick='ctx = { zone: \""+i.zone+"\" }; "
++" searchLoadRecord(\""+i.zone+"\",\""+i.name+"\",\""+i.type+"\");'"
 +"><td valign=top>"+i.name+"</td>"
 +"<td valign=top align=right>"+i.ttl+"</td>"
 +"<td valign=top>"+i.type+"</td>";if(i.type=="SOA")
@@ -169,17 +204,20 @@ function searchFormSubmit()
 function doMakeZone(data)
 {zoneDetailsLoad(data.name);}
 function doNewZone()
-{let name=document.newZoneForm.zoneName.value;if(name.substr(name.length-1)!=".")name=name+".";if(!fqdnCheck.test(name)){msg(gbl.warn+" Invalid domain name");document.newZoneForm.zoneName.focus();document.newZoneForm.zoneName.select();return false;}
-let kind=document.newZoneForm.zoneKind.value;data={name:name,kind:kind,masters:[],nameservers:[],};callApi("zones",doMakeZone,{method:"POST",okResp:201,json:JSON.stringify(data)});return false;}
+{let name=document.newZoneForm.zoneName.value;if(name.substr(name.length-1)!=".")name=name+".";if(!fqdnCheck.test(name)){popMsg(gbl.warn+" Invalid domain name");document.newZoneForm.zoneName.focus();document.newZoneForm.zoneName.select();return false;}
+let kind=document.newZoneForm.zoneKind.value;let dt=[]
+for(i=0;i<4;i++){let v=document.newZoneForm["extra"+i].value;if(v!="")dt.push(v);}
+let ns=[];let ms=[];if(document.newZoneForm.zoneKind.value=="Master")
+ns=dt;else ms=dt;let data={name:name,kind:kind,masters:ms,nameservers:ns,};callApi("zones",doMakeZone,{method:"POST",okResp:201,json:JSON.stringify(data)});return false;}
 function zoneListDetails(data)
 {data.sort(function(a,b){if(a.id<b.id)return-1;if(a.id>b.id)return 1;;return 0;})
 ctx.zoneList=data;if("param"in gbl){if(gbl.param.length>=2)
 return zoneDetailsLoad(gbl.param[1]);}
-let newTitle=gbl.server+": Zone List";if(!("param"in gbl))window.history.pushState(gbl.server,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){let name=i.id;x=x+"<tr class=zoneListItem onClick='zoneDetailsLoad(\""+name+"\")'>"
+let newTitle=gbl.server+": Zone List";if(!("param"in gbl))window.history.pushState(gbl.server,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){let name=i.id;x=x+"<tr class=dataRow onClick='zoneDetailsLoad(\""+name+"\")'>"
 +"<td>"+name+"</td><td>"+i.kind+"</td>";t="";hlp="Zone is NOT dnssec signed";if(i.dnssec){t=gbl.lock;hlp="Zone is DNSSEC signed"}
 x=x+"<td title='"+hlp+"'>"+t+"</td><td>"+i.serial+"</td>";t="";hlp="";if(i.notified_serial!=i.serial){t=gbl.timer;hlp="Zone has unnotified changes";}
 x=x+"<td title='"+hlp+"'>"+t+"</td></tr>";}
-gbl.bot.innerHTML=x+"</table>";}
+gbl.bot.innerHTML=x+"</table>";topLine();}
 function zoneList()
 {document.body.scrollTop=0;ctx={};topLine();callApi("zones",zoneListDetails);return false;}
 function zoneAxfrData(data)
@@ -187,22 +225,21 @@ function zoneAxfrData(data)
 function zoneAxfr()
 {callApi("zones/"+ctx.zone+"/export",zoneAxfrData);}
 function validInt(x){return((x!="")&&(x!=null)&&(!(isNaN(x))));}
-function btn(call,txt,hlp){return"<span title='"+hlp+"' class=myBtn onClick='"+call+"; return false;'>"+txt+"</span>";}
+function btn(call,txt,hlp,sz){let ex=""
+if(sz!=null)ex="style='width: "+sz+"px;'"
+return"<span "+ex+" title='"+hlp+"' class=myBtn onClick='"+call+"; return false;'>"+txt+"</span>";}
 function goLogin()
 {document.location="/";}
 function topLine()
-{gbl.addH.style.display="none";gbl.newZ.style.display="none";let url=""
-let y="<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=zoneListItem>"
+{gbl.addH.style.display="none";gbl.newZ.style.display="none";gbl.newM.style.display="none";let url=""
+let y="<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
 +"<font size=+1><a title='Open this page in a new window' target=_blank href='"+window.origin+"?"+gbl.server;let x="'>"+gbl.page+"</a></font></td><td>"
 +btn("goLogin()",gbl.server,"Change server")
 +btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);if("zone"in ctx){url="/"+ctx.zone;x=x+btn('zoneDetailsLoad("'+ctx.zone+'")',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);if("rec"in ctx){let name="@";url=url+"/"+ctx.rec.name+":"+ctx.rec.type;if(ctx.rec.name!=ctx.zone)
 name=ctx.rec.name.substr(0,ctx.rec.name.length-ctx.zone.length-1);ctx.rec.showName=name;x=x+btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);}
-else{if("meta"in ctx){url=url+"/META";x=x+btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);}}}
-x=x+"</td><td width=100% align=center><span id='showMsg'></span></td><td>";if("zone"in ctx){if((!("meta"in ctx))&&(!("rec"in ctx))&&(!("addRR"in ctx))){if(ctx.zoneDetails.kind!="Slave")
-x=x+btn("zoneAddHost()","Add Host","Add a host to the zone "+ctx.zone);x=x+btn("zoneAxfr()","AXFR","Download "+ctx.zone+" in RFC/AXFR format")
-+btn('dropZone()',"Drop","Delete "+ctx.zone+" and ALL its records")
-+btn('zoneMeta()',"Meta","Load the META data for "+ctx.zone);}
-if("edit"in ctx){if("needCancel"in ctx.edit)
+else if("meta"in ctx){url=url+"/META";x=x+btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);}
+else if("zoneKeys"in ctx){url=url+"/KEYS";x=x+btn('zoneKeys()',"DNSSEC","Reload the DNSSEC Keys for "+ctx.zone);}}
+x=x+"</td><td width=100% align=center><span class='hidden' id='showMsg'></span></td><td>";if("zone"in ctx){if("edit"in ctx){if("needCancel"in ctx.edit)
 x=x+btn(ctx.edit.needCancel+"(false)","Cancel","Cancel this edit");else
 x=x+btn("cancelAllEdits()","Cancel","Cancel this edit");}
 else{if("rec"in ctx)
@@ -217,7 +254,7 @@ x=x+"</td><td width=1 align=right><form name=searchForm onSubmit='return searchF
 function startUp()
 {window.addEventListener('popstate',function(e){if(e.state==null)goLogin();gbl.param=e.state.split("/");if(gbl.param.length>=1){gbl.server=gbl.param[0];zoneList();return true;}
 delete gbl.param;document.location="/"
-return true;});gbl.top=document.getElementById("topSpan");gbl.bot=document.getElementById("lowerSpan");gbl.addH=document.getElementById("addName");gbl.newZ=document.getElementById("addZone");if(window.location.search!=""){gbl.param=window.location.search.substr(1).split("/");if(gbl.param.length>=1){gbl.server=gbl.param[0];zoneList();}}}
+return true;});gbl.top=document.getElementById("topSpan");gbl.bot=document.getElementById("lowerSpan");gbl.addH=document.getElementById("addName");gbl.newZ=document.getElementById("addZone");gbl.newM=document.getElementById("addMeta");if(window.location.search!=""){gbl.param=window.location.search.substr(1).split("/");if(gbl.param.length>=1){gbl.server=gbl.param[0];zoneList();}}}
 function initialLogin()
 {let f=document.loginForm;gbl.server=f.server.value;gbl.apikey=f.apikey.value;gbl.with_https=f.with_https.checked;zoneList();return false;}
 function formatSOA(soa_txt)
@@ -225,7 +262,12 @@ function formatSOA(soa_txt)
 return soa;}
 function showError(err)
 {gbl.bot.innerHTML="<h1>"+err+"</h1>";}
-function msg(myMsg)
-{let m=document.getElementById("showMsg");m.innerHTML=myMsg;}
+function unpopMsg()
+{let m=document.getElementById("showMsg");let t1=m.innerHTML;let t2=gbl.lastMsg;if(t1.charCodeAt(0)>255){t1=t1.substr(t1.indexOf(" "));t2=t2.substr(t2.indexOf(" "));}
+if(t1==t2)m.className="fadeout";delete gbl.lastMsg;}
+function popMsg(txt)
+{msg(txt,"fadein");gbl.lastMsg=txt;setTimeout(unpopMsg,2500);}
+function msg(myMsg,newClass)
+{if(newClass==null)newClass="fullvis";let m=document.getElementById("showMsg");m.className=newClass;m.innerHTML=myMsg;delete gbl.lastMsg;}
 function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();if("addRR"in ctx)return zoneDetailsLoad(ctx.zone);if("addZone"in ctx)return zoneList();}}
-</script><head><title>PowerDNS WebUI-Login</title></head><body onLoad="startUp();"><div id="topSpan"><table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr></table></div><div id="lowerSpan"><table align=center><form action="/"onSubmit="return initialLogin()"name=loginForm><tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr><tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr><tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr><tr><td align=center colspan=2><span title="Load zone list"class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addZone style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr><form method=post action="/"name=newZoneForm onSubmit="return doNewZone();"><tr><td class=formPrompt>Name:</td><td><input onkeydown="keyEsc(event);"name=zoneName></td></tr><tr><td class=formPrompt>Type:</td><td><select onChange="zoneKindChange(this);"name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr><tr><td class=formPrompt><span id="extraNewZonePrompt">Name Servers:</span></td><td><input size=40 name=extra0><br><input size=40 name=extra1><br><input size=40 name=extra2><br><input size=40 name=extra3><br></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span title="Cancel adding zone"class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone"class=myBtn onClick="doNewZone();">Add Zone</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addName style="display: none;"><table align=center><form method=post action="/"name=newNameForm onSubmit="return doNewName();"><tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);"name=rrName></td></tr><tr><td class=formPrompt>RR Type:</td><td><select name=rrType><option>A<option>AAAA<option>MX<option>NS<option>TXT<option>A6<option>ADDR<option>AFSDB<option>ALIAS<option>CAA<option>CDNSKEY<option>CDS<option>CERT<option>CNAME<option>DHCID<option>DLV<option>DNAME<option>DNSKEY<option>DS<option>EUI48<option>EUI64<option>HINFO<option>IPSECKEY<option>KEY<option>KX<option>LOC<option>LUA<option>MAILA<option>MAILB<option>MB<option>MG<option>MINFO<option>MR<option>MX<option>NAPTR<option>NS<option>OPENPGPKEY<option>OPT<option>PTR<option>RKEY<option>RP<option>RRSIG<option>SIG<option>SMIMEA<option>SOA<option>SPF<option>SRV<option>SSHFP<option>TKEY<option>TLSA<option>TXT<option>URI<option>WKS</select></td></tr><tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR"onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addMeta style="display: none;"><table align=center><form method=post action="/"name=newMetaForm onSubmit="return doNewMeta();"><tr><td><select metaName><option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE</select></td></tr><input type=submit style="display: none;"></form></table></div></body></html>
+</script><head><title>PowerDNS WebUI-Login</title></head><body onLoad="startUp();"><div id="topSpan"><table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr></table></div><div id="lowerSpan"><table align=center><form action="/"onSubmit="return initialLogin()"name=loginForm><tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr><tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr><tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr><tr><td align=center colspan=2><span title="Load zone list"class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addZone style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr><form method=post action="/"name=newZoneForm onSubmit="return doNewZone();"><tr><td class=formPrompt>Name:</td><td><input onkeydown="keyEsc(event);"name=zoneName></td></tr><tr><td class=formPrompt>Type:</td><td><select onChange="zoneKindChange(this);"name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr><tr><td class=formPrompt><span id="extraNewZonePrompt">Name Servers:</span></td><td><input size=40 name=extra0><br><input size=40 name=extra1><br><input size=40 name=extra2><br><input size=40 name=extra3><br></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span title="Cancel adding zone"class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone"class=myBtn onClick="doNewZone();">Add Zone</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addName style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Host</h2></td></tr><form method=post action="/"name=newNameForm onSubmit="return doNewName();"><tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);"name=rrName></td></tr><tr><td class=formPrompt>RR Type:</td><td><select name=rrType><option>A<option>AAAA<option>MX<option>NS<option>TXT<option>A6<option>ADDR<option>AFSDB<option>ALIAS<option>CAA<option>CDNSKEY<option>CDS<option>CERT<option>CNAME<option>DHCID<option>DLV<option>DNAME<option>DNSKEY<option>DS<option>EUI48<option>EUI64<option>HINFO<option>IPSECKEY<option>KEY<option>KX<option>LOC<option>LUA<option>MAILA<option>MAILB<option>MB<option>MG<option>MINFO<option>MR<option>MX<option>NAPTR<option>NS<option>OPENPGPKEY<option>OPT<option>PTR<option>RKEY<option>RP<option>RRSIG<option>SIG<option>SMIMEA<option>SOA<option>SPF<option>SRV<option>SSHFP<option>TKEY<option>TLSA<option>TXT<option>URI<option>WKS</select></td></tr><tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR"onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addMeta style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Meta Data</h2></td></tr><form method=post action="/"name=newMetaForm onSubmit="return doNewMeta();"><tr><td><select metaName><option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE</select></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data"onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr><input type=submit style="display: none;"></form></table></div></body></html>
