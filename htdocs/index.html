@@ -7,6 +7,10 @@
 
 <style type='text/css'>
 
+.fullvis { visibility: visible; opacity: 1; }
+.fadein  { visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
+.fadeout { visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
+
 #topSpan{
 	background-color: #666688;
 	height: 55px;
@@ -178,7 +182,11 @@ function callApi(sfx,callback,inData)
 	gbl.addH.style.display = "none";
 	gbl.newZ.style.display = "none";
 	gbl.newM.style.display = "none";
-	msg("Loading ... " + gbl.timer);
+
+	if ((inData != null)&&(inData.method == "PUT"))
+		msg("Requesting ... " + gbl.timer);
+	else
+		msg("Loading ... " + gbl.timer);
 
 	let p = "https";
 	if (!gbl.with_https) p = "http";
@@ -927,14 +935,21 @@ function zoneDetailsLoad(zone)
 //=============================================================================================
 
 
+function searchLoadRecord(zone,name,type)
+{
+	gbl.param = [ gbl.server, zone, name + ":" + type ];
+	zoneDetailsLoad(zone);
+}
+
 
 function searchResults(data)
 {
-	ctx = {}; topLine();
 	if (data.length <= 0) {
-		gbl.bot.innerHTML = "No search results";
+		popMsg("No search results");
 		return;
 		}
+
+	ctx = {}; topLine();
 
 	let newTitle = gbl.server + ": Search Results"
 	window.history.pushState(gbl.server+"/SEARCH/"+ctx.searchTerm,newTitle,"/");
@@ -945,7 +960,7 @@ function searchResults(data)
 		x = x + "<tr class=zoneListItem";
 		if (i.object_type != "zone") {
 			x = x + " onClick='ctx = { zone: \""+i.zone+"\" }; "
-				+ " clickZoneRecord(\""+i.name+"\",\""+i.type+"\");'"
+				+ " searchLoadRecord(\""+i.zone+"\",\""+i.name+"\",\""+i.type+"\");'"
 				+ "><td valign=top>" + i.name + "</td>"
 				+ "<td valign=top align=right>" + i.ttl + "</td>"
 				+ "<td valign=top>" + i.type + "</td>";
@@ -1163,7 +1178,7 @@ function topLine()
 			}
 		}
 
-	x = x + "</td><td width=100% align=center><span id='showMsg'></span></td><td>";
+	x = x + "</td><td width=100% align=center><span class='hidden' id='showMsg'></span></td><td>";
 
 	if ("zone" in ctx) {
 		if ("edit" in ctx) {
@@ -1276,7 +1291,7 @@ function unpopMsg()
 		t2 = t2.substr(t2.indexOf(" "));
 		}
 
-	if (t1 == t2) m.innerHTML = ""
+	if (t1 == t2) m.className = "fadeout";
 	delete gbl.lastMsg;
 }
 
@@ -1284,16 +1299,18 @@ function unpopMsg()
 
 function popMsg(txt)
 {
-	msg(txt);
+	msg(txt,"fadein");
 	gbl.lastMsg = txt;
 	setTimeout(unpopMsg,2500);
 }
 
 
 
-function msg(myMsg)
+function msg(myMsg,newClass)
 {
+	if (newClass == null) newClass = "fullvis";
 	let m = document.getElementById("showMsg");
+	m.className = newClass;
 	m.innerHTML = myMsg;
 	delete gbl.lastMsg;
 }
