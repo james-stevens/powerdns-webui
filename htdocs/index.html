@@ -7,6 +7,10 @@
 
 <style type='text/css'>
 
+.fullvis { visibility: visible; opacity: 1; }
+.fadein  { visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
+.fadeout { visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
+
 #topSpan{
 	background-color: #666688;
 	height: 55px;
@@ -28,8 +32,14 @@ html {
 	scrollbar-arrow-color:#ddddff;
 	}
 
-td {
-	vertical-align: top;
+th {
+	color: black;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size:10pt;
+	background-color:#a0a0cc;
+	font-weight: bold;
+	padding-left: 3px;
+	padding-right: 3px;
 	}
 
 select {
@@ -77,6 +87,7 @@ form {
 	}
 
 .myBtn {
+	text-align: center;
 	display: inline-block;
 	background-color: #d0d0ff;
 	color: black;
@@ -108,12 +119,13 @@ form {
 	}
 
 td {
+	vertical-align: top;
 	padding-left: 7px;
 	padding-right: 7px;
 	white-space: nowrap;
 	}
 
-.zoneListItem {
+.dataRow {
 	font-family: Verdana,Arial,Helvetica,sans-serif;
 	font-size: 10pt;
 	cursor: pointer;
@@ -121,7 +133,7 @@ td {
 	background-color: #666688;
 	}
 
-.zoneListItem:hover {
+.dataRow:hover {
 	background-color: #444466;
 	}
 
@@ -172,13 +184,19 @@ var validations = {
 	};
 
 
+var dsAlg = [ "Reserved","SHA1","SHA256","GOST","SHA384"];
+
 
 function callApi(sfx,callback,inData)
 {
 	gbl.addH.style.display = "none";
 	gbl.newZ.style.display = "none";
 	gbl.newM.style.display = "none";
-	msg("Loading ... " + gbl.timer);
+
+	if ((inData != null)&&(inData.method == "PUT"))
+		msg("Requesting ... " + gbl.timer);
+	else
+		msg("Loading ... " + gbl.timer);
 
 	let p = "https";
 	if (!gbl.with_https) p = "http";
@@ -284,7 +302,7 @@ function zoneMetaDetails(data)
 	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 
 	for(let i of data) {
-		x = x + "<tr class=zoneListItem><td align=center>" + gbl.bin
+		x = x + "<tr class=dataRow><td align=center>" + gbl.bin
 			+ "</td><td>" + i.kind.toUpperCase() + "</td><td>";
 		for(let y of i.metadata) x = x + y + "<br>";
 		x = x + "</td></tr>";
@@ -315,7 +333,7 @@ function madeChange(res)
 	if (res)
 		zoneDetailsLoad(ctx.zone);
 	else
-		msg(gbl.warn + " Update Failed");
+		popMsg(gbl.warn + " Update Failed");
 }
 
 
@@ -379,7 +397,7 @@ function changeRR()
 
 			if (idx in validations) {
 				if (!validations[idx].test(newVal)) {
-					msg(gbl.warn+" Invalid value");
+					popMsg(gbl.warn+" Invalid value");
 					document.rrForm.new.focus();
 					document.rrForm.new.select();
 					return false;
@@ -407,7 +425,7 @@ function changeTTL()
 	let newVal = document.rrForm.new.value;
 
 	if (!validInt(newVal)) {
-		msg(gbl.warn+" Invalid TTL");
+		popMsg(gbl.warn+" Invalid TTL");
 		document.rrForm.new.focus();
 		document.rrForm.new.select();
 		return false;
@@ -505,7 +523,7 @@ function changeName()
 
 	if (z != "") ctx.zone = z;
 	else {
-		msg(gbl.warn + " No matching zone");
+		popMsg(gbl.warn + " No matching zone");
 		document.rrForm.new.focus();
 		return false;
 		}
@@ -651,7 +669,7 @@ function drawOneRecord(rrs)
 
 	for(let idx in ctx.rec.rrs.records) {
 		let i = ctx.rec.rrs.records[idx];
-		x = x + "<tr class=zoneListItem>"
+		x = x + "<tr class=dataRow>"
 			+ "<td onClick='deleteRRitem("+idx+");' align=center>" + gbl.bin + "</td>"
 			+ "<td onClick='clickRecName("+idx+");'><span id=nme"+idx+">" + ctx.rec.name + "</span></td>"
 			+ "<td align=right onClick='clickTTL("+idx+");'><span id=ttl"+idx+">" + ctx.rec.rrs.ttl + "</span></td>"
@@ -690,6 +708,167 @@ function getZoneRecord()
 
 
 //=============================================================================================
+// DNSSEC Stuff
+//=============================================================================================
+
+function clickDS(txt) 
+{
+	let x = txt.split(" ");
+	if (x.length < 4) {
+		popMsg(gbl.warn+"Copy to clipboard failed");
+		return false;
+		}
+
+	navigator.clipboard.writeText(x[x.length-1]).then(
+		function() { popMsg("Digest copied to clipboard"); },
+		function() { popMsg(gbl.warn+"Copy to clipboard failed"); }
+		);
+
+	return false;
+}
+
+
+
+function showKeys(data)
+{
+	data.sort(function(a,b) {
+		if (a.keytype < b.keytype) return -1;
+		if (a.keytype > b.keytype) return 1;
+		if (a.id < b.id) return -1;
+		if (a.id > b.id) return 1;
+		return 0;
+		})
+
+	ctx.zoneKeys = data;
+
+	if ("param" in gbl) {
+		if (gbl.param.length >= 3) {
+			let x = gbl.param[2].split(":");
+			if (x.length == 2) return clickZoneRecord(x[0],x[1]);
+			}
+		}
+
+	let newTitle = gbl.server + ": " + ctx.zone + ", DNSSEC Keys"
+	if (!("param" in gbl)) window.history.pushState(gbl.server+"/"+ctx.zone+"/KEYS",newTitle,"/");
+	document.title = newTitle;
+
+	delete gbl.param;
+
+	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	x = x + "<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0>";
+	x = x + '<colgroup>';
+	for(let i=0;i<5;i++) x = x + '<col width="50px">';
+	x = x + "</colgroup><tr>";
+	for (let i of ["Active","Id","Type","Bits","Algrythm",""])
+		x = x + "<th>"+i+"</th>";
+	x = x + "</tr>";
+
+	let keyTypes = { num: 0 };
+
+	for(let idx in data) {
+		i = data[idx];
+		x = x + "<tr class=dataRow><td>"
+		let aflag = 0;
+		if (i.active) { aflag=1; x = x + gbl.tick; } else x = x + gbl.cross;
+		x = x + "</td>";
+		x = x + "<td>" + i.id + "</td>";
+
+		if (i.keytype in keyTypes) {
+			let k = keyTypes[i.keytype];
+			k.num++; k.active += aflag;
+			k.ids.push({ idx: parseInt(idx), id: i.id, act: i.active });
+			}
+		else {
+			keyTypes[i.keytype] = { ids: [], active: aflag, num: 1, }
+			keyTypes[i.keytype].ids.push({ idx: parseInt(idx), id: i.id, act: i.active });
+			keyTypes.num++;
+			}
+
+		x = x + "<td>" + i.keytype.toUpperCase() + "</td>";
+		x = x + "<td>" + i.bits + "</td>";
+		x = x + "<td align=left>" + i.algorithm;
+		x = x + "</td><td>&nbsp;</td></tr>";
+		if ("ds" in i) {
+			for (let ds of i.ds) {
+				let dscol = ds.split(" ");
+				x = x + "<tr onClick=\"clickDS('"+ds+"');\" class=dataRow><td></td><td><li>DS"
+					+ "</td><td>" + dsAlg[parseInt(dscol[2])] + "</td><td colspan=3>" + ds + "</td></tr>";
+				}
+			}
+		x = x + "<tr><td><div style='height: 5px;'></div></td></tr>"
+		}
+
+	let sp = "<div style='height: 7px;'></div>";
+	let sz = 100;
+
+	x = x + "</table></td><td>"
+	x = x + btn('addKSK()',"Add KSK","Add a KSK to "+ctx.zone,sz) + sp;
+	x = x + btn('addZSK()',"Add ZSK","Add a ZSK to "+ctx.zone,sz) + sp;
+	x = x + btn('addCSK()',"Add CSK","Add a CSK to "+ctx.zone,sz) + sp;
+	x = x + "</td></tr></table>"
+
+	sz = 200
+	x = x + "<table align=center cellspacing=10 cellpadding=0 border=0><tr><td><hr></td></tr>"
+
+	let notes = null;
+	if ((keyTypes.num==1)&&("csk" in keyTypes)) {
+		if (
+			([1,2].indexOf(keyTypes.csk.num) >= 0)&&
+			(keyTypes.csk.num == keyTypes.csk.active)
+			) {
+			if (keyTypes.csk.num == 1)
+				x = x + "<tr><Td>" + btn("someFn()","Start CSK Rollover","Start a CSK Rollover",sz) + "</td></tr>";
+			else if (keyTypes.csk.num == 2)
+				x = x + "<tr><Td>" + btn("someFn()","Complete CSK Rollover","Complete a CSK Rollover",sz) + "</td></tr>";
+			}
+		else x = x + "<tr><td><h2>A: Unknown DNSSEC State</h2></td></tr>"
+		}
+	else if ((keyTypes.num==2)&&("ksk" in keyTypes)&&("zsk" in keyTypes)) {
+
+		if (
+			([1,2].indexOf(keyTypes.ksk.num) >= 0)&&
+			([1,2].indexOf(keyTypes.zsk.num) >= 0)&&
+			(keyTypes.ksk.active == keyTypes.ksk.num)&&
+			(keyTypes.zsk.active == 1)
+			) {
+			if (keyTypes.ksk.num == 1)
+				x = x + "<tr><Td>" + btn("startKSK()","Start KSK Rollover","Start a KSK Rollover",sz) + "</td></tr>";
+
+			else if (keyTypes.ksk.num == 2) {
+				x = x + "<tr><Td>" + btn("deleteKey("+keyTypes.ksk.ids[0].id+")","Complete KSK Rollover","Complete the KSK Rollover",sz) + "</td></tr>";
+				notes = "The DS records for Key-Id: " + keyTypes.ksk.ids[1].id + ", should be the only ones present<br>"
+					+ "in the parent zone, for a few days, before completing the KSK rollover";
+				}
+
+			if (keyTypes.zsk.num == 1)
+				x = x + "<tr><Td>" + btn("startZSK()","Start ZSK Rollover","Start a ZSK Rollover",sz) + "</td></tr>";
+
+			else if (keyTypes.zsk.num == 2) {
+				if (keyTypes.zsk.ids[0].act)
+					x = x + "<tr><Td>" + btn("activateZSK("+keyTypes.zsk.ids[0].id+","+keyTypes.zsk.ids[1].id+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz) + "</td></tr>";
+				else if (keyTypes.zsk.ids[1].act)
+					x = x + "<tr><Td>" + btn("deleteKey("+keyTypes.zsk.ids[0].id+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz) + "</td></tr>";
+				}
+			}
+		else x = x + "<tr><td><h2>B: Unknown DNSSEC State</h2></td></tr>";
+	}
+	else x = x + "<tr><td><h2>Z: Unknown DNSSEC State</h2></td></tr>";
+
+	x = x + "</table>";
+	if (notes != null) x = x + "<center>"+notes+"</center>";
+
+	gbl.bot.innerHTML = x;
+
+	topLine();
+}
+
+function zoneKeys()
+{
+	callApi("zones/"+ctx.zone+"/cryptokeys",showKeys);
+}
+
+
+//=============================================================================================
 // Zone detils code
 //=============================================================================================
 
@@ -705,11 +884,7 @@ function zoneKindChange(sel)
 function zoneNotify()
 {
 	callApi("zones/"+ctx.zone+"/notify", function(ret) { 
-		if (ret) {
-			msg("Zone notified");
-			setTimeout(function() { msg(""); }, 2500);
-			}
-		else msg(gbl.warn + " Notify failed");
+		if (ret) popMsg("Zone notified"); else popMsg(gbl.warn + " Notify failed");
 		}, { method: "PUT" });
 }
 
@@ -718,11 +893,7 @@ function zoneNotify()
 function zoneRectify()
 {
 	callApi("zones/"+ctx.zone+"/rectify", function(ret) { 
-		if (ret) {
-			msg("Zone rectified");
-			setTimeout(function() { msg(""); }, 2500);
-			}
-		else msg(gbl.warn + " Rectify failed");
+		if (ret) popMsg("Zone rectified"); else popMsg(gbl.warn + " Rectify failed");
 		}, { method: "PUT" });
 }
 
@@ -731,11 +902,7 @@ function zoneRectify()
 function zoneRetrieve()
 {
 	callApi("zones/"+ctx.zone+"/axfr-retrieve", function(ret) { 
-		if (ret) {
-			msg("Zone retrieval requested");
-			setTimeout(function() { msg(""); }, 2500);
-			}
-		else msg(gbl.warn + " Zone retrieval failed");
+		if (ret) popMsg("Zone retrieval requested"); else popMsg(gbl.warn + " Zone retrieval failed");
 		}, { method: "PUT" });
 }
 
@@ -778,7 +945,7 @@ function doNewName()
 	let f = document.newNameForm;
 
 	if (!validInt(f.rrTTL.value)) {
-		msg(gbl.warn+" Invalid TTL");
+		popMsg(gbl.warn+" Invalid TTL");
 		f.rrTTL.focus();
 		f.rrTTL.select();
 		return;
@@ -793,7 +960,7 @@ function doNewName()
 		name = f.rrName.value + "." + ctx.zone;
 
 	if (!fqdnCheck.test(name)) {
-		msg(gbl.warn + " Invalid host name");
+		popMsg(gbl.warn + " Invalid host name");
 		f.rrName.focus();
 		f.rrName.select();
 		return false;
@@ -869,13 +1036,13 @@ function zoneDetails(data)
 	if (!("param" in gbl)) window.history.pushState(gbl.server+"/"+ctx.zone,newTitle,"/");
 	document.title = newTitle;
 
-	delete gbl.param
+	delete gbl.param;
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	x = x + "<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";
 
 	for(let i of data.rrsets) {
-		x = x + "<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=zoneListItem>"
+		x = x + "<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=dataRow>"
 			+ "<td valign=top>" + i.name.substr(0,i.name.length - ctx.zone.length - 1) + "</td>"
 			+ "<td valign=top align=right>" + i.ttl + "</td>"
 			+ "<td valign=top>" + i.type + "</td>"
@@ -899,7 +1066,8 @@ function zoneDetails(data)
 	let sp = "<div style='height: 7px;'></div>";
 	let sz = 100;
 
-	x = x + "</table></td><td align=center>"
+	x = x + "</table></td><td align=center>";
+
 	if (ctx.zoneDetails.kind != "Slave")
 		x = x + btn("zoneAddHost()","Add Host","Add a host to the zone "+ctx.zone,sz) + sp;
 
@@ -908,12 +1076,20 @@ function zoneDetails(data)
 		+ btn('zoneNotify()',"Notify Zone","Notify the slaves of "+ctx.zone,sz) + sp;
 
 	if (ctx.zoneDetails.dnssec)
-		x = x + btn('zoneRectify()',"Rectify Zone","Rectify the data for "+ctx.zone,sz) + sp
+		x = x + btn('zoneRectify()',"Rectify Zone","Rectify the data for "+ctx.zone,sz) + sp;
 
 	if (ctx.zoneDetails.kind == "Slave")
-		x = x + btn('zoneRetrieve()',"Retrieve Zone","Retrieve "+ctx.zone+" from masters") + sp
+		x = x + btn('zoneRetrieve()',"Retrieve Zone","Retrieve "+ctx.zone+" from masters",sz) + sp;
 
-	x = x + btn('dropZone()',"Drop Zone","Delete "+ctx.zone+" and ALL its records",sz) + sp
+	x = x + btn('dropZone()',"Drop Zone","Delete "+ctx.zone+" and ALL its records",sz);
+
+	x = x + "<hr>";
+
+	if (ctx.zoneDetails.dnssec) {
+		x = x + btn('zoneKeys()',"DNSSEC Keys","View DNSSEC keys for "+ctx.zone,sz) + sp;
+		}
+	else
+		x = x + btn('signZone()',"Sign Zone","DNSSEC sign "+ctx.zone,sz) + sp;
 
 	gbl.bot.innerHTML = x + "</td></tr></table>";
 
@@ -939,14 +1115,21 @@ function zoneDetailsLoad(zone)
 //=============================================================================================
 
 
+function searchLoadRecord(zone,name,type)
+{
+	gbl.param = [ gbl.server, zone, name + ":" + type ];
+	zoneDetailsLoad(zone);
+}
+
 
 function searchResults(data)
 {
-	ctx = {}; topLine();
 	if (data.length <= 0) {
-		gbl.bot.innerHTML = "No search results";
+		popMsg("No search results");
 		return;
 		}
+
+	ctx = {}; topLine();
 
 	let newTitle = gbl.server + ": Search Results"
 	window.history.pushState(gbl.server+"/SEARCH/"+ctx.searchTerm,newTitle,"/");
@@ -954,10 +1137,10 @@ function searchResults(data)
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
-		x = x + "<tr class=zoneListItem";
+		x = x + "<tr class=dataRow";
 		if (i.object_type != "zone") {
 			x = x + " onClick='ctx = { zone: \""+i.zone+"\" }; "
-				+ " clickZoneRecord(\""+i.name+"\",\""+i.type+"\");'"
+				+ " searchLoadRecord(\""+i.zone+"\",\""+i.name+"\",\""+i.type+"\");'"
 				+ "><td valign=top>" + i.name + "</td>"
 				+ "<td valign=top align=right>" + i.ttl + "</td>"
 				+ "<td valign=top>" + i.type + "</td>";
@@ -1007,7 +1190,7 @@ function doNewZone()
 	let name = document.newZoneForm.zoneName.value;
 	if (name.substr(name.length-1)!=".") name = name + ".";
 	if (!fqdnCheck.test(name)) {
-		msg(gbl.warn + " Invalid domain name");
+		popMsg(gbl.warn + " Invalid domain name");
 		document.newZoneForm.zoneName.focus();
 		document.newZoneForm.zoneName.select();
 		return false;
@@ -1062,7 +1245,7 @@ function zoneListDetails(data)
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
 		let name = i.id;
-		x = x + "<tr class=zoneListItem onClick='zoneDetailsLoad(\""+name+"\")'>"
+		x = x + "<tr class=dataRow onClick='zoneDetailsLoad(\""+name+"\")'>"
 			+ "<td>" + name + "</td><td>" + i.kind + "</td>";
 
 		t = "";
@@ -1147,7 +1330,7 @@ function topLine()
 	gbl.newM.style.display = "none";
 	let url = ""
 
-	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=zoneListItem>"
+	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
 		+ "<font size=+1><a title='Open this page in a new window' target=_blank href='" + window.origin + "?" + gbl.server;
 
 	let x = "'>" + gbl.page + "</a></font></td><td>"
@@ -1167,15 +1350,17 @@ function topLine()
 			ctx.rec.showName = name;
 			x = x + btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);
 			}
-		else {
-			if ("meta" in ctx) {
+		else if ("meta" in ctx) {
 				url = url + "/META";
 				x = x + btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);
 				}
+		else if ("zoneKeys" in ctx) {
+			url = url + "/KEYS";
+			x = x + btn('zoneKeys()',"DNSSEC","Reload the DNSSEC Keys for "+ctx.zone);
 			}
 		}
 
-	x = x + "</td><td width=100% align=center><span id='showMsg'></span></td><td>";
+	x = x + "</td><td width=100% align=center><span class='hidden' id='showMsg'></span></td><td>";
 
 	if ("zone" in ctx) {
 		if ("edit" in ctx) {
@@ -1277,10 +1462,39 @@ function showError(err)
 
 
 
-function msg(myMsg)
+function unpopMsg()
 {
 	let m = document.getElementById("showMsg");
+	let t1 = m.innerHTML;
+	let t2 = gbl.lastMsg;
+
+	if (t1.charCodeAt(0) > 255) { // uncode chars are decoded so must be excluded
+		t1 = t1.substr(t1.indexOf(" "));
+		t2 = t2.substr(t2.indexOf(" "));
+		}
+
+	if (t1 == t2) m.className = "fadeout";
+	delete gbl.lastMsg;
+}
+
+
+
+function popMsg(txt)
+{
+	msg(txt,"fadein");
+	gbl.lastMsg = txt;
+	setTimeout(unpopMsg,2500);
+}
+
+
+
+function msg(myMsg,newClass)
+{
+	if (newClass == null) newClass = "fullvis";
+	let m = document.getElementById("showMsg");
+	m.className = newClass;
 	m.innerHTML = myMsg;
+	delete gbl.lastMsg;
 }
 
 
@@ -1395,7 +1609,5 @@ function keyEsc(e) {
 	</form>
 	</table>
 </div>
-
-
 
 </body></html>
