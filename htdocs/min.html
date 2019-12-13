@@ -1,6 +1,6 @@
 <!---(c)Copyright 2019,James Stevens...see LICENSE for details---><!---Alternative license arrangements are possible,contact me for more information---><html><head><title>PowerDNS WebUI-Login</title></head><style type='text/css'>.fullvis{visibility:visible;opacity:1;}.fadein{visibility:visible;opacity:1;transition:opacity 0.5s linear;}.fadeout{visibility:hidden;opacity:0;transition:visibility 0s 1s,opacity 1s linear;}#topSpan{background-color:#666688;height:55px;line-height:55px;margin-top:0px;padding-left:0px;padding-top:1px;position:-webkit-sticky;position:sticky;top:0px;}
 html{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;background-color:#666688;scrollbar-base-color:#666699;scrollbar-arrow-color:#ddddff;}
-th{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;background-color:#a0a0cc;font-weight:bold;padding-left:3px;padding-right:3px;}
+th{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;background-color:#a0a0cc;font-weight:bold;padding-left:6px;padding-right:6px;}
 select{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}
 input{color:black;background-color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}.inputBad{color:black;background-color:#ffd0d0;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}
 body{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;margin-top:0px;background-color:#666688;scrollbar-base-color:#666699;scrollbar-arrow-color:#ddddff;}
@@ -30,7 +30,7 @@ function addNewRR()
 {ctx.rec.rrs.records.push({content:"",disabled:false});drawOneRecord();clickData(ctx.rec.rrs.records.length-1);}
 function madeChange(res)
 {if(res)
-zoneDetailsLoad(ctx.zone);else
+loadThisZone();else
 popMsg(gbl.warn+" Update Failed");}
 function patchRRdata()
 {return JSON.stringify({rrsets:[{name:ctx.rec.name,ttl:ctx.rec.rrs.ttl,type:ctx.rec.type,changetype:"REPLACE",records:ctx.rec.rrs.records,}]});}
@@ -80,7 +80,7 @@ function cancelAllEdits()
 {if(!("edit"in ctx))return;if("nme"in ctx.edit){let s=document.getElementById("nme"+ctx.edit.nme);s.innerHTML=ctx.rec.name;}
 if("ttl"in ctx.edit){let s=document.getElementById("ttl"+ctx.edit.ttl);s.innerHTML=ctx.rec.rrs.ttl;}
 if("dta"in ctx.edit){if(ctx.rec.rrs.records[ctx.edit.dta].content==""){ctx.rec.rrs.records.pop();if((ctx.rec.loadedRows==0)&&(ctx.rec.rrs.records.length==0))
-return zoneDetailsLoad(ctx.zone);drawOneRecord();}
+return loadThisZone();drawOneRecord();}
 else{let s=document.getElementById("rrs"+ctx.edit.dta);s.innerHTML=ctx.rec.rrs.records[ctx.edit.dta].content;}}
 delete ctx.edit;topLine();}
 function deleteRRitem(idx)
@@ -112,17 +112,34 @@ function clickZoneRecord(name,type)
 ctx.rec={name:name,type:type,};delete ctx.meta;getZoneRecord();}
 function getZoneRecord()
 {delete ctx.edit;delete ctx.needSave;topLine();callApi("zones/"+ctx.zone,oneRecord);}
+function addAlg()
+{let x="<tr><Td class=formPrompt>Key Algrythm :</td><td><select name=keyAlg>";["ecdsa256","ecdsa384","rsasha1","rsasha1-nsec3-sha1","rsasha256","rsasha512","dh","dsa","dsa-nsec3-sha1","ecc-gost","ed25519","ed448","gost","indirect","rsamd5"].forEach(function(i){x=x+"<option value="+i+">"+i.toUpperCase()});x=x+"</select></td></tr>";x=x+"<tr><Td class=formPrompt>Key Length (bits) :</td><td><select name=keyBits>";["256","384","1024","2048","4096"].forEach(function(i){x=x+"<option>"+i;});return x+"</select></td></tr>";}
+function doSignZone()
+{let x=document.signZoneForm.keyAlg.value+","
++document.signZoneForm.keyBits.value+","
++document.signZoneForm.keyStyle.value;console.log(x);return false;}
+function signZone()
+{let x="<form onSubmit='return doSignZone();' name=signZoneForm><table align=center>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
++"<tr><th colspan=2>DNSSEC Sign: "+ctx.zone+"</th></tr>"+addAlg();x=x+"<tr><td class=formPrompt>Style: </td><td><select name=keyStyle>";["NSEC-3 / KSK+ZSK","NSEC-3 / CSK","NSEC / KSK+ZSK","NSEC / CSK"].forEach(function(i){x=x+"<option>"+i});x=x+"</select></td></tr>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
++"<tr><td align=center colspan=2>"
++btn("loadThisZone()","Cancel","Do not sign "+ctx.zone)
++btn("doSignZone()","Sign Zone","DNSSEC Sign "+ctx.zone)
++"</td></tr><tr><td><div style='height: 15px;'></div></td></tr>"
++"<input type=submit style='display: none;'></form>";x=x+"</table>";gbl.bot.innerHTML=x;}
 function clickDS(txt)
 {let x=txt.split(" ");if(x.length<4){popMsg(gbl.warn+"Copy to clipboard failed");return false;}
 navigator.clipboard.writeText(x[x.length-1]).then(function(){popMsg("Digest copied to clipboard");},function(){popMsg(gbl.warn+"Copy to clipboard failed");});return false;}
 function doAddKey()
 {let json={"keytype":document.addKeyForm.keyKind.value,"active":(document.addKeyForm.keyActive.value=="true"),"algorithm":document.addKeyForm.keyAlg.value,"bits":parseInt(document.addKeyForm.keyBits.value),};callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});return false}
 function clickAddKey()
-{let x="<form onSubmit='return doAddKey();' name=addKeyForm><table align=center>";x=x+"<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
-x=x+"<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";["ksk","zsk","csk"].forEach(function(i){x=x+"<option value="+i+">"+i.toUpperCase()});x=x+"</select></td></tr>";x=x+"<tr><Td class=formPrompt>Key Algrythm :</td><td><select name=keyAlg>";["ecdsa256","ecdsa384","rsasha1","rsasha1-nsec3-sha1","rsasha256","rsasha512","dh","dsa","dsa-nsec3-sha1","ecc-gost","ed25519","ed448","gost","indirect","rsamd5"].forEach(function(i){x=x+"<option value="+i+">"+i.toUpperCase()});x=x+"</select></td></tr>";x=x+"<tr><Td class=formPrompt>Key Length (bits) :</td><td><select name=keyBits>";["256","384","1024","2048","4096"].forEach(function(i){x=x+"<option>"+i;});x=x+"</select></td></tr>";x=x+"<tr><Td class=formPrompt>Key Active :</td><td><select name=keyActive>";["true","false"].forEach(function(i){x=x+"<option>"+i;});x=x+"</select></td></tr>";x=x+"<tr><td colspan=2><hr></td></tr>";x=x+"<tr><td align=center colspan=2>"
+{let x="<form onSubmit='return doAddKey();' name=addKeyForm><table align=center>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
+x=x+"<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
+x=x+"<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";["ksk","zsk","csk"].forEach(function(i){x=x+"<option value="+i+">"+i.toUpperCase()});x=x+"</select></td></tr>"+addAlg();x=x+"<tr><Td class=formPrompt>Key Active :</td><td><select name=keyActive>";["true","false"].forEach(function(i){x=x+"<option>"+i;});x=x+"</select></td></tr>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
+x=x+"<tr><td align=center colspan=2>"
 +btn("cancelAddKey()","Cancel","Do not add a key to the zone "+ctx.zone)
 +btn("doAddKey()","Add a Key","Add a key to the zone "+ctx.zone)
-+"</td></tr>";x=x+"<tr><td colspan=2><hr></td></tr><input type=submit style='display: none;'></form>";ctx.dnssec.t.style.display="none";ctx.dnssec.b.innerHTML=x;}
++"</td></tr>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
+x=x+"<input type=submit style='display: none;'></form>";ctx.dnssec.t.style.display="none";ctx.dnssec.b.innerHTML=x;}
 function cancelAddKey()
 {ctx.dnssec.b.innerHTML="";ctx.dnssec.t.style.display="block";}
 function activateZSK(a,b)
@@ -160,7 +177,7 @@ sz=200
 x=x+"<div id='dnssecTop'><table align=center cellspacing=10 cellpadding=0 border=0>"
 x=x+"<tr><td colspan=2><hr></td></tr>"
 let notes="If your zone is currently validating, after each KSK or ZSK Rollover step you must leave a few days<br>"
-+"for the internet to take-up your change.  Probably a minimum of around 3 to 4 days";if((keyTypes.num==1)&&("csk"in keyTypes)){if(([1,2].indexOf(keyTypes.csk.num)>=0)&&(keyTypes.csk.num==keyTypes.csk.active)){if(keyTypes.csk.num==1)
++"for the internet to take-up your change. Probably a minimum of around 3 to 4 days";if((keyTypes.num==1)&&("csk"in keyTypes)){if(([1,2].indexOf(keyTypes.csk.num)>=0)&&(keyTypes.csk.num==keyTypes.csk.active)){if(keyTypes.csk.num==1)
 x=x+"<tr><td>Step 1 of 2: </td><Td>"+btn("someFn()","Start CSK Rollover","Start a CSK Rollover",sz)+"</td></tr>";else if(keyTypes.csk.num==2)
 x=x+"<tr><td>Step 2 of 2: </td><Td>"+btn("someFn()","Complete CSK Rollover","Complete a CSK Rollover",sz)+"</td></tr>";}
 else x=x+"<tr><td><h2>DNSSEC Key Rollover State could not be detected</h2></td></tr>"}
@@ -198,7 +215,7 @@ function dropZone()
 {let x="<table align=center><tr><td align=center><h3>Are you sure you want to delete"
 +"<br>the zone '"+ctx.zone+"' and all its records ?</h3></td></tr>"
 +"<tr><td align=center>"
-+btn("zoneDetailsLoad(\""+ctx.zone+"\");","Cancel","Do not delete the zone "+ctx.zone)
++btn("loadThisZone();","Cancel","Do not delete the zone "+ctx.zone)
 +"&nbsp;"
 +btn("doDropZone()","Drop '"+ctx.zone+"'","Delete the zone "+ctx.zone+" and ALL its records");gbl.bot.innerHTML=x;}
 function doDropZone()
@@ -234,6 +251,8 @@ x=x+btn('zoneRectify()',"Rectify Zone","Rectify the data for "+ctx.zone,sz)+sp;i
 x=x+btn('zoneRetrieve()',"Retrieve Zone","Retrieve "+ctx.zone+" from masters",sz)+sp;x=x+btn('dropZone()',"Drop Zone","Delete "+ctx.zone+" and ALL its records",sz);x=x+"<hr>";if(ctx.zoneDetails.dnssec){x=x+btn('zoneKeys()',"DNSSEC Keys","View DNSSEC keys for "+ctx.zone,sz)+sp;}
 else
 x=x+btn('signZone()',"Sign Zone","DNSSEC sign "+ctx.zone,sz)+sp;gbl.bot.innerHTML=x+"</td></tr></table>";topLine();}
+function loadThisZone()
+{return zoneDetailsLoad(ctx.zone);}
 function zoneDetailsLoad(zone)
 {document.body.scrollTop=0;ctx={zone:zone,zoneList:ctx.zoneList,};callApi("zones/"+ctx.zone,zoneDetails);}
 function searchLoadRecord(zone,name,type)
@@ -288,7 +307,7 @@ function topLine()
 let y="<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
 +"<font size=+1><a title='Open this page in a new window' target=_blank href='"+window.origin+"?"+gbl.server;let x="'>"+gbl.page+"</a></font></td><td>"
 +btn("goLogin()",gbl.server,"Change server")
-+btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);if("zone"in ctx){url="/"+ctx.zone;x=x+btn('zoneDetailsLoad("'+ctx.zone+'")',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);if("rec"in ctx){let name="@";url=url+"/"+ctx.rec.name+":"+ctx.rec.type;if(ctx.rec.name!=ctx.zone)
++btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);if("zone"in ctx){url="/"+ctx.zone;x=x+btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);if("rec"in ctx){let name="@";url=url+"/"+ctx.rec.name+":"+ctx.rec.type;if(ctx.rec.name!=ctx.zone)
 name=ctx.rec.name.substr(0,ctx.rec.name.length-ctx.zone.length-1);ctx.rec.showName=name;x=x+btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);}
 else if("meta"in ctx){url=url+"/META";x=x+btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);}
 else if("zoneKeys"in ctx){url=url+"/KEYS";x=x+btn('zoneKeys()',"DNSSEC","Reload the DNSSEC Keys for "+ctx.zone);}}
@@ -322,5 +341,5 @@ function popMsg(txt)
 {msg(txt,"fadein");gbl.lastMsg=txt;setTimeout(unpopMsg,2500);}
 function msg(myMsg,newClass)
 {if(newClass==null)newClass="fullvis";let m=document.getElementById("showMsg");m.className=newClass;m.innerHTML=myMsg;delete gbl.lastMsg;}
-function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();if("addRR"in ctx)return zoneDetailsLoad(ctx.zone);if("addZone"in ctx)return zoneList();}}
-</script><head><title>PowerDNS WebUI-Login</title></head><body onLoad="startUp();"><div id="topSpan"><table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr></table></div><div id="lowerSpan"><table align=center><form action="/"onSubmit="return initialLogin()"name=loginForm><tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr><tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr><tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr><tr><td align=center colspan=2><span title="Load zone list"class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addZone style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr><form method=post action="/"name=newZoneForm onSubmit="return doNewZone();"><tr><td class=formPrompt>Name:</td><td><input onkeydown="keyEsc(event);"name=zoneName></td></tr><tr><td class=formPrompt>Type:</td><td><select onChange="zoneKindChange(this);"name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr><tr><td class=formPrompt><span id="extraNewZonePrompt">Name Servers:</span></td><td><input size=40 name=extra0><br><input size=40 name=extra1><br><input size=40 name=extra2><br><input size=40 name=extra3><br></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span title="Cancel adding zone"class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone"class=myBtn onClick="doNewZone();">Add Zone</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addName style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Host</h2></td></tr><form method=post action="/"name=newNameForm onSubmit="return doNewName();"><tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);"name=rrName></td></tr><tr><td class=formPrompt>RR Type:</td><td><select name=rrType><option>A<option>AAAA<option>MX<option>NS<option>TXT<option>A6<option>ADDR<option>AFSDB<option>ALIAS<option>CAA<option>CDNSKEY<option>CDS<option>CERT<option>CNAME<option>DHCID<option>DLV<option>DNAME<option>DNSKEY<option>DS<option>EUI48<option>EUI64<option>HINFO<option>IPSECKEY<option>KEY<option>KX<option>LOC<option>LUA<option>MAILA<option>MAILB<option>MB<option>MG<option>MINFO<option>MR<option>MX<option>NAPTR<option>NS<option>OPENPGPKEY<option>OPT<option>PTR<option>RKEY<option>RP<option>RRSIG<option>SIG<option>SMIMEA<option>SOA<option>SPF<option>SRV<option>SSHFP<option>TKEY<option>TLSA<option>TXT<option>URI<option>WKS</select></td></tr><tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR"onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addMeta style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Meta Data</h2></td></tr><form method=post action="/"name=newMetaForm onSubmit="return doNewMeta();"><tr><td><select metaName><option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE</select></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data"onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr><input type=submit style="display: none;"></form></table></div></body></html>
+function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();if("addRR"in ctx)return loadThisZone();if("addZone"in ctx)return zoneList();}}
+</script><head><title>PowerDNS WebUI-Login</title></head><body onLoad="startUp();"><div id="topSpan"><table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr></table></div><div id="lowerSpan"><table align=center><form action="/"onSubmit="return initialLogin()"name=loginForm><tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr><tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr><tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr><tr><td align=center colspan=2><span title="Load zone list"class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addZone style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr><form method=post action="/"name=newZoneForm onSubmit="return doNewZone();"><tr><td class=formPrompt>Name:</td><td><input onkeydown="keyEsc(event);"name=zoneName></td></tr><tr><td class=formPrompt>Type:</td><td><select onChange="zoneKindChange(this);"name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr><tr><td class=formPrompt><span id="extraNewZonePrompt">Name Servers:</span></td><td><input size=40 name=extra0><br><input size=40 name=extra1><br><input size=40 name=extra2><br><input size=40 name=extra3><br></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span title="Cancel adding zone"class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone"class=myBtn onClick="doNewZone();">Add Zone</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addName style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Host</h2></td></tr><form method=post action="/"name=newNameForm onSubmit="return doNewName();"><tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);"name=rrName></td></tr><tr><td class=formPrompt>RR Type:</td><td><select name=rrType><option>A<option>AAAA<option>MX<option>NS<option>TXT<option>A6<option>ADDR<option>AFSDB<option>ALIAS<option>CAA<option>CDNSKEY<option>CDS<option>CERT<option>CNAME<option>DHCID<option>DLV<option>DNAME<option>DNSKEY<option>DS<option>EUI48<option>EUI64<option>HINFO<option>IPSECKEY<option>KEY<option>KX<option>LOC<option>LUA<option>MAILA<option>MAILB<option>MB<option>MG<option>MINFO<option>MR<option>MX<option>NAPTR<option>NS<option>OPENPGPKEY<option>OPT<option>PTR<option>RKEY<option>RP<option>RRSIG<option>SIG<option>SMIMEA<option>SOA<option>SPF<option>SRV<option>SSHFP<option>TKEY<option>TLSA<option>TXT<option>URI<option>WKS</select></td></tr><tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR"onClick="loadThisZone();">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addMeta style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Meta Data</h2></td></tr><form method=post action="/"name=newMetaForm onSubmit="return doNewMeta();"><tr><td><select metaName><option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE</select></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data"onClick="loadThisZone();">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr><input type=submit style="display: none;"></form></table></div></body></html>
