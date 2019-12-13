@@ -1,23 +1,21 @@
 <!---(c)Copyright 2019,James Stevens...see LICENSE for details---><!---Alternative license arrangements are possible,contact me for more information---><html><head><title>PowerDNS WebUI-Login</title></head><style type='text/css'>.fullvis{visibility:visible;opacity:1;}.fadein{visibility:visible;opacity:1;transition:opacity 0.5s linear;}.fadeout{visibility:hidden;opacity:0;transition:visibility 0s 1s,opacity 1s linear;}#topSpan{background-color:#666688;height:55px;line-height:55px;margin-top:0px;padding-left:0px;padding-top:1px;position:-webkit-sticky;position:sticky;top:0px;}
 html{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;background-color:#666688;scrollbar-base-color:#666699;scrollbar-arrow-color:#ddddff;}
-th{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;background-color:#a0a0cc;font-weight:bold;padding-left:3px;padding-right:3px;}
+th{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;background-color:#a0a0cc;font-weight:bold;padding-left:6px;padding-right:6px;}
 select{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}
 input{color:black;background-color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}.inputBad{color:black;background-color:#ffd0d0;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}
 body{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;margin-top:0px;background-color:#666688;scrollbar-base-color:#666699;scrollbar-arrow-color:#ddddff;}
-a{color:white;text-decoration:none;}
-a:hover{text-decoration:none;}
-form{margin:0px;}.myBtn{text-align:center;display:inline-block;background-color:#d0d0ff;color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;font-weight:bold;border-radius:25px;padding:5px;padding-left:10px;padding-right:10px;cursor:pointer;margin-top:0px;margin-left:10px;margin-bottom:2px;margin-right:2px;}.myBtn:hover{box-shadow:3px 3px#222244;text-shadow:1px 1px#ffffff;}.myBtn:active{position:relative;box-shadow:none;text-shadow:none;top:1px;left:1px;}
+a{color:#b0b0ff;text-decoration:none;}
+a:hover{text-decoration:underline;}
+form{margin:0px;}.myBtn{text-align:center;display:inline-block;background-color:#d0d0ff;color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;font-weight:bold;border-radius:25px;padding:5px;padding-left:10px;padding-right:10px;cursor:pointer;margin-top:0px;margin-left:10px;margin-bottom:2px;margin-right:2px;}.myBtn:hover{box-shadow:3px 3px#222244;text-shadow:1px 1px#ffffff;}.myBtn:active{position:relative;box-shadow:none;text-shadow:none;top:1px;left:1px;}.dnskey{color:#383855;}
 td{vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",lock:"&#x1F512;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];function callApi(sfx,callback,inData)
 {gbl.addH.style.display="none";gbl.newZ.style.display="none";gbl.newM.style.display="none";if((inData!=null)&&(inData.method=="PUT"))
 msg("Requesting ... "+gbl.timer);else
 msg("Loading ... "+gbl.timer);let p="https";if(!gbl.with_https)p="http";url=p+"://"+gbl.server+"/api/v1/servers/localhost/"+sfx;let okResp=200;let httpCmd={headers:{'X-API-Key':gbl.apikey},method:'GET',};if(inData!=null){httpCmd.method=inData.method;httpCmd.body=inData.json;if("okResp"in inData)okResp=inData.okResp;}
-fetch(url,httpCmd).then(function(response){if(response.status!=okResp){if(inData!=null)
-callback(false);else
-showError("ERROR: "+response.status+" "+response.statusText);return;}
+fetch(url,httpCmd).then(function(response){if(response.status!=okResp){popMsg("ERROR: "+response.status+" "+response.statusText);return;}
 response.text().then(function(data){if((inData!=null)&&(inData.noData))
 callback(true);else{let param=data;try{param=JSON.parse(data);}
 catch{param=data;}
-callback(param);}});}).catch(function(err){msg("");showError('Fetch Error :-S',err);});}
+callback(param);}});});}
 function downloadFile(text,fileType,fileName){var blob=new Blob([text],{type:fileType});var a=document.createElement('a');a.download=fileName;a.href=URL.createObjectURL(blob);a.dataset.downloadurl=[fileType,a.download,a.href].join(':');a.style.display="none";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(a.href);},1500);msg("");}
 function clickAddMeta()
 {gbl.bot.innerHTML="";gbl.newM.style.display="block";}
@@ -32,7 +30,7 @@ function addNewRR()
 {ctx.rec.rrs.records.push({content:"",disabled:false});drawOneRecord();clickData(ctx.rec.rrs.records.length-1);}
 function madeChange(res)
 {if(res)
-zoneDetailsLoad(ctx.zone);else
+loadThisZone();else
 popMsg(gbl.warn+" Update Failed");}
 function patchRRdata()
 {return JSON.stringify({rrsets:[{name:ctx.rec.name,ttl:ctx.rec.rrs.ttl,type:ctx.rec.type,changetype:"REPLACE",records:ctx.rec.rrs.records,}]});}
@@ -82,7 +80,7 @@ function cancelAllEdits()
 {if(!("edit"in ctx))return;if("nme"in ctx.edit){let s=document.getElementById("nme"+ctx.edit.nme);s.innerHTML=ctx.rec.name;}
 if("ttl"in ctx.edit){let s=document.getElementById("ttl"+ctx.edit.ttl);s.innerHTML=ctx.rec.rrs.ttl;}
 if("dta"in ctx.edit){if(ctx.rec.rrs.records[ctx.edit.dta].content==""){ctx.rec.rrs.records.pop();if((ctx.rec.loadedRows==0)&&(ctx.rec.rrs.records.length==0))
-return zoneDetailsLoad(ctx.zone);drawOneRecord();}
+return loadThisZone();drawOneRecord();}
 else{let s=document.getElementById("rrs"+ctx.edit.dta);s.innerHTML=ctx.rec.rrs.records[ctx.edit.dta].content;}}
 delete ctx.edit;topLine();}
 function deleteRRitem(idx)
@@ -110,41 +108,97 @@ for(let idx in ctx.rec.rrs.records){let i=ctx.rec.rrs.records[idx];x=x+"<tr clas
 +"<td onClick='clickData("+idx+");'><span id=rrs"+idx+">"+i.content+"</span></td></tr>";}
 gbl.bot.innerHTML=x+"</table>";topLine();}
 function clickZoneRecord(name,type)
-{if(ctx.zoneDetails.kind=="Slave")return;ctx.rec={name:name,type:type,};delete ctx.meta;getZoneRecord();}
+{if(ctx.zoneDetails.kind=="Slave"){popMsg("Slave zone, editing is disabled");delete gbl.param;return;}
+ctx.rec={name:name,type:type,};delete ctx.meta;getZoneRecord();}
 function getZoneRecord()
 {delete ctx.edit;delete ctx.needSave;topLine();callApi("zones/"+ctx.zone,oneRecord);}
+function addAlg()
+{let x="<tr><Td class=formPrompt>Key Algrythm :</td><td><select name=keyAlg>";["ecdsa256","ecdsa384","rsasha1","rsasha1-nsec3-sha1","rsasha256","rsasha512","dh","dsa","dsa-nsec3-sha1","ecc-gost","ed25519","ed448","gost","indirect","rsamd5"].forEach(function(i){x=x+"<option value="+i+">"+i.toUpperCase()});x=x+"</select></td></tr>";x=x+"<tr><Td class=formPrompt>Key Length (bits) :</td><td><select name=keyBits>";["256","384","1024","2048","4096"].forEach(function(i){x=x+"<option>"+i;});return x+"</select></td></tr>";}
+function doSignZone()
+{let x=document.signZoneForm.keyAlg.value+","
++document.signZoneForm.keyBits.value+","
++document.signZoneForm.keyStyle.value;console.log(x);return false;}
+function signZone()
+{let x="<form onSubmit='return doSignZone();' name=signZoneForm><table align=center>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
++"<tr><th colspan=2>DNSSEC Sign: "+ctx.zone+"</th></tr>"+addAlg();x=x+"<tr><td class=formPrompt>Style: </td><td><select name=keyStyle>";["NSEC-3 / KSK+ZSK","NSEC-3 / CSK","NSEC / KSK+ZSK","NSEC / CSK"].forEach(function(i){x=x+"<option>"+i});x=x+"</select></td></tr>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
++"<tr><td align=center colspan=2>"
++btn("loadThisZone()","Cancel","Do not sign "+ctx.zone)
++btn("doSignZone()","Sign Zone","DNSSEC Sign "+ctx.zone)
++"</td></tr><tr><td><div style='height: 15px;'></div></td></tr>"
++"<input type=submit style='display: none;'></form>";x=x+"</table>";gbl.bot.innerHTML=x;}
 function clickDS(txt)
 {let x=txt.split(" ");if(x.length<4){popMsg(gbl.warn+"Copy to clipboard failed");return false;}
 navigator.clipboard.writeText(x[x.length-1]).then(function(){popMsg("Digest copied to clipboard");},function(){popMsg(gbl.warn+"Copy to clipboard failed");});return false;}
+function doAddKey()
+{let json={"keytype":document.addKeyForm.keyKind.value,"active":(document.addKeyForm.keyActive.value=="true"),"algorithm":document.addKeyForm.keyAlg.value,"bits":parseInt(document.addKeyForm.keyBits.value),};callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});return false}
+function clickAddKey()
+{let x="<form onSubmit='return doAddKey();' name=addKeyForm><table align=center>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
+x=x+"<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
+x=x+"<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";["ksk","zsk","csk"].forEach(function(i){x=x+"<option value="+i+">"+i.toUpperCase()});x=x+"</select></td></tr>"+addAlg();x=x+"<tr><Td class=formPrompt>Key Active :</td><td><select name=keyActive>";["true","false"].forEach(function(i){x=x+"<option>"+i;});x=x+"</select></td></tr>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
+x=x+"<tr><td align=center colspan=2>"
++btn("cancelAddKey()","Cancel","Do not add a key to the zone "+ctx.zone)
++btn("doAddKey()","Add a Key","Add a key to the zone "+ctx.zone)
++"</td></tr>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
+x=x+"<input type=submit style='display: none;'></form>";ctx.dnssec.t.style.display="none";ctx.dnssec.b.innerHTML=x;}
+function cancelAddKey()
+{ctx.dnssec.b.innerHTML="";ctx.dnssec.t.style.display="block";}
+function activateZSK(a,b)
+{callApi("zones/"+ctx.zone+"/cryptokeys/"+ctx.zoneKeys[a].id,function(){callApi("zones/"+ctx.zone+"/cryptokeys/"+ctx.zoneKeys[b].id,zoneKeys,{method:"PUT",okResp:204,json:'{ "active": true }'});},{method:"PUT",okResp:204,json:'{ "active": false }'});}
+function startZSK(template)
+{let k=ctx.zoneKeys[template];let json={"keytype":"zsk","active":false,"algorithm":k.algorithm,"bits":k.bits,};callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});}
+function startKSK(template)
+{let k=ctx.zoneKeys[template];let json={"keytype":"ksk","active":true,"algorithm":k.algorithm,"bits":k.bits,}
+callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});}
+function toggleKey(id,act)
+{let p={"active":(!(act))};callApi("zones/"+ctx.zone+"/cryptokeys/"+id,zoneKeys,{method:"PUT",okResp:204,json:JSON.stringify(p)});}
+function deleteKey(id)
+{callApi("zones/"+ctx.zone+"/cryptokeys/"+id,zoneKeys,{method:"DELETE",okResp:204});}
+function cancelKeyAction()
+{ctx.dnssec.b.innerHTML="";ctx.dnssec.t.style.display="block";delete ctx.dnssec.clickKey;}
+function clickDnssecKey(idx)
+{if(("clickKey"in ctx.dnssec)&&(ctx.dnssec.clickKey==idx)){ctx.dnssec.b.innerHTML="";ctx.dnssec.t.style.display="block";delete ctx.dnssec.clickKey;return;}
+ctx.dnssec.clickKey=idx;let sz=150;let k=ctx.zoneKeys[idx];let x="<table align=center>";let txt="Activate Key-"+k.id;if(k.active)txt="Deactivate Key-"+k.id;x=x+"<tr><td>"+btn('toggleKey('+k.id+","+k.active+')',txt,txt,sz);x=x+"<tr><td>"+btn('deleteKey('+k.id+')',"Delete Key-"+k.id,"Delete Key "+k.id,sz);x=x+"<tr><td>"+btn('cancelKeyAction()',"Cancel Action","Cancel an action on this key",sz);x=x+"</table>";ctx.dnssec.t.style.display="none";ctx.dnssec.b.innerHTML=x}
 function showKeys(data)
-{data.sort(function(a,b){if(a.keytype<b.keytype)return-1;if(a.keytype>b.keytype)return 1;if(a.id<b.id)return-1;if(a.id>b.id)return 1;return 0;})
+{data.sort(function(a,b){if(a.keytype<b.keytype)return-1;if(a.keytype>b.keytype)return 1;if(a.active!=b.active){if(a.active)return-1;if(b.active)return 1;}
+if(a.id>b.id)return-1;if(a.id<b.id)return 1;return 0;})
 ctx.zoneKeys=data;if("param"in gbl){if(gbl.param.length>=3){let x=gbl.param[2].split(":");if(x.length==2)return clickZoneRecord(x[0],x[1]);}}
 let newTitle=gbl.server+": "+ctx.zone+", DNSSEC Keys"
 if(!("param"in gbl))window.history.pushState(gbl.server+"/"+ctx.zone+"/KEYS",newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0>";x=x+'<colgroup>';for(let i=0;i<5;i++)x=x+'<col width="50px">';x=x+"</colgroup><tr>";for(let i of["Active","Id","Type","Bits","Algrythm",""])
-x=x+"<th>"+i+"</th>";x=x+"</tr>";let keyTypes={num:0};for(let idx in data){i=data[idx];x=x+"<tr class=dataRow><td>"
-let aflag=0;if(i.active){aflag=1;x=x+gbl.tick;}else x=x+gbl.cross;x=x+"</td>";x=x+"<td>"+i.id+"</td>";if(i.keytype in keyTypes){let k=keyTypes[i.keytype];k.num++;k.active+=aflag;k.ids.push({idx:parseInt(idx),id:i.id,act:i.active});}
+x=x+"<th>"+i+"</th>";x=x+"</tr>";let keyTypes={num:0};for(let idx in data){i=data[idx];x=x+"<tr onClick='clickDnssecKey("+idx+");' class=dataRow><td align=center>"
+let aflag=0;if(i.active){aflag=1;x=x+gbl.tick;}else x=x+gbl.cross;x=x+"</td>";x=x+"<td align=center>"+i.id+"</td>";if(i.keytype in keyTypes){let k=keyTypes[i.keytype];k.num++;k.active+=aflag;k.ids.push({idx:parseInt(idx),id:i.id,act:i.active});}
 else{keyTypes[i.keytype]={ids:[],active:aflag,num:1,}
 keyTypes[i.keytype].ids.push({idx:parseInt(idx),id:i.id,act:i.active});keyTypes.num++;}
-x=x+"<td>"+i.keytype.toUpperCase()+"</td>";x=x+"<td>"+i.bits+"</td>";x=x+"<td align=left>"+i.algorithm;x=x+"</td><td>&nbsp;</td></tr>";if("ds"in i){for(let ds of i.ds){let dscol=ds.split(" ");x=x+"<tr onClick=\"clickDS('"+ds+"');\" class=dataRow><td></td><td><li>DS"
+x=x+"<td align=center>"+i.keytype.toUpperCase()+"</td>";x=x+"<td align=center>"+i.bits+"</td>";x=x+"<td align=left>"+i.algorithm;x=x+"</td><td class=dnskey>"+i.dnskey.substr(1,50)+"...</td></tr>";if("ds"in i){for(let ds of i.ds){let dscol=ds.split(" ");x=x+"<tr onClick=\"clickDS('"+ds+"');\" class=dataRow><td></td><td><li>DS"
 +"</td><td>"+dsAlg[parseInt(dscol[2])]+"</td><td colspan=3>"+ds+"</td></tr>";}}
-x=x+"<tr><td><div style='height: 5px;'></div></td></tr>"}
+x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"}
 let sp="<div style='height: 7px;'></div>";let sz=100;x=x+"</table></td><td>"
-x=x+btn('addKSK()',"Add KSK","Add a KSK to "+ctx.zone,sz)+sp;x=x+btn('addZSK()',"Add ZSK","Add a ZSK to "+ctx.zone,sz)+sp;x=x+btn('addCSK()',"Add CSK","Add a CSK to "+ctx.zone,sz)+sp;x=x+"</td></tr></table>"
+x=x+btn('clickAddKey()',"Add Key","Add a DNSSEC Key to "+ctx.zone,sz)+sp;x=x+"</td></tr></table>"
 sz=200
-x=x+"<table align=center cellspacing=10 cellpadding=0 border=0><tr><td><hr></td></tr>"
-let notes=null;if((keyTypes.num==1)&&("csk"in keyTypes)){if(([1,2].indexOf(keyTypes.csk.num)>=0)&&(keyTypes.csk.num==keyTypes.csk.active)){if(keyTypes.csk.num==1)
-x=x+"<tr><Td>"+btn("someFn()","Start CSK Rollover","Start a CSK Rollover",sz)+"</td></tr>";else if(keyTypes.csk.num==2)
-x=x+"<tr><Td>"+btn("someFn()","Complete CSK Rollover","Complete a CSK Rollover",sz)+"</td></tr>";}
-else x=x+"<tr><td><h2>A: Unknown DNSSEC State</h2></td></tr>"}
+x=x+"<div id='dnssecTop'><table align=center cellspacing=10 cellpadding=0 border=0>"
+x=x+"<tr><td colspan=2><hr></td></tr>"
+let notes="If your zone is currently validating, after each KSK or ZSK Rollover step you must leave a few days<br>"
++"for the internet to take-up your change. Probably a minimum of around 3 to 4 days";if((keyTypes.num==1)&&("csk"in keyTypes)){if(([1,2].indexOf(keyTypes.csk.num)>=0)&&(keyTypes.csk.num==keyTypes.csk.active)){if(keyTypes.csk.num==1)
+x=x+"<tr><td>Step 1 of 2: </td><Td>"+btn("someFn()","Start CSK Rollover","Start a CSK Rollover",sz)+"</td></tr>";else if(keyTypes.csk.num==2)
+x=x+"<tr><td>Step 2 of 2: </td><Td>"+btn("someFn()","Complete CSK Rollover","Complete a CSK Rollover",sz)+"</td></tr>";}
+else x=x+"<tr><td><h2>DNSSEC Key Rollover State could not be detected</h2></td></tr>"}
 else if((keyTypes.num==2)&&("ksk"in keyTypes)&&("zsk"in keyTypes)){if(([1,2].indexOf(keyTypes.ksk.num)>=0)&&([1,2].indexOf(keyTypes.zsk.num)>=0)&&(keyTypes.ksk.active==keyTypes.ksk.num)&&(keyTypes.zsk.active==1)){if(keyTypes.ksk.num==1)
-x=x+"<tr><Td>"+btn("startKSK()","Start KSK Rollover","Start a KSK Rollover",sz)+"</td></tr>";else if(keyTypes.ksk.num==2){x=x+"<tr><Td>"+btn("deleteKey("+keyTypes.ksk.ids[0].id+")","Complete KSK Rollover","Complete the KSK Rollover",sz)+"</td></tr>";notes="The DS records for Key-Id: "+keyTypes.ksk.ids[1].id+", should be the only ones present<br>"
-+"in the parent zone, for a few days, before completing the KSK rollover";}
+x=x+"<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/kskroll.html'>Step 1 of 2</a>: </td><Td>"
++btn("startKSK("+keyTypes.ksk.ids[0].idx+")","Start KSK Rollover","Start a KSK Rollover",sz)+"</td></tr>";else if(keyTypes.ksk.num==2){x=x+"<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/kskroll.html'>Step 2 of 2</a>: </td><Td>"
++btn("deleteKey("+keyTypes.ksk.ids[1].id+")","Complete KSK Rollover","Complete the KSK Rollover",sz)+"</td></tr>";notes="<u>If you have only just created a new KSK, wait a few days before changing your DS records</u>"
++"<P>Once you have changed your DS reocrds, wait a few more days before completing the KSK rollover."
++"<P>The DS records for Key-Id: "+keyTypes.ksk.ids[0].id+", should be the only ones present<br>"
++"in the parent zone, for a few days, before completing the KSK rollover.";}
 if(keyTypes.zsk.num==1)
-x=x+"<tr><Td>"+btn("startZSK()","Start ZSK Rollover","Start a ZSK Rollover",sz)+"</td></tr>";else if(keyTypes.zsk.num==2){if(keyTypes.zsk.ids[0].act)
-x=x+"<tr><Td>"+btn("activateZSK("+keyTypes.zsk.ids[0].id+","+keyTypes.zsk.ids[1].id+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz)+"</td></tr>";else if(keyTypes.zsk.ids[1].act)
-x=x+"<tr><Td>"+btn("deleteKey("+keyTypes.zsk.ids[0].id+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz)+"</td></tr>";}}
-else x=x+"<tr><td><h2>B: Unknown DNSSEC State</h2></td></tr>";}
-else x=x+"<tr><td><h2>Z: Unknown DNSSEC State</h2></td></tr>";x=x+"</table>";if(notes!=null)x=x+"<center>"+notes+"</center>";gbl.bot.innerHTML=x;topLine();}
+x=x+"<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>Step 1 of 3</a>: </td><Td>"
++btn("startZSK("+keyTypes.zsk.ids[0].idx+")","Start ZSK Rollover","Start a ZSK Rollover",sz)+"</td></tr>";else if(keyTypes.zsk.num==2){if(keyTypes.zsk.ids[0].id<keyTypes.zsk.ids[1].id)
+x=x+"<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>Step 2 of 3</a>: </td><Td>"
++btn("activateZSK("+keyTypes.zsk.ids[0].idx+","+keyTypes.zsk.ids[1].idx+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz)+"</td></tr>";else
+x=x+"<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>Step 3 of 3</a>: </td><Td>"
++btn("deleteKey("+keyTypes.zsk.ids[1].id+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz)+"</td></tr>";}}
+else x=x+"<tr><td><h2>DNSSEC Key Rollover State could not be detected</h2></td></tr>";}
+else x=x+"<tr><td><h2>DNSSEC Key Rollover State could not be detected</h2></td></tr>";x=x+"<tr><td colspan=2><hr></td></tr>"
+x=x+"</table>";if(notes!=null)x=x+"<center>"+notes+"</center>";x=x+"</div><div id='dnssecBot'></div>"
+gbl.bot.innerHTML=x;topLine();ctx.dnssec={t:document.getElementById("dnssecTop"),b:document.getElementById("dnssecBot"),}}
 function zoneKeys()
 {callApi("zones/"+ctx.zone+"/cryptokeys",showKeys);}
 function zoneKindChange(sel)
@@ -161,7 +215,7 @@ function dropZone()
 {let x="<table align=center><tr><td align=center><h3>Are you sure you want to delete"
 +"<br>the zone '"+ctx.zone+"' and all its records ?</h3></td></tr>"
 +"<tr><td align=center>"
-+btn("zoneDetailsLoad(\""+ctx.zone+"\");","Cancel","Do not delete the zone "+ctx.zone)
++btn("loadThisZone();","Cancel","Do not delete the zone "+ctx.zone)
 +"&nbsp;"
 +btn("doDropZone()","Drop '"+ctx.zone+"'","Delete the zone "+ctx.zone+" and ALL its records");gbl.bot.innerHTML=x;}
 function doDropZone()
@@ -179,15 +233,13 @@ function zoneDetails(data)
 {data.rrsets.sort(function(a,b){if((a.name==data.id)&&(b.name==data.id)){for(tag of["SOA","NS","MX"]){if(a.type==tag)return-1;if(b.type==tag)return 1;}}
 else{if(a.name==data.id)return-1;if(b.name==data.id)return 1;if(a.name<b.name)return-1;if(a.name>b.name)return 1;}
 if(a.type<b.type)return-1;if(a.type>b.type)return 1;return 0;})
-ctx.zoneDetails=data;if("param"in gbl){if(gbl.param.length>=3){let x=gbl.param[2].split(":");if(x.length==2)return clickZoneRecord(x[0],x[1]);}}
+ctx.zoneDetails=data;if("param"in gbl){if((data.kind!="Slave")&&(gbl.param.length>=3)){let x=gbl.param[2].split(":");if(x.length==2)return clickZoneRecord(x[0],x[1]);}}
 let newTitle=gbl.server+": "+ctx.zone
 if(!("param"in gbl))window.history.pushState(gbl.server+"/"+ctx.zone,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data.rrsets){x=x+"<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=dataRow>"
 +"<td valign=top>"+i.name.substr(0,i.name.length-ctx.zone.length-1)+"</td>"
 +"<td valign=top align=right>"+i.ttl+"</td>"
-+"<td valign=top>"+i.type+"</td>"
-+"<td valign=top>"
-if(i.type=="SOA")
-x=x+formatSOA(i.records[0].content);else{i.records.sort(function(a,b){if(a.content<b.content)return-1;if(a.content>b.content)return 1;return 0;})
++"<td valign=top>"+i.type+"</td><td valign=top>";if(i.type=="SOA"){data.soaSplit=i.records[0].content.split(" ");x=x+formatSOA(data.soaSplit);}
+else{i.records.sort(function(a,b){if(a.content<b.content)return-1;if(a.content>b.content)return 1;return 0;})
 for(let rrs of i.records)
 x=x+""+rrs.content+"<br>";}
 x=x+"</td></tr>";}
@@ -199,6 +251,8 @@ x=x+btn('zoneRectify()',"Rectify Zone","Rectify the data for "+ctx.zone,sz)+sp;i
 x=x+btn('zoneRetrieve()',"Retrieve Zone","Retrieve "+ctx.zone+" from masters",sz)+sp;x=x+btn('dropZone()',"Drop Zone","Delete "+ctx.zone+" and ALL its records",sz);x=x+"<hr>";if(ctx.zoneDetails.dnssec){x=x+btn('zoneKeys()',"DNSSEC Keys","View DNSSEC keys for "+ctx.zone,sz)+sp;}
 else
 x=x+btn('signZone()',"Sign Zone","DNSSEC sign "+ctx.zone,sz)+sp;gbl.bot.innerHTML=x+"</td></tr></table>";topLine();}
+function loadThisZone()
+{return zoneDetailsLoad(ctx.zone);}
 function zoneDetailsLoad(zone)
 {document.body.scrollTop=0;ctx={zone:zone,zoneList:ctx.zoneList,};callApi("zones/"+ctx.zone,zoneDetails);}
 function searchLoadRecord(zone,name,type)
@@ -212,7 +266,7 @@ let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of dat
 +"><td valign=top>"+i.name+"</td>"
 +"<td valign=top align=right>"+i.ttl+"</td>"
 +"<td valign=top>"+i.type+"</td>";if(i.type=="SOA")
-x=x+"<td valign=top>"+formatSOA(i.content)+"</td>";else
+x=x+"<td valign=top>"+formatSOA(i.content.split(" "))+"</td>";else
 x=x+"<td valign=top>"+i.content+"</td>";}
 else{x=x+" onClick='return zoneDetailsLoad(\""+i.name+"\");'>";x=x+"<td>"+i.name+"</td><td colspan=3>[Zone Apex]</td>";}
 x=x+"</tr>";}
@@ -253,7 +307,7 @@ function topLine()
 let y="<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
 +"<font size=+1><a title='Open this page in a new window' target=_blank href='"+window.origin+"?"+gbl.server;let x="'>"+gbl.page+"</a></font></td><td>"
 +btn("goLogin()",gbl.server,"Change server")
-+btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);if("zone"in ctx){url="/"+ctx.zone;x=x+btn('zoneDetailsLoad("'+ctx.zone+'")',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);if("rec"in ctx){let name="@";url=url+"/"+ctx.rec.name+":"+ctx.rec.type;if(ctx.rec.name!=ctx.zone)
++btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);if("zone"in ctx){url="/"+ctx.zone;x=x+btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);if("rec"in ctx){let name="@";url=url+"/"+ctx.rec.name+":"+ctx.rec.type;if(ctx.rec.name!=ctx.zone)
 name=ctx.rec.name.substr(0,ctx.rec.name.length-ctx.zone.length-1);ctx.rec.showName=name;x=x+btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);}
 else if("meta"in ctx){url=url+"/META";x=x+btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);}
 else if("zoneKeys"in ctx){url=url+"/KEYS";x=x+btn('zoneKeys()',"DNSSEC","Reload the DNSSEC Keys for "+ctx.zone);}}
@@ -275,8 +329,8 @@ delete gbl.param;document.location="/"
 return true;});gbl.top=document.getElementById("topSpan");gbl.bot=document.getElementById("lowerSpan");gbl.addH=document.getElementById("addName");gbl.newZ=document.getElementById("addZone");gbl.newM=document.getElementById("addMeta");if(window.location.search!=""){gbl.param=window.location.search.substr(1).split("/");if(gbl.param.length>=1){gbl.server=gbl.param[0];zoneList();}}}
 function initialLogin()
 {let f=document.loginForm;gbl.server=f.server.value;gbl.apikey=f.apikey.value;gbl.with_https=f.with_https.checked;zoneList();return false;}
-function formatSOA(soa_txt)
-{let i=soa_txt.split(" ");let soa=i[0]+" "+i[1]+"<br>";let idx=2;for(let tag of["serial","refresh","retry","expire","minimum"]){soa=soa+"<span style='display: inline-block; width:50px'></span>";soa=soa+"<span style='display: inline-block; width:100px'>"+i[idx++]+"</span>;"+tag+"<br>";}
+function formatSOA(i)
+{let soa=i[0]+" "+i[1]+"<br>";let idx=2;for(let tag of["serial","refresh","retry","expire","minimum"]){soa=soa+"<span style='display: inline-block; width:50px'></span>";soa=soa+"<span style='display: inline-block; width:100px'>"+i[idx++]+"</span>;"+tag+"<br>";}
 return soa;}
 function showError(err)
 {gbl.bot.innerHTML="<h1>"+err+"</h1>";}
@@ -287,5 +341,5 @@ function popMsg(txt)
 {msg(txt,"fadein");gbl.lastMsg=txt;setTimeout(unpopMsg,2500);}
 function msg(myMsg,newClass)
 {if(newClass==null)newClass="fullvis";let m=document.getElementById("showMsg");m.className=newClass;m.innerHTML=myMsg;delete gbl.lastMsg;}
-function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();if("addRR"in ctx)return zoneDetailsLoad(ctx.zone);if("addZone"in ctx)return zoneList();}}
-</script><head><title>PowerDNS WebUI-Login</title></head><body onLoad="startUp();"><div id="topSpan"><table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr></table></div><div id="lowerSpan"><table align=center><form action="/"onSubmit="return initialLogin()"name=loginForm><tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr><tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr><tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr><tr><td align=center colspan=2><span title="Load zone list"class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addZone style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr><form method=post action="/"name=newZoneForm onSubmit="return doNewZone();"><tr><td class=formPrompt>Name:</td><td><input onkeydown="keyEsc(event);"name=zoneName></td></tr><tr><td class=formPrompt>Type:</td><td><select onChange="zoneKindChange(this);"name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr><tr><td class=formPrompt><span id="extraNewZonePrompt">Name Servers:</span></td><td><input size=40 name=extra0><br><input size=40 name=extra1><br><input size=40 name=extra2><br><input size=40 name=extra3><br></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span title="Cancel adding zone"class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone"class=myBtn onClick="doNewZone();">Add Zone</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addName style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Host</h2></td></tr><form method=post action="/"name=newNameForm onSubmit="return doNewName();"><tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);"name=rrName></td></tr><tr><td class=formPrompt>RR Type:</td><td><select name=rrType><option>A<option>AAAA<option>MX<option>NS<option>TXT<option>A6<option>ADDR<option>AFSDB<option>ALIAS<option>CAA<option>CDNSKEY<option>CDS<option>CERT<option>CNAME<option>DHCID<option>DLV<option>DNAME<option>DNSKEY<option>DS<option>EUI48<option>EUI64<option>HINFO<option>IPSECKEY<option>KEY<option>KX<option>LOC<option>LUA<option>MAILA<option>MAILB<option>MB<option>MG<option>MINFO<option>MR<option>MX<option>NAPTR<option>NS<option>OPENPGPKEY<option>OPT<option>PTR<option>RKEY<option>RP<option>RRSIG<option>SIG<option>SMIMEA<option>SOA<option>SPF<option>SRV<option>SSHFP<option>TKEY<option>TLSA<option>TXT<option>URI<option>WKS</select></td></tr><tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR"onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addMeta style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Meta Data</h2></td></tr><form method=post action="/"name=newMetaForm onSubmit="return doNewMeta();"><tr><td><select metaName><option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE</select></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data"onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr><input type=submit style="display: none;"></form></table></div></body></html>
+function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();if("addRR"in ctx)return loadThisZone();if("addZone"in ctx)return zoneList();}}
+</script><head><title>PowerDNS WebUI-Login</title></head><body onLoad="startUp();"><div id="topSpan"><table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr></table></div><div id="lowerSpan"><table align=center><form action="/"onSubmit="return initialLogin()"name=loginForm><tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr><tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr><tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr><tr><td align=center colspan=2><span title="Load zone list"class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addZone style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr><form method=post action="/"name=newZoneForm onSubmit="return doNewZone();"><tr><td class=formPrompt>Name:</td><td><input onkeydown="keyEsc(event);"name=zoneName></td></tr><tr><td class=formPrompt>Type:</td><td><select onChange="zoneKindChange(this);"name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr><tr><td class=formPrompt><span id="extraNewZonePrompt">Name Servers:</span></td><td><input size=40 name=extra0><br><input size=40 name=extra1><br><input size=40 name=extra2><br><input size=40 name=extra3><br></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span title="Cancel adding zone"class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone"class=myBtn onClick="doNewZone();">Add Zone</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addName style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Host</h2></td></tr><form method=post action="/"name=newNameForm onSubmit="return doNewName();"><tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);"name=rrName></td></tr><tr><td class=formPrompt>RR Type:</td><td><select name=rrType><option>A<option>AAAA<option>MX<option>NS<option>TXT<option>A6<option>ADDR<option>AFSDB<option>ALIAS<option>CAA<option>CDNSKEY<option>CDS<option>CERT<option>CNAME<option>DHCID<option>DLV<option>DNAME<option>DNSKEY<option>DS<option>EUI48<option>EUI64<option>HINFO<option>IPSECKEY<option>KEY<option>KX<option>LOC<option>LUA<option>MAILA<option>MAILB<option>MB<option>MG<option>MINFO<option>MR<option>MX<option>NAPTR<option>NS<option>OPENPGPKEY<option>OPT<option>PTR<option>RKEY<option>RP<option>RRSIG<option>SIG<option>SMIMEA<option>SOA<option>SPF<option>SRV<option>SSHFP<option>TKEY<option>TLSA<option>TXT<option>URI<option>WKS</select></td></tr><tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR"onClick="loadThisZone();">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addMeta style="display: none;"><table width=40%align=center><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Meta Data</h2></td></tr><form method=post action="/"name=newMetaForm onSubmit="return doNewMeta();"><tr><td><select metaName><option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE</select></td></tr><tr><td colspan=2><hr></td></tr><tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data"onClick="loadThisZone();">Cancel</span><span title="Add this RR"class=myBtn onClick="doNewName();">Add Record</span></td></tr><input type=submit style="display: none;"></form></table></div></body></html>
