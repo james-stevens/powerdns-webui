@@ -38,8 +38,8 @@ th {
 	font-size:10pt;
 	background-color:#a0a0cc;
 	font-weight: bold;
-	padding-left: 3px;
-	padding-right: 3px;
+	padding-left: 6px;
+	padding-right: 6px;
 	}
 
 select {
@@ -328,7 +328,7 @@ function addNewRR()
 function madeChange(res)
 {
 	if (res)
-		zoneDetailsLoad(ctx.zone);
+		loadThisZone();
 	else
 		popMsg(gbl.warn + " Update Failed");
 }
@@ -576,7 +576,7 @@ function cancelAllEdits()
 			ctx.rec.rrs.records.pop();
 
 			if ((ctx.rec.loadedRows==0)&&(ctx.rec.rrs.records.length==0))
-				return zoneDetailsLoad(ctx.zone);
+				return loadThisZone();
 
 			drawOneRecord();
 			}
@@ -681,7 +681,7 @@ function drawOneRecord(rrs)
 
 function clickZoneRecord(name,type)
 {
-	if (ctx.zoneDetails.kind == "Slave") { 
+	if (ctx.zoneDetails.kind == "Slave") {
 		popMsg("Slave zone, editing is disabled");
 		delete gbl.param; return; }
 
@@ -710,8 +710,59 @@ function getZoneRecord()
 // DNSSEC Stuff
 //=============================================================================================
 
+function addAlg()
+{
+	let x = "<tr><Td class=formPrompt>Key Algrythm :</td><td><select name=keyAlg>";
+	[
+		"ecdsa256","ecdsa384","rsasha1","rsasha1-nsec3-sha1","rsasha256","rsasha512","dh","dsa",
+		"dsa-nsec3-sha1","ecc-gost","ed25519","ed448","gost","indirect","rsamd5"
+	].forEach(function (i) { x = x + "<option value="+i+">"+i.toUpperCase() } );
+	x = x + "</select></td></tr>";
 
-function clickDS(txt) 
+	x = x + "<tr><Td class=formPrompt>Key Length (bits) :</td><td><select name=keyBits>";
+	["256","384","1024","2048","4096"].forEach(function (i) { x = x + "<option>"+i; });
+	return x + "</select></td></tr>";
+}
+
+
+
+function doSignZone()
+{
+	let x = document.signZoneForm.keyAlg.value + ","
+		+ document.signZoneForm.keyBits.value + ","
+		+ document.signZoneForm.keyStyle.value;
+
+	console.log(x);
+
+	return false;
+}
+
+
+
+function signZone()
+{
+	let x = "<form onSubmit='return doSignZone();' name=signZoneForm><table align=center>";
+	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
+		+ "<tr><th colspan=2>DNSSEC Sign: " + ctx.zone + "</th></tr>" + addAlg();
+
+	x = x + "<tr><td class=formPrompt>Style: </td><td><select name=keyStyle>";
+	["NSEC-3 / KSK+ZSK","NSEC-3 / CSK","NSEC / KSK+ZSK","NSEC / CSK"].forEach(function(i) { x = x + "<option>" + i } );
+	x = x + "</select></td></tr>";
+
+	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
+		+ "<tr><td align=center colspan=2>"
+		+ btn("loadThisZone()","Cancel","Do not sign "+ctx.zone)
+		+ btn("doSignZone()","Sign Zone","DNSSEC Sign "+ctx.zone)
+		+ "</td></tr><tr><td><div style='height: 15px;'></div></td></tr>"
+		+ "<input type=submit style='display: none;'></form>";
+
+	x = x + "</table>";
+	gbl.bot.innerHTML = x;
+}
+
+
+
+function clickDS(txt)
 {
 	let x = txt.split(" ");
 	if (x.length < 4) {
@@ -739,7 +790,7 @@ function doAddKey()
 		"bits": parseInt(document.addKeyForm.keyBits.value),
 		};
 
-	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys, 
+	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,
 		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
 
 	return false // prevent submit
@@ -750,33 +801,23 @@ function doAddKey()
 function clickAddKey()
 {
 	let x = "<form onSubmit='return doAddKey();' name=addKeyForm><table align=center>";
+	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
 	x = x + "<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
 	x = x + "<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";
 	["ksk","zsk","csk"].forEach(function (i) { x = x + "<option value="+i+">"+i.toUpperCase() } );
-	x = x + "</select></td></tr>";
-
-	x = x + "<tr><Td class=formPrompt>Key Algrythm :</td><td><select name=keyAlg>";
-	[
-		"ecdsa256","ecdsa384","rsasha1","rsasha1-nsec3-sha1","rsasha256","rsasha512","dh","dsa",
-		"dsa-nsec3-sha1","ecc-gost","ed25519","ed448","gost","indirect","rsamd5"
-	].forEach(function (i) { x = x + "<option value="+i+">"+i.toUpperCase() } );
-
-	x = x + "</select></td></tr>";
-
-	x = x + "<tr><Td class=formPrompt>Key Length (bits) :</td><td><select name=keyBits>";
-	["256","384","1024","2048","4096"].forEach(function (i) { x = x + "<option>"+i; });
-	x = x + "</select></td></tr>";
+	x = x + "</select></td></tr>" + addAlg();
 
 	x = x + "<tr><Td class=formPrompt>Key Active :</td><td><select name=keyActive>";
 	["true","false"].forEach(function (i) { x = x + "<option>"+i; });
 	x = x + "</select></td></tr>";
 
-	x = x + "<tr><td colspan=2><hr></td></tr>";
-	x = x + "<tr><td align=center colspan=2>" 
-		+ btn("cancelAddKey()","Cancel","Do not add a key to the zone "+ctx.zone) 
-		+ btn("doAddKey()","Add a Key","Add a key to the zone "+ctx.zone) 
+	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
+	x = x + "<tr><td align=center colspan=2>"
+		+ btn("cancelAddKey()","Cancel","Do not add a key to the zone "+ctx.zone)
+		+ btn("doAddKey()","Add a Key","Add a key to the zone "+ctx.zone)
 		+ "</td></tr>";
-	x = x + "<tr><td colspan=2><hr></td></tr><input type=submit style='display: none;'></form>";
+	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
+	x = x + "<input type=submit style='display: none;'></form>";
 
 	ctx.dnssec.t.style.display = "none";
 	ctx.dnssec.b.innerHTML = x;
@@ -796,15 +837,15 @@ function activateZSK(a,b)
 {
 	callApi("zones/"+ctx.zone+"/cryptokeys/" + ctx.zoneKeys[a].id,
 		function() {
-			callApi("zones/"+ctx.zone+"/cryptokeys/" + ctx.zoneKeys[b].id,zoneKeys, 
-			   { 
-			   method: "PUT", 
-			   okResp: 204, 
-			   json: '{ "active": true }'
-			   } );
-		}, { 
-			method: "PUT", 
-			okResp: 204, 
+			callApi("zones/"+ctx.zone+"/cryptokeys/" + ctx.zoneKeys[b].id,zoneKeys,
+				{
+				method: "PUT",
+				okResp: 204,
+				json: '{ "active": true }'
+				} );
+		}, {
+			method: "PUT",
+			okResp: 204,
 			json: '{ "active": false }'
 			}
 		);
@@ -812,8 +853,8 @@ function activateZSK(a,b)
 
 
 
-function startZSK(template) 
-{ 
+function startZSK(template)
+{
 	let k = ctx.zoneKeys[template];
 	let json = {
 		"keytype": "zsk",
@@ -822,14 +863,14 @@ function startZSK(template)
 		"bits": k.bits,
 		};
 
-	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys, 
+	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,
 		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
 }
 
 
 
-function startKSK(template) 
-{ 
+function startKSK(template)
+{
 	let k = ctx.zoneKeys[template];
 	let json = {
 		"keytype": "ksk",
@@ -838,7 +879,7 @@ function startKSK(template)
 		"bits": k.bits,
 		}
 
-	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys, 
+	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,
 		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
 }
 
@@ -847,7 +888,7 @@ function startKSK(template)
 function toggleKey(id,act)
 {
 	let p = { "active": (!(act)) };
-	callApi("zones/"+ctx.zone+"/cryptokeys/" + id,zoneKeys, 
+	callApi("zones/"+ctx.zone+"/cryptokeys/" + id,zoneKeys,
 		{ method: "PUT", okResp: 204, json: JSON.stringify(p) } );
 }
 
@@ -980,7 +1021,7 @@ function showKeys(data)
 	x = x + "<tr><td colspan=2><hr></td></tr>"
 
 	let notes = "If your zone is currently validating, after each KSK or ZSK Rollover step you must leave a few days<br>"
-		+ "for the internet to take-up your change.  Probably a minimum of around 3 to 4 days";
+		+ "for the internet to take-up your change. Probably a minimum of around 3 to 4 days";
 
 	if ((keyTypes.num==1)&&("csk" in keyTypes)) {
 		if (
@@ -1071,7 +1112,7 @@ function zoneKindChange(sel)
 
 function zoneNotify()
 {
-	callApi("zones/"+ctx.zone+"/notify", function(ret) { 
+	callApi("zones/"+ctx.zone+"/notify", function(ret) {
 		if (ret) popMsg("Zone notified"); else popMsg(gbl.warn + " Notify failed");
 		}, { method: "PUT" });
 }
@@ -1080,7 +1121,7 @@ function zoneNotify()
 
 function zoneRectify()
 {
-	callApi("zones/"+ctx.zone+"/rectify", function(ret) { 
+	callApi("zones/"+ctx.zone+"/rectify", function(ret) {
 		if (ret) popMsg("Zone rectified"); else popMsg(gbl.warn + " Rectify failed");
 		}, { method: "PUT" });
 }
@@ -1089,7 +1130,7 @@ function zoneRectify()
 
 function zoneRetrieve()
 {
-	callApi("zones/"+ctx.zone+"/axfr-retrieve", function(ret) { 
+	callApi("zones/"+ctx.zone+"/axfr-retrieve", function(ret) {
 		if (ret) popMsg("Zone retrieval requested"); else popMsg(gbl.warn + " Zone retrieval failed");
 		}, { method: "PUT" });
 }
@@ -1114,7 +1155,7 @@ function dropZone()
 	let x = "<table align=center><tr><td align=center><h3>Are you sure you want to delete"
 		+ "<br>the zone '"+ctx.zone+"' and all its records ?</h3></td></tr>"
 		+ "<tr><td align=center>"
-		+ btn("zoneDetailsLoad(\"" + ctx.zone + "\");","Cancel","Do not delete the zone "+ctx.zone)
+		+ btn("loadThisZone();","Cancel","Do not delete the zone "+ctx.zone)
 		+ "&nbsp;"
 		+ btn("doDropZone()","Drop '"+ctx.zone+"'","Delete the zone "+ctx.zone+" and ALL its records");
 	gbl.bot.innerHTML = x;
@@ -1285,6 +1326,12 @@ function zoneDetails(data)
 	topLine();
 }
 
+
+
+function loadThisZone()
+{
+	return zoneDetailsLoad(ctx.zone);
+}
 
 
 function zoneDetailsLoad(zone)
@@ -1528,7 +1575,7 @@ function topLine()
 
 	if ("zone" in ctx) {
 		url = "/" + ctx.zone;
-		x = x + btn('zoneDetailsLoad("'+ctx.zone+'")',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);
+		x = x + btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);
 
 		if ("rec" in ctx) {
 			let name = "@";
@@ -1690,7 +1737,7 @@ function msg(myMsg,newClass)
 function keyEsc(e) {
 	if (e.key == "Escape") {
 		if ("edit" in ctx) return cancelAllEdits();
-		if ("addRR" in ctx) return zoneDetailsLoad(ctx.zone);
+		if ("addRR" in ctx) return loadThisZone();
 		if ("addZone" in ctx) return zoneList();
 		}
 }
@@ -1772,7 +1819,7 @@ function keyEsc(e) {
 		</select></td></tr>
 		<tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr>
 		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR" onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR" onClick="loadThisZone();">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
@@ -1792,7 +1839,7 @@ function keyEsc(e) {
 		<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
 		</select></td></tr>
 		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="zoneDetailsLoad(ctx.zone);">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="loadThisZone();">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 	<input type=submit style="display: none;">
 	</form>
 	</table>
