@@ -4,8 +4,8 @@ th{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;bac
 select{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}
 input{color:black;background-color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}.inputBad{color:black;background-color:#ffd0d0;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}
 body{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;margin-top:0px;background-color:#666688;scrollbar-base-color:#666699;scrollbar-arrow-color:#ddddff;}
-a{color:white;text-decoration:none;}
-a:hover{text-decoration:none;}
+a{color:#b0b0ff;text-decoration:none;}
+a:hover{text-decoration:underline;}
 form{margin:0px;}.myBtn{text-align:center;display:inline-block;background-color:#d0d0ff;color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;font-weight:bold;border-radius:25px;padding:5px;padding-left:10px;padding-right:10px;cursor:pointer;margin-top:0px;margin-left:10px;margin-bottom:2px;margin-right:2px;}.myBtn:hover{box-shadow:3px 3px#222244;text-shadow:1px 1px#ffffff;}.myBtn:active{position:relative;box-shadow:none;text-shadow:none;top:1px;left:1px;}
 td{vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",lock:"&#x1F512;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];function callApi(sfx,callback,inData)
 {gbl.addH.style.display="none";gbl.newZ.style.display="none";gbl.newM.style.display="none";if((inData!=null)&&(inData.method=="PUT"))
@@ -110,41 +110,52 @@ for(let idx in ctx.rec.rrs.records){let i=ctx.rec.rrs.records[idx];x=x+"<tr clas
 +"<td onClick='clickData("+idx+");'><span id=rrs"+idx+">"+i.content+"</span></td></tr>";}
 gbl.bot.innerHTML=x+"</table>";topLine();}
 function clickZoneRecord(name,type)
-{if(ctx.zoneDetails.kind=="Slave")return;ctx.rec={name:name,type:type,};delete ctx.meta;getZoneRecord();}
+{if(ctx.zoneDetails.kind=="Slave"){popMsg("Slave zone, editing is disabled");delete gbl.param;return;}
+ctx.rec={name:name,type:type,};delete ctx.meta;getZoneRecord();}
 function getZoneRecord()
 {delete ctx.edit;delete ctx.needSave;topLine();callApi("zones/"+ctx.zone,oneRecord);}
 function clickDS(txt)
 {let x=txt.split(" ");if(x.length<4){popMsg(gbl.warn+"Copy to clipboard failed");return false;}
 navigator.clipboard.writeText(x[x.length-1]).then(function(){popMsg("Digest copied to clipboard");},function(){popMsg(gbl.warn+"Copy to clipboard failed");});return false;}
+function clickDnssecKey(idx)
+{let t=document.getElementById("dnssecTop");let b=document.getElementById("dnssecBot");if(t.style.display=="none"){b.innerHTML="";t.style.display="block";return;}
+let sz=130;let k=ctx.zoneKeys[idx];let x="<table align=center>";let txt="Activate Key";if(k.active)txt="Deactivate Key";x=x+"<tr><td>"+btn('toggleKey('+idx+')',txt,txt+" "+k.id,sz);x=x+"<tr><td>"+btn('deleteKey('+idx+')',"Delete Key","Delete Key "+k.id,sz);x=x+"</table>";t.style.display="none";b.innerHTML=x}
 function showKeys(data)
-{data.sort(function(a,b){if(a.keytype<b.keytype)return-1;if(a.keytype>b.keytype)return 1;if(a.id<b.id)return-1;if(a.id>b.id)return 1;return 0;})
+{data.sort(function(a,b){if(a.keytype<b.keytype)return-1;if(a.keytype>b.keytype)return 1;if(a.id>b.id)return-1;if(a.id<b.id)return 1;return 0;})
 ctx.zoneKeys=data;if("param"in gbl){if(gbl.param.length>=3){let x=gbl.param[2].split(":");if(x.length==2)return clickZoneRecord(x[0],x[1]);}}
 let newTitle=gbl.server+": "+ctx.zone+", DNSSEC Keys"
 if(!("param"in gbl))window.history.pushState(gbl.server+"/"+ctx.zone+"/KEYS",newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0>";x=x+'<colgroup>';for(let i=0;i<5;i++)x=x+'<col width="50px">';x=x+"</colgroup><tr>";for(let i of["Active","Id","Type","Bits","Algrythm",""])
-x=x+"<th>"+i+"</th>";x=x+"</tr>";let keyTypes={num:0};for(let idx in data){i=data[idx];x=x+"<tr class=dataRow><td>"
-let aflag=0;if(i.active){aflag=1;x=x+gbl.tick;}else x=x+gbl.cross;x=x+"</td>";x=x+"<td>"+i.id+"</td>";if(i.keytype in keyTypes){let k=keyTypes[i.keytype];k.num++;k.active+=aflag;k.ids.push({idx:parseInt(idx),id:i.id,act:i.active});}
+x=x+"<th>"+i+"</th>";x=x+"</tr>";let keyTypes={num:0};for(let idx in data){i=data[idx];x=x+"<tr onClick='clickDnssecKey("+idx+");' class=dataRow><td align=center>"
+let aflag=0;if(i.active){aflag=1;x=x+gbl.tick;}else x=x+gbl.cross;x=x+"</td>";x=x+"<td align=center>"+i.id+"</td>";if(i.keytype in keyTypes){let k=keyTypes[i.keytype];k.num++;k.active+=aflag;k.ids.push({idx:parseInt(idx),id:i.id,act:i.active});}
 else{keyTypes[i.keytype]={ids:[],active:aflag,num:1,}
 keyTypes[i.keytype].ids.push({idx:parseInt(idx),id:i.id,act:i.active});keyTypes.num++;}
-x=x+"<td>"+i.keytype.toUpperCase()+"</td>";x=x+"<td>"+i.bits+"</td>";x=x+"<td align=left>"+i.algorithm;x=x+"</td><td>&nbsp;</td></tr>";if("ds"in i){for(let ds of i.ds){let dscol=ds.split(" ");x=x+"<tr onClick=\"clickDS('"+ds+"');\" class=dataRow><td></td><td><li>DS"
+x=x+"<td align=center>"+i.keytype.toUpperCase()+"</td>";x=x+"<td align=center>"+i.bits+"</td>";x=x+"<td align=left>"+i.algorithm;x=x+"</td><td>&nbsp;</td></tr>";if("ds"in i){for(let ds of i.ds){let dscol=ds.split(" ");x=x+"<tr onClick=\"clickDS('"+ds+"');\" class=dataRow><td></td><td><li>DS"
 +"</td><td>"+dsAlg[parseInt(dscol[2])]+"</td><td colspan=3>"+ds+"</td></tr>";}}
-x=x+"<tr><td><div style='height: 5px;'></div></td></tr>"}
+x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"}
 let sp="<div style='height: 7px;'></div>";let sz=100;x=x+"</table></td><td>"
 x=x+btn('addKSK()',"Add KSK","Add a KSK to "+ctx.zone,sz)+sp;x=x+btn('addZSK()',"Add ZSK","Add a ZSK to "+ctx.zone,sz)+sp;x=x+btn('addCSK()',"Add CSK","Add a CSK to "+ctx.zone,sz)+sp;x=x+"</td></tr></table>"
 sz=200
-x=x+"<table align=center cellspacing=10 cellpadding=0 border=0><tr><td><hr></td></tr>"
-let notes=null;if((keyTypes.num==1)&&("csk"in keyTypes)){if(([1,2].indexOf(keyTypes.csk.num)>=0)&&(keyTypes.csk.num==keyTypes.csk.active)){if(keyTypes.csk.num==1)
-x=x+"<tr><Td>"+btn("someFn()","Start CSK Rollover","Start a CSK Rollover",sz)+"</td></tr>";else if(keyTypes.csk.num==2)
-x=x+"<tr><Td>"+btn("someFn()","Complete CSK Rollover","Complete a CSK Rollover",sz)+"</td></tr>";}
+x=x+"<div id='dnssecTop'><table align=center cellspacing=10 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr>"
+let notes="If your zone is currently validating, after each Key rollover step you must leave a few days<br>"
++"for the internet to take-up your change.  Probably a minimum of around 3 to 4 days";if((keyTypes.num==1)&&("csk"in keyTypes)){if(([1,2].indexOf(keyTypes.csk.num)>=0)&&(keyTypes.csk.num==keyTypes.csk.active)){if(keyTypes.csk.num==1)
+x=x+"<tr><td>Step 1 of 2: </td><Td>"+btn("someFn()","Start CSK Rollover","Start a CSK Rollover",sz)+"</td></tr>";else if(keyTypes.csk.num==2)
+x=x+"<tr><td>Step 2 of 2: </td><Td>"+btn("someFn()","Complete CSK Rollover","Complete a CSK Rollover",sz)+"</td></tr>";}
 else x=x+"<tr><td><h2>A: Unknown DNSSEC State</h2></td></tr>"}
 else if((keyTypes.num==2)&&("ksk"in keyTypes)&&("zsk"in keyTypes)){if(([1,2].indexOf(keyTypes.ksk.num)>=0)&&([1,2].indexOf(keyTypes.zsk.num)>=0)&&(keyTypes.ksk.active==keyTypes.ksk.num)&&(keyTypes.zsk.active==1)){if(keyTypes.ksk.num==1)
-x=x+"<tr><Td>"+btn("startKSK()","Start KSK Rollover","Start a KSK Rollover",sz)+"</td></tr>";else if(keyTypes.ksk.num==2){x=x+"<tr><Td>"+btn("deleteKey("+keyTypes.ksk.ids[0].id+")","Complete KSK Rollover","Complete the KSK Rollover",sz)+"</td></tr>";notes="The DS records for Key-Id: "+keyTypes.ksk.ids[1].id+", should be the only ones present<br>"
+x=x+"<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/kskroll.html'>Step 1 of 2</a>: </td><Td>"
++btn("startKSK()","Start KSK Rollover","Start a KSK Rollover",sz)+"</td></tr>";else if(keyTypes.ksk.num==2){x=x+"<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/kskroll.html'>Step 2 of 2</a>: </td><Td>"
++btn("deleteKey("+keyTypes.ksk.ids[0].id+")","Complete KSK Rollover","Complete the KSK Rollover",sz)+"</td></tr>";notes="The DS records for Key-Id: "+keyTypes.ksk.ids[0].id+", should be the only ones present<br>"
 +"in the parent zone, for a few days, before completing the KSK rollover";}
 if(keyTypes.zsk.num==1)
-x=x+"<tr><Td>"+btn("startZSK()","Start ZSK Rollover","Start a ZSK Rollover",sz)+"</td></tr>";else if(keyTypes.zsk.num==2){if(keyTypes.zsk.ids[0].act)
-x=x+"<tr><Td>"+btn("activateZSK("+keyTypes.zsk.ids[0].id+","+keyTypes.zsk.ids[1].id+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz)+"</td></tr>";else if(keyTypes.zsk.ids[1].act)
-x=x+"<tr><Td>"+btn("deleteKey("+keyTypes.zsk.ids[0].id+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz)+"</td></tr>";}}
+x=x+"<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>Step 1 of 3</a>: </td><Td>"
++btn("startZSK()","Start ZSK Rollover","Start a ZSK Rollover",sz)+"</td></tr>";else if(keyTypes.zsk.num==2){if(keyTypes.zsk.ids[0].act)
+x=x+"<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>Step 2 of 3</a>: </td><Td>"
++btn("activateZSK("+keyTypes.zsk.ids[0].id+","+keyTypes.zsk.ids[1].id+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz)+"</td></tr>";else if(keyTypes.zsk.ids[1].act)
+x=x+"<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>Step 3 of 3</a>: </td><Td>"
++btn("deleteKey("+keyTypes.zsk.ids[0].id+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz)+"</td></tr>";}}
 else x=x+"<tr><td><h2>B: Unknown DNSSEC State</h2></td></tr>";}
-else x=x+"<tr><td><h2>Z: Unknown DNSSEC State</h2></td></tr>";x=x+"</table>";if(notes!=null)x=x+"<center>"+notes+"</center>";gbl.bot.innerHTML=x;topLine();}
+else x=x+"<tr><td><h2>Z: Unknown DNSSEC State</h2></td></tr>";x=x+"</table>";if(notes!=null)x=x+"<center>"+notes+"</center>";x=x+"</div><div id='dnssecBot'></div>"
+gbl.bot.innerHTML=x;topLine();}
 function zoneKeys()
 {callApi("zones/"+ctx.zone+"/cryptokeys",showKeys);}
 function zoneKindChange(sel)
@@ -179,15 +190,13 @@ function zoneDetails(data)
 {data.rrsets.sort(function(a,b){if((a.name==data.id)&&(b.name==data.id)){for(tag of["SOA","NS","MX"]){if(a.type==tag)return-1;if(b.type==tag)return 1;}}
 else{if(a.name==data.id)return-1;if(b.name==data.id)return 1;if(a.name<b.name)return-1;if(a.name>b.name)return 1;}
 if(a.type<b.type)return-1;if(a.type>b.type)return 1;return 0;})
-ctx.zoneDetails=data;if("param"in gbl){if(gbl.param.length>=3){let x=gbl.param[2].split(":");if(x.length==2)return clickZoneRecord(x[0],x[1]);}}
+ctx.zoneDetails=data;if("param"in gbl){if((data.kind!="Slave")&&(gbl.param.length>=3)){let x=gbl.param[2].split(":");if(x.length==2)return clickZoneRecord(x[0],x[1]);}}
 let newTitle=gbl.server+": "+ctx.zone
 if(!("param"in gbl))window.history.pushState(gbl.server+"/"+ctx.zone,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data.rrsets){x=x+"<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=dataRow>"
 +"<td valign=top>"+i.name.substr(0,i.name.length-ctx.zone.length-1)+"</td>"
 +"<td valign=top align=right>"+i.ttl+"</td>"
-+"<td valign=top>"+i.type+"</td>"
-+"<td valign=top>"
-if(i.type=="SOA")
-x=x+formatSOA(i.records[0].content);else{i.records.sort(function(a,b){if(a.content<b.content)return-1;if(a.content>b.content)return 1;return 0;})
++"<td valign=top>"+i.type+"</td><td valign=top>";if(i.type=="SOA"){data.soaSplit=i.records[0].content.split(" ");x=x+formatSOA(data.soaSplit);}
+else{i.records.sort(function(a,b){if(a.content<b.content)return-1;if(a.content>b.content)return 1;return 0;})
 for(let rrs of i.records)
 x=x+""+rrs.content+"<br>";}
 x=x+"</td></tr>";}
@@ -212,7 +221,7 @@ let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of dat
 +"><td valign=top>"+i.name+"</td>"
 +"<td valign=top align=right>"+i.ttl+"</td>"
 +"<td valign=top>"+i.type+"</td>";if(i.type=="SOA")
-x=x+"<td valign=top>"+formatSOA(i.content)+"</td>";else
+x=x+"<td valign=top>"+formatSOA(i.content.split(" "))+"</td>";else
 x=x+"<td valign=top>"+i.content+"</td>";}
 else{x=x+" onClick='return zoneDetailsLoad(\""+i.name+"\");'>";x=x+"<td>"+i.name+"</td><td colspan=3>[Zone Apex]</td>";}
 x=x+"</tr>";}
@@ -275,8 +284,8 @@ delete gbl.param;document.location="/"
 return true;});gbl.top=document.getElementById("topSpan");gbl.bot=document.getElementById("lowerSpan");gbl.addH=document.getElementById("addName");gbl.newZ=document.getElementById("addZone");gbl.newM=document.getElementById("addMeta");if(window.location.search!=""){gbl.param=window.location.search.substr(1).split("/");if(gbl.param.length>=1){gbl.server=gbl.param[0];zoneList();}}}
 function initialLogin()
 {let f=document.loginForm;gbl.server=f.server.value;gbl.apikey=f.apikey.value;gbl.with_https=f.with_https.checked;zoneList();return false;}
-function formatSOA(soa_txt)
-{let i=soa_txt.split(" ");let soa=i[0]+" "+i[1]+"<br>";let idx=2;for(let tag of["serial","refresh","retry","expire","minimum"]){soa=soa+"<span style='display: inline-block; width:50px'></span>";soa=soa+"<span style='display: inline-block; width:100px'>"+i[idx++]+"</span>;"+tag+"<br>";}
+function formatSOA(i)
+{let soa=i[0]+" "+i[1]+"<br>";let idx=2;for(let tag of["serial","refresh","retry","expire","minimum"]){soa=soa+"<span style='display: inline-block; width:50px'></span>";soa=soa+"<span style='display: inline-block; width:100px'>"+i[idx++]+"</span>;"+tag+"<br>";}
 return soa;}
 function showError(err)
 {gbl.bot.innerHTML="<h1>"+err+"</h1>";}
