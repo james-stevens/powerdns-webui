@@ -728,13 +728,36 @@ function addAlg()
 
 function doSignZone()
 {
-	let x = document.signZoneForm.keyAlg.value + ","
-		+ document.signZoneForm.keyBits.value + ","
-		+ document.signZoneForm.keyStyle.value;
+	let nextFn = zoneKeys;
+	let keyAlg = document.signZoneForm.keyAlg.value;
+	let keyBits = parseInt(document.signZoneForm.keyBits.value);
+	let keyPolicy = document.signZoneForm.keyPolocy.value;
+	let keyDNSSEC = document.signZoneForm.keyDNSSEC.value;
 
-	console.log(x);
+	if (keyDNSSEC == "NSEC3") {
+		// JAMES
+		}
 
-	return false;
+	if (keyPolicy == "CSK") {
+		let json = { "keytype": "csk", "active": true, "algorithm": keyAlg, "bits": keyBits, };
+		callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,
+			{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
+		}
+	else {
+		let json_ksk = { "keytype": "ksk", "active": true, "algorithm": keyAlg, "bits": keyBits, }
+
+		callApi("zones/"+ctx.zone+"/cryptokeys", function() { 
+
+				let json_zsk = { "keytype": "zsk", "active": true, "algorithm": keyAlg, "bits": keyBits, }
+
+				callApi("zones/"+ctx.zone+"/cryptokeys",nextFn, 
+					{ method: "POST", okResp: 201, json: JSON.stringify(json_zsk) } ); 
+				},
+
+			{ method: "POST", okResp: 201, json: JSON.stringify(json_ksk) } ); 
+		}
+
+	return false // prevent submit
 }
 
 
@@ -745,8 +768,12 @@ function signZone()
 	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
 		+ "<tr><th colspan=2>DNSSEC Sign: " + ctx.zone + "</th></tr>" + addAlg();
 
-	x = x + "<tr><td class=formPrompt>Style: </td><td><select name=keyStyle>";
-	["NSEC-3 / KSK+ZSK","NSEC-3 / CSK","NSEC / KSK+ZSK","NSEC / CSK"].forEach(function(i) { x = x + "<option>" + i } );
+	x = x + "<tr><td class=formPrompt>Key Policy: </td><td><select name=keyPolicy>";
+	["KSK+ZSK", "CSK"].forEach(function(i) { x = x + "<option>" + i } );
+	x = x + "</select></td></tr>";
+
+	x = x + "<tr><td class=formPrompt>DNSSEC Policy: </td><td><select name=keyDNSSEC>";
+	["NSEC3","NSEC"].forEach(function(i) { x = x + "<option>" + i } );
 	x = x + "</select></td></tr>";
 
 	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
@@ -782,7 +809,6 @@ function clickDS(txt)
 
 function doAddKey()
 {
-
 	let json = {
 		"keytype": document.addKeyForm.keyKind.value,
 		"active": (document.addKeyForm.keyActive.value=="true"),
