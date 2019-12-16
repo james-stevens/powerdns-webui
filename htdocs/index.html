@@ -123,6 +123,8 @@ form {
 	}
 
 td {
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size:10pt;
 	vertical-align: top;
 	padding-left: 7px;
 	padding-right: 7px;
@@ -169,6 +171,7 @@ var gbl = {
 	warn: "&#x26a0;",
 	page: "&#x1F5CE;",
 	lock: "&#x1F512;",
+	clip: "&#x1F4CE;",
 	};
 
 var ctx = { }; // will store the context of what the user is up to
@@ -267,6 +270,55 @@ function downloadFile(text, fileType, fileName) {
 // Zone META data handling
 //=============================================================================================
 
+
+
+function delMetaItem(metaItem,metaValue)
+{
+	console.log("DEL>",metaItem,metaValue);
+}
+
+function editMetaItem(metaItem,metaValue)
+{
+	let x = "";
+	x = x + "<form name=editMeta onSubmit='return doEditMeta();'>";
+	x = x + "<table border=0 width=40% align=center><tr><td class=formPrompt>Metadata Item: </td><td>"+metaItem+"</td></tr>";
+	x = x + "<tr><Td class=formPrompt>Value: </td><td><input size=50 value='"+metaValue+"' name=metaValue></td></tr>";
+	x = x + "<tr><td colspan=2><hr></td></tr>";
+	x = x + '<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="zoneMeta();">Cancel</span>';
+	x = x + '<span title="Add this RR" class=myBtn onClick="doEditMeta();">Change Metadata</span></td></tr>'
+	x = x + "<input type=hidden name=metaItem value='" + metaItem + "'>";
+	x = x + "<input type=submit style='display: none;'></form></table>";
+	gbl.bot.innerHTML = x;
+	document.editMeta.metaValue.focus();
+	document.editMeta.metaValue.select();
+}
+
+
+
+function addMetaItem()
+{
+	let f = document.newMetaForm;
+	let metaItem = f.metaItem.value;
+	let metaValue = [ f.metaValue.value ];
+
+	let hdr = { method: "POST", okResp: 201 };
+	let url = "zones/"+ctx.zone+"/metadata";
+
+	for(let i of ctx.zoneMeta)
+		if (i.kind.toUpperCase() == metaItem) {
+			metaValue = i.metadata;
+			metaValue.push(f.metaValue.value);
+			hdr.method = "PUT";
+			hdr.okResp = 200;
+			url = url + "/" + metaItem;
+			}
+
+	hdr.json = JSON.stringify( { "type": "Metadata", "kind":metaItem, "metadata": metaValue } );
+	callApi(url,zoneMeta,hdr);
+}
+
+
+
 function clickAddMeta()
 {
 	gbl.bot.innerHTML = "";
@@ -298,11 +350,16 @@ function zoneMetaDetails(data)
 
 	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 
+	ctx.zoneMeta = data;
+
 	for(let i of data) {
-		x = x + "<tr class=dataRow><td align=center>" + gbl.bin
-			+ "</td><td>" + i.kind.toUpperCase() + "</td><td>";
-		for(let y of i.metadata) x = x + y + "<br>";
-		x = x + "</td></tr>";
+		for(let y of i.metadata) {
+			let td = "<td onClick=\"editMetaItem('"+i.kind.toUpperCase()+"','"+y+"');\">";
+			x = x + "<tr class=dataRow>"
+				+ "<td align=center onClick=\"delMetaItem('"+i.kind.toUpperCase()+"','"+y+"');\">"
+				+ gbl.bin + "</td>" + td + i.kind.toUpperCase() + "</td>";
+			x = x + td + y + "</td></tr>"
+			}
 		}
 
 	gbl.bot.innerHTML = x + "</table>";
@@ -728,13 +785,40 @@ function addAlg()
 
 function doSignZone()
 {
-	let x = document.signZoneForm.keyAlg.value + ","
-		+ document.signZoneForm.keyBits.value + ","
-		+ document.signZoneForm.keyStyle.value;
+	let nextFn = zoneKeys;
+	let keyAlg = document.signZoneForm.keyAlg.value;
+	let keyBits = parseInt(document.signZoneForm.keyBits.value);
+	let keyPolicy = document.signZoneForm.keyPolicy.value;
+	let keyDNSSEC = document.signZoneForm.keyDNSSEC.value;
 
-	console.log(x);
+	if (keyDNSSEC == "NSEC3") {
+		nextFn = function() {
+			let json = { "type": "Metadata", "kind":"NSEC3PARAM", "metadata": ["1 0 5 f0e0d0c0"] }
+			callApi("zones/"+ctx.zone+"/metadata",zoneKeys,
+				{ method: "POST", okResp: 204, json: JSON.stringify(json) } );
+			}
+		}
 
-	return false;
+	if (keyPolicy == "CSK") {
+		let json = { "keytype": "csk", "active": true, "algorithm": keyAlg, "bits": keyBits, };
+		callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,
+			{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
+		}
+	else {
+		let json_ksk = { "keytype": "ksk", "active": true, "algorithm": keyAlg, "bits": keyBits, }
+
+		callApi("zones/"+ctx.zone+"/cryptokeys", function() {
+
+				let json_zsk = { "keytype": "zsk", "active": true, "algorithm": keyAlg, "bits": keyBits, }
+
+				callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,
+					{ method: "POST", okResp: 201, json: JSON.stringify(json_zsk) } );
+				},
+
+			{ method: "POST", okResp: 201, json: JSON.stringify(json_ksk) } );
+		}
+
+	return false // prevent submit
 }
 
 
@@ -745,8 +829,12 @@ function signZone()
 	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
 		+ "<tr><th colspan=2>DNSSEC Sign: " + ctx.zone + "</th></tr>" + addAlg();
 
-	x = x + "<tr><td class=formPrompt>Style: </td><td><select name=keyStyle>";
-	["NSEC-3 / KSK+ZSK","NSEC-3 / CSK","NSEC / KSK+ZSK","NSEC / CSK"].forEach(function(i) { x = x + "<option>" + i } );
+	x = x + "<tr><td class=formPrompt>Key Policy: </td><td><select name=keyPolicy>";
+	["KSK+ZSK", "CSK"].forEach(function(i) { x = x + "<option>" + i } );
+	x = x + "</select></td></tr>";
+
+	x = x + "<tr><td class=formPrompt>DNSSEC Policy: </td><td><select name=keyDNSSEC>";
+	["NSEC3","NSEC"].forEach(function(i) { x = x + "<option>" + i } );
 	x = x + "</select></td></tr>";
 
 	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
@@ -757,6 +845,14 @@ function signZone()
 		+ "<input type=submit style='display: none;'></form>";
 
 	x = x + "</table>";
+
+	x = x + "<P style='height: 25px;'>&nbsp;</p><table border=0 cellspacing=20 align=center>"
+	x = x + "<tr><Td colspan=2>Your friendly paper-clip helper buddy says ....</td></tr>"
+	x = x + "<tr><td><span style='font-size: 65pt'>" + gbl.clip + "</span></td><td>"
+	x = x + "<P>Unless you have a really good reason, you should probably sign your zone using <b>ECDSA256</b><P>"
+	x = x + "<b>NSEC</b> is more space & bandwidth efficient than <b>NSEC3</b>.<br><b>NSEC3</b> will enlarge your zone by typically twice as much as <b>NSEC</b>, but <b>NSEC</b> exposes all your DNS names in a linked list.<P>"
+	x = x + "<b>CSK</b> uses one key instead of two, but means your zone will double in size during key rollover.<br>With <b>KSK+ZSK</b> you have two keys to roll-over, but you can keep the same zone size during the process."
+	x = x + "</td></tr></table>"
 	gbl.bot.innerHTML = x;
 }
 
@@ -782,7 +878,6 @@ function clickDS(txt)
 
 function doAddKey()
 {
-
 	let json = {
 		"keytype": document.addKeyForm.keyKind.value,
 		"active": (document.addKeyForm.keyActive.value=="true"),
@@ -869,6 +964,22 @@ function startZSK(template)
 
 
 
+function startCSK(template)
+{
+	let k = ctx.zoneKeys[template];
+	let json = {
+		"keytype": "csk",
+		"active": true,
+		"algorithm": k.algorithm,
+		"bits": k.bits,
+		}
+
+	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,
+		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
+}
+
+
+
 function startKSK(template)
 {
 	let k = ctx.zoneKeys[template];
@@ -894,9 +1005,10 @@ function toggleKey(id,act)
 
 
 
-function deleteKey(id)
+function deleteKey(idx)
 {
-	callApi("zones/"+ctx.zone+"/cryptokeys/" + id,zoneKeys, { method: "DELETE", okResp: 204 } );
+	let k = ctx.zoneKeys[idx];
+	callApi("zones/"+ctx.zone+"/cryptokeys/" + k.id,zoneKeys, { method: "DELETE", okResp: 204 } );
 }
 
 
@@ -926,7 +1038,7 @@ function clickDnssecKey(idx)
 	let txt = "Activate Key-" + k.id;
 	if (k.active) txt = "Deactivate Key-" + k.id;
 	x = x + "<tr><td>" + btn('toggleKey('+k.id+","+k.active+')',txt,txt,sz);
-	x = x + "<tr><td>" + btn('deleteKey('+k.id+')',"Delete Key-" + k.id,"Delete Key " + k.id,sz);
+	x = x + "<tr><td>" + btn('deleteKey('+idx+')',"Delete Key-" + k.id,"Delete Key " + k.id,sz);
 	x = x + "<tr><td>" + btn('cancelKeyAction()',"Cancel Action","Cancel an action on this key",sz);
 	x = x + "</table>";
 
@@ -970,7 +1082,7 @@ function showKeys(data)
 	x = x + '<colgroup>';
 	for(let i=0;i<5;i++) x = x + '<col width="50px">';
 	x = x + "</colgroup><tr>";
-	for (let i of ["Active","Id","Type","Bits","Algrythm",""])
+	for (let i of ["Active","Id","Type/Flags","Bits","Algrythm",""])
 		x = x + "<th>"+i+"</th>";
 	x = x + "</tr>";
 
@@ -995,7 +1107,7 @@ function showKeys(data)
 			keyTypes.num++;
 			}
 
-		x = x + "<td align=center>" + i.keytype.toUpperCase() + "</td>";
+		x = x + "<td align=center>" + i.keytype.toUpperCase() + "/" + i.flags + "</td>";
 		x = x + "<td align=center>" + i.bits + "</td>";
 		x = x + "<td align=left>" + i.algorithm;
 		x = x + "</td><td class=dnskey>" + i.dnskey.substr(1,50) + "...</td></tr>";
@@ -1018,23 +1130,32 @@ function showKeys(data)
 
 	sz = 200
 	x = x + "<div id='dnssecTop'><table align=center cellspacing=10 cellpadding=0 border=0>"
-	x = x + "<tr><td colspan=2><hr></td></tr>"
 
-	let notes = "If your zone is currently validating, after each KSK or ZSK Rollover step you must leave a few days<br>"
+	let notes = "If your zone is currently validating, after <b>every</b> Key Rollover step you must leave a few days<br>"
 		+ "for the internet to take-up your change. Probably a minimum of around 3 to 4 days";
+
+
+	let key_txt = null;
+	let zkey_txt = "";
 
 	if ((keyTypes.num==1)&&("csk" in keyTypes)) {
 		if (
 			([1,2].indexOf(keyTypes.csk.num) >= 0)&&
 			(keyTypes.csk.num == keyTypes.csk.active)
 			) {
-			if (keyTypes.csk.num == 1)
-				x = x + "<tr><td>Step 1 of 2: </td><Td>" + btn("someFn()","Start CSK Rollover","Start a CSK Rollover",sz) + "</td></tr>";
-			else if (keyTypes.csk.num == 2)
-				x = x + "<tr><td>Step 2 of 2: </td><Td>" + btn("someFn()","Complete CSK Rollover","Complete a CSK Rollover",sz) + "</td></tr>";
+			let cid0 = keyTypes.csk.ids[0].idx;
+			let cid1 = keyTypes.csk.ids[keyTypes.csk.ids.length-1].idx;
+
+			let csk_rollover = [
+				"<tr><td>Step 1 of 2: </td><Td>" + btn("startCSK("+cid0+")","Start CSK Rollover","Start a CSK Rollover",sz) + "</td></tr>",
+				"<tr><td>Step 2 of 2: </td><Td>" + btn("deleteKey("+cid1+")","Complete CSK Rollover","Complete a CSK Rollover",sz) + "</td></tr>",
+				]
+
+			if (keyTypes.csk.num == 1) key_txt = csk_rollover[0];
+			else if (keyTypes.csk.num == 2) key_txt = csk_rollover[1];
 			}
-		else x = x + "<tr><td><h2>DNSSEC Key Rollover State could not be detected</h2></td></tr>"
 		}
+
 	else if ((keyTypes.num==2)&&("ksk" in keyTypes)&&("zsk" in keyTypes)) {
 
 		if (
@@ -1043,13 +1164,39 @@ function showKeys(data)
 			(keyTypes.ksk.active == keyTypes.ksk.num)&&
 			(keyTypes.zsk.active == 1)
 			) {
+			let ksk_link = "<a target=_blank href='https://doc.powerdns.com/authoritative/guides/kskroll.html'>";
+			let zsk_link = "<a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>";
+
+			let kid0 = keyTypes.ksk.ids[0].idx;
+			let kid1 = keyTypes.ksk.ids[keyTypes.ksk.ids.length-1].idx;
+			let zid0 = keyTypes.zsk.ids[0].idx;
+			let zid1 = keyTypes.zsk.ids[keyTypes.zsk.ids.length-1].idx;
+
+			let ksk_rollover = [
+				"<tr><td>" + ksk_link + "Step 1 of 2</a>: </td><Td>"
+					+ btn("startKSK("+kid0+")","Start KSK Rollover","Start a KSK Rollover",sz) + "</td></tr>",
+
+				"<tr><td>" + ksk_link + "Step 2 of 2</a>: </td><Td>"
+						 + btn("deleteKey("+kid1+")","Complete KSK Rollover","Complete the KSK Rollover",sz) + "</td></tr>",
+				];
+
+			let zsk_rollover = [
+				"<tr><td>" + zsk_link + "Step 1 of 3</a>: </td><Td>"
+					 + btn("startZSK("+zid0+")","Start ZSK Rollover","Start a ZSK Rollover",sz) + "</td></tr>",
+
+				"<tr><td>" + zsk_link + "Step 2 of 3</a>: </td><Td>"
+					+ btn("activateZSK("+zid0+","+zid1+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz) + "</td></tr>",
+
+				"<tr><td>" + zsk_link + "Step 3 of 3</a>: </td><Td>"
+					+ btn("deleteKey("+zid1+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz) + "</td></tr>",
+				];
+
 			if (keyTypes.ksk.num == 1)
-				x = x + "<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/kskroll.html'>Step 1 of 2</a>: </td><Td>"
-						 + btn("startKSK("+keyTypes.ksk.ids[0].idx+")","Start KSK Rollover","Start a KSK Rollover",sz) + "</td></tr>";
+				key_txt = ksk_rollover[0];
 
 			else if (keyTypes.ksk.num == 2) {
-				x = x + "<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/kskroll.html'>Step 2 of 2</a>: </td><Td>"
-						 + btn("deleteKey("+keyTypes.ksk.ids[1].id+")","Complete KSK Rollover","Complete the KSK Rollover",sz) + "</td></tr>";
+
+				key_txt = ksk_rollover[1];
 
 				notes = "<u>If you have only just created a new KSK, wait a few days before changing your DS records</u>"
 					+ "<P>Once you have changed your DS reocrds, wait a few more days before completing the KSK rollover."
@@ -1058,23 +1205,27 @@ function showKeys(data)
 				}
 
 			if (keyTypes.zsk.num == 1)
-				x = x + "<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>Step 1 of 3</a>: </td><Td>"
-						 + btn("startZSK("+keyTypes.zsk.ids[0].idx+")","Start ZSK Rollover","Start a ZSK Rollover",sz) + "</td></tr>";
-
+				zkey_txt = zsk_rollover[0];
 			else if (keyTypes.zsk.num == 2) {
 				if (keyTypes.zsk.ids[0].id < keyTypes.zsk.ids[1].id)
-					x = x + "<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>Step 2 of 3</a>: </td><Td>"
-						+ btn("activateZSK("+keyTypes.zsk.ids[0].idx+","+keyTypes.zsk.ids[1].idx+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz) + "</td></tr>";
+					zkey_txt =  zsk_rollover[1];
 				else
-					x = x + "<tr><td><a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>Step 3 of 3</a>: </td><Td>"
-						+ btn("deleteKey("+keyTypes.zsk.ids[1].id+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz) + "</td></tr>";
+					zkey_txt =  zsk_rollover[2];
 				}
+			if (key_txt == null) zkey_txt = "";
 			}
-		else x = x + "<tr><td><h2>DNSSEC Key Rollover State could not be detected</h2></td></tr>";
-	}
-	else x = x + "<tr><td><h2>DNSSEC Key Rollover State could not be detected</h2></td></tr>";
+		}
+
 
 	x = x + "<tr><td colspan=2><hr></td></tr>"
+
+	if (key_txt == null)
+		x = x + "<tr><td><h3>DNSSEC Key Rollover State could not be detected</h3></td></tr>"
+	else
+		x = x + key_txt + zkey_txt;
+
+	x = x + "<tr><td colspan=2><hr></td></tr>"
+
 	x = x + "</table>";
 	if (notes != null) x = x + "<center>"+notes+"</center>";
 	x = x + "</div><div id='dnssecBot'></div>"
@@ -1302,7 +1453,7 @@ function zoneDetails(data)
 		x = x + btn("zoneAddHost()","Add Host","Add a host to the zone "+ctx.zone,sz) + sp;
 
 	x = x + btn("zoneAxfr()","Download","Download "+ctx.zone+" in RFC/AXFR format",sz) + sp
-		+ btn('zoneMeta()',"Meta Data","Load the META data for "+ctx.zone,sz) + sp
+		+ btn('zoneMeta()',"Metadata","Load the META data for "+ctx.zone,sz) + sp
 		+ btn('zoneNotify()',"Notify Zone","Notify the slaves of "+ctx.zone,sz) + sp;
 
 	if (ctx.zoneDetails.dnssec)
@@ -1829,17 +1980,18 @@ function keyEsc(e) {
 <div id=addMeta style="display: none;">
 	<table width=40% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New Meta Data</h2></td></tr>
+	<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
 	<form method=post action="/" name=newMetaForm onSubmit="return doNewMeta();">
-		<tr><td><select metaName>
+		<tr><td class=formPrompt>Metadata: </td><td><select name=metaItem>
 		<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
 		<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
 		<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE
 		<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS
 		<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
 		</select></td></tr>
+		<tr><Td class=formPrompt>Value: </td><td><input size=50 name=metaValue></td></tr>
 		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="loadThisZone();">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="zoneMeta();">Cancel</span><span title="Add this RR" class=myBtn onClick="addMetaItem();">Add Metadata</span></td></tr>
 	<input type=submit style="display: none;">
 	</form>
 	</table>

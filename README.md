@@ -137,11 +137,16 @@ nginx performed the same as Apache - virtuall instant.
 
 # Security #
 
+This webapp is intended as a SysAdmin aid, and not to be given directly to end-users without the addition of more serverside security.
+Especially, this webapp is not recomended in the situation where you have multiple users owning different domains.
+
 There are deliberatly **NO** security options in this webapp, e.g. who can edit/delete zones/names/records etc.
 
-When you have a JavaScript/RestAPI application the place to put the security is in the serverside RestAPI.
+As a general principal, when you have a JavaScript/RestAPI webapp the place to put the security is in the serverside RestAPI.
 Any security put into the Javascript can probably be trivially circumvented and is therefore of extremely limited value.
 
-In various web proxies, there are options to block certain `METHOD`. For example, by blocking all `METHOD` except `GET`,
+In various web proxies, there are options to block certain `METHODs`. For example, by blocking all `METHODs` except `GET`,
 you can stop a user from being able to do updates. For more information, please ask Google.
 
+In general, therefore, as it is provided, this webapp is probably not going to be that useful for giving to end users.
+However, as an admin-tool, it can be very useful.
