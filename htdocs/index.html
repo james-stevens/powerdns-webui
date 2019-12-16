@@ -920,9 +920,10 @@ function toggleKey(id,act)
 
 
 
-function deleteKey(id)
+function deleteKey(idx)
 {
-	callApi("zones/"+ctx.zone+"/cryptokeys/" + id,zoneKeys, { method: "DELETE", okResp: 204 } );
+	let k = ctx.zoneKeys[idx];
+	callApi("zones/"+ctx.zone+"/cryptokeys/" + k.id,zoneKeys, { method: "DELETE", okResp: 204 } );
 }
 
 
@@ -1049,7 +1050,8 @@ function showKeys(data)
 		+ "for the internet to take-up your change. Probably a minimum of around 3 to 4 days";
 
 
-	let key_txt = "<tr><td><h2>DNSSEC Key Rollover State could not be detected</h2></td></tr>"
+	let key_txt = null;
+	let zkey_txt = "";
 
 	if ((keyTypes.num==1)&&("csk" in keyTypes)) {
 		if (
@@ -1077,23 +1079,28 @@ function showKeys(data)
 			let ksk_link = "<a target=_blank href='https://doc.powerdns.com/authoritative/guides/kskroll.html'>";
 			let zsk_link = "<a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>";
 
+			let kid0 = keyTypes.ksk.ids[0].idx;
+			let kid1 = keyTypes.ksk.ids[keyTypes.ksk.ids.length-1].idx;
+			let zid0 = keyTypes.zsk.ids[0].idx;
+			let zid1 = keyTypes.zsk.ids[keyTypes.zsk.ids.length-1].idx;
+
 			let ksk_rollover = [
 				"<tr><td>" + ksk_link + "Step 1 of 2</a>: </td><Td>" 
-					+ btn("startKSK("+keyTypes.ksk.ids[0].idx+")","Start KSK Rollover","Start a KSK Rollover",sz) + "</td></tr>",
+					+ btn("startKSK("+kid0+")","Start KSK Rollover","Start a KSK Rollover",sz) + "</td></tr>",
 
 				"<tr><td>" + ksk_link + "Step 2 of 2</a>: </td><Td>"
-						 + btn("deleteKey("+keyTypes.ksk.ids[1].id+")","Complete KSK Rollover","Complete the KSK Rollover",sz) + "</td></tr>",
+						 + btn("deleteKey("+kid1+")","Complete KSK Rollover","Complete the KSK Rollover",sz) + "</td></tr>",
 				];
 
 			let zsk_rollover = [
-				"<tr><td>" + zsk_line + "Step 1 of 3</a>: </td><Td>"
-					 + btn("startZSK("+keyTypes.zsk.ids[0].idx+")","Start ZSK Rollover","Start a ZSK Rollover",sz) + "</td></tr>",
+				"<tr><td>" + zsk_link + "Step 1 of 3</a>: </td><Td>"
+					 + btn("startZSK("+zid0+")","Start ZSK Rollover","Start a ZSK Rollover",sz) + "</td></tr>",
 
 				"<tr><td>" + zsk_link + "Step 2 of 3</a>: </td><Td>"
-					+ btn("activateZSK("+keyTypes.zsk.ids[0].idx+","+keyTypes.zsk.ids[1].idx+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz) + "</td></tr>",
+					+ btn("activateZSK("+zid0+","+zid1+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz) + "</td></tr>",
 
 				"<tr><td>" + zsk_link + "Step 3 of 3</a>: </td><Td>"
-					+ btn("deleteKey("+keyTypes.zsk.ids[1].id+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz) + "</td></tr>",
+					+ btn("deleteKey("+zid1+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz) + "</td></tr>",
 				];
 
 			if (keyTypes.ksk.num == 1) 
@@ -1110,19 +1117,27 @@ function showKeys(data)
 				}
 
 			if (keyTypes.zsk.num == 1) 
-				key_txt = zsk_rollover[0];
+				zkey_txt = zsk_rollover[0];
 			else if (keyTypes.zsk.num == 2) {
 				if (keyTypes.zsk.ids[0].id < keyTypes.zsk.ids[1].id)
-					key_txt =  zsk_rollover[1];
+					zkey_txt =  zsk_rollover[1];
 				else
-					key_txt =  zsk_rollover[2];
+					zkey_txt =  zsk_rollover[2];
 				}
+			if (key_txt == null) zkey_txt = "";
 			}
 		}
 
+
 	x = x + "<tr><td colspan=2><hr></td></tr>"
-	x = x + key_txt;
+
+	if (key_txt == null) 
+		x = x + "<tr><td><h3>DNSSEC Key Rollover State could not be detected</h3></td></tr>"
+	else 
+		x = x + key_txt + zkey_txt;
+
 	x = x + "<tr><td colspan=2><hr></td></tr>"
+
 	x = x + "</table>";
 	if (notes != null) x = x + "<center>"+notes+"</center>";
 	x = x + "</div><div id='dnssecBot'></div>"
