@@ -12,7 +12,7 @@ I'm always happy to fix them, but this code is still undergoing massive developm
 
 The basic paradigm of the UI will probably stay much as it is, but the underlying code may change.
 
-I will try and keep the `master` branch stable (i.e. functional / usable) and do all the development in the `dev` branch.
+I will try and keep the `master` branch stable (i.e. functional & usable) and do all the development in the `dev` branch.
 
 Therefore, if you want to contribute to the development effort, please fork from the `dev` branch.
 Although, my personal recommendation would be to wait until the code had stablised a lot more :)
@@ -142,7 +142,7 @@ Especially, this webapp is not recomended in the situation where you have multip
 
 There are deliberatly **NO** security options in this webapp, e.g. who can edit/delete zones/names/records etc.
 
-As a general principal, when you have a JavaScript/RestAPI webapp the place to put the security is in the serverside RestAPI.
+As a general principal, when you have a JavaScript+RestAPI webapp the place to put the security is in the serverside RestAPI.
 Any security put into the Javascript can probably be trivially circumvented and is therefore of extremely limited value.
 
 In various web proxies, there are options to block certain `METHODs`. For example, by blocking all `METHODs` except `GET`,

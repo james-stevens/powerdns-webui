@@ -270,55 +270,6 @@ function downloadFile(text, fileType, fileName) {
 // Zone META data handling
 //=============================================================================================
 
-
-
-function delMetaItem(metaItem,metaValue)
-{
-	console.log("DEL>",metaItem,metaValue);
-}
-
-function editMetaItem(metaItem,metaValue)
-{
-	let x = "";
-	x = x + "<form name=editMeta onSubmit='return doEditMeta();'>";
-	x = x + "<table border=0 width=40% align=center><tr><td class=formPrompt>Metadata Item: </td><td>"+metaItem+"</td></tr>";
-	x = x + "<tr><Td class=formPrompt>Value: </td><td><input size=50 value='"+metaValue+"' name=metaValue></td></tr>";
-	x = x + "<tr><td colspan=2><hr></td></tr>";
-	x = x + '<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="zoneMeta();">Cancel</span>';
-	x = x + '<span title="Add this RR" class=myBtn onClick="doEditMeta();">Change Metadata</span></td></tr>'
-	x = x + "<input type=hidden name=metaItem value='" + metaItem + "'>";
-	x = x + "<input type=submit style='display: none;'></form></table>";
-	gbl.bot.innerHTML = x;
-	document.editMeta.metaValue.focus();
-	document.editMeta.metaValue.select();
-}
-
-
-
-function addMetaItem()
-{
-	let f = document.newMetaForm;
-	let metaItem = f.metaItem.value;
-	let metaValue = [ f.metaValue.value ];
-
-	let hdr = { method: "POST", okResp: 201 };
-	let url = "zones/"+ctx.zone+"/metadata";
-
-	for(let i of ctx.zoneMeta)
-		if (i.kind.toUpperCase() == metaItem) {
-			metaValue = i.metadata;
-			metaValue.push(f.metaValue.value);
-			hdr.method = "PUT";
-			hdr.okResp = 200;
-			url = url + "/" + metaItem;
-			}
-
-	hdr.json = JSON.stringify( { "type": "Metadata", "kind":metaItem, "metadata": metaValue } );
-	callApi(url,zoneMeta,hdr);
-}
-
-
-
 function clickAddMeta()
 {
 	gbl.bot.innerHTML = "";
@@ -350,16 +301,11 @@ function zoneMetaDetails(data)
 
 	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 
-	ctx.zoneMeta = data;
-
 	for(let i of data) {
-		for(let y of i.metadata) {
-			let td = "<td onClick=\"editMetaItem('"+i.kind.toUpperCase()+"','"+y+"');\">";
-			x = x + "<tr class=dataRow>"
-				+ "<td align=center onClick=\"delMetaItem('"+i.kind.toUpperCase()+"','"+y+"');\">"
-				+ gbl.bin + "</td>" + td + i.kind.toUpperCase() + "</td>";
-			x = x + td + y + "</td></tr>"
-			}
+		x = x + "<tr class=dataRow><td align=center>" + gbl.bin
+			+ "</td><td>" + i.kind.toUpperCase() + "</td><td>";
+		for(let y of i.metadata) x = x + y + "<br>";
+		x = x + "</td></tr>";
 		}
 
 	gbl.bot.innerHTML = x + "</table>";
@@ -783,25 +729,6 @@ function addAlg()
 
 
 
-function setNSEC3(withMsg)
-{
-	let salt = ""
-	for(let i=0;i<5;i++)
-		salt = salt + Math.floor(Math.random() * 256).toString(16)
-
-	let nsec3 = "1 0 5 " + salt;
-
-	callApi("zones/"+ctx.zone,function() {
-			let nxtFn = zoneKeys;
-			if (withMsg) nxtFn = function() { popMsg("NSEC3PARAM Changed"); };
-			ctx.zoneDetails.nsec3param = nsec3;
-			callApi("zones/"+ctx.zone+"/rectify", nxtFn, { method: "PUT" });
-		},
-		{ method: "PUT", okResp: 204, json: JSON.stringify({ nsec3param: nsec3 }) } );
-}
-
-
-
 function doSignZone()
 {
 	let nextFn = zoneKeys;
@@ -809,8 +736,6 @@ function doSignZone()
 	let keyBits = parseInt(document.signZoneForm.keyBits.value);
 	let keyPolicy = document.signZoneForm.keyPolicy.value;
 	let keyDNSSEC = document.signZoneForm.keyDNSSEC.value;
-
-	if (keyDNSSEC == "NSEC3") nextFn = setNSEC3;
 
 	if (keyPolicy == "CSK") {
 		let json = { "keytype": "csk", "active": true, "algorithm": keyAlg, "bits": keyBits, };
@@ -820,18 +745,22 @@ function doSignZone()
 	else {
 		let json_ksk = { "keytype": "ksk", "active": true, "algorithm": keyAlg, "bits": keyBits, }
 
-		callApi("zones/"+ctx.zone+"/cryptokeys", function() {
+		callApi("zones/"+ctx.zone+"/cryptokeys", function() { 
 
 				let json_zsk = { "keytype": "zsk", "active": true, "algorithm": keyAlg, "bits": keyBits, }
 
-				callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,
-					{ method: "POST", okResp: 201, json: JSON.stringify(json_zsk) } );
+				callApi("zones/"+ctx.zone+"/cryptokeys",nextFn, 
+					{ method: "POST", okResp: 201, json: JSON.stringify(json_zsk) } ); 
 				},
 
-			{ method: "POST", okResp: 201, json: JSON.stringify(json_ksk) } );
+			{ method: "POST", okResp: 201, json: JSON.stringify(json_ksk) } ); 
 		}
 
-	return false; // prevent submit
+	if (keyDNSSEC == "NSEC3") {
+		// Add NSEC3 Meta
+		}
+
+	return false // prevent submit
 }
 
 
@@ -1139,12 +1068,6 @@ function showKeys(data)
 
 	x = x + "</table></td><td>"
 	x = x + btn('clickAddKey()',"Add Key","Add a DNSSEC Key to "+ctx.zone,sz) + sp;
-
-	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != ""))
-		x = x + btn('setNSEC3(true)'," Roll NSEC3","Change the NSEC3PARAM for "+ctx.zone,sz) + sp;
-	else
-		x = x + btn('setNSEC3(false)'," Add NSEC3","Switch this zone to NSEC3 "+ctx.zone,sz) + sp;
-
 	x = x + "</td></tr></table>"
 
 	sz = 200
@@ -1192,7 +1115,7 @@ function showKeys(data)
 			let zid1 = keyTypes.zsk.ids[keyTypes.zsk.ids.length-1].idx;
 
 			let ksk_rollover = [
-				"<tr><td>" + ksk_link + "Step 1 of 2</a>: </td><Td>"
+				"<tr><td>" + ksk_link + "Step 1 of 2</a>: </td><Td>" 
 					+ btn("startKSK("+kid0+")","Start KSK Rollover","Start a KSK Rollover",sz) + "</td></tr>",
 
 				"<tr><td>" + ksk_link + "Step 2 of 2</a>: </td><Td>"
@@ -1210,7 +1133,7 @@ function showKeys(data)
 					+ btn("deleteKey("+zid1+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz) + "</td></tr>",
 				];
 
-			if (keyTypes.ksk.num == 1)
+			if (keyTypes.ksk.num == 1) 
 				key_txt = ksk_rollover[0];
 
 			else if (keyTypes.ksk.num == 2) {
@@ -1223,7 +1146,7 @@ function showKeys(data)
 					+ "in the parent zone, for a few days, before completing the KSK rollover.";
 				}
 
-			if (keyTypes.zsk.num == 1)
+			if (keyTypes.zsk.num == 1) 
 				zkey_txt = zsk_rollover[0];
 			else if (keyTypes.zsk.num == 2) {
 				if (keyTypes.zsk.ids[0].id < keyTypes.zsk.ids[1].id)
@@ -1238,9 +1161,9 @@ function showKeys(data)
 
 	x = x + "<tr><td colspan=2><hr></td></tr>"
 
-	if (key_txt == null)
+	if (key_txt == null) 
 		x = x + "<tr><td><h3>DNSSEC Key Rollover State could not be detected</h3></td></tr>"
-	else
+	else 
 		x = x + key_txt + zkey_txt;
 
 	x = x + "<tr><td colspan=2><hr></td></tr>"
@@ -1472,7 +1395,7 @@ function zoneDetails(data)
 		x = x + btn("zoneAddHost()","Add Host","Add a host to the zone "+ctx.zone,sz) + sp;
 
 	x = x + btn("zoneAxfr()","Download","Download "+ctx.zone+" in RFC/AXFR format",sz) + sp
-		+ btn('zoneMeta()',"Metadata","Load the META data for "+ctx.zone,sz) + sp
+		+ btn('zoneMeta()',"Meta Data","Load the META data for "+ctx.zone,sz) + sp
 		+ btn('zoneNotify()',"Notify Zone","Notify the slaves of "+ctx.zone,sz) + sp;
 
 	if (ctx.zoneDetails.dnssec)
@@ -1999,18 +1922,17 @@ function keyEsc(e) {
 <div id=addMeta style="display: none;">
 	<table width=40% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
+	<tr><td colspan=2 align=center><h2>Add a New Meta Data</h2></td></tr>
 	<form method=post action="/" name=newMetaForm onSubmit="return doNewMeta();">
-		<tr><td class=formPrompt>Metadata: </td><td><select name=metaItem>
+		<tr><td><select metaName>
 		<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
 		<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
 		<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE
 		<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS
 		<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
 		</select></td></tr>
-		<tr><Td class=formPrompt>Value: </td><td><input size=50 name=metaValue></td></tr>
 		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="zoneMeta();">Cancel</span><span title="Add this RR" class=myBtn onClick="addMetaItem();">Add Metadata</span></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="loadThisZone();">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 	<input type=submit style="display: none;">
 	</form>
 	</table>
