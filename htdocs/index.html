@@ -837,17 +837,17 @@ function addAlg()
 
 
 
-function setNSEC3(withMsg)
+function setNSEC3()
 {
 	let salt = ""
 	for(let i=0;i<5;i++)
 		salt = salt + Math.floor(Math.random() * 256).toString(16)
 
 	let nsec3 = "1 0 5 " + salt;
+	let nxtFn = zoneKeys;
+	if (this.msg) { nxtFn = function() { popMsg("NSEC3PARAM Changed"); }; }
 
 	callApi("zones/"+ctx.zone,function() {
-			let nxtFn = zoneKeys;
-			if (withMsg) nxtFn = function() { popMsg("NSEC3PARAM Changed"); };
 			ctx.zoneDetails.nsec3param = nsec3;
 			callApi("zones/"+ctx.zone+"/rectify", nxtFn, { method: "PUT" });
 		},
@@ -864,7 +864,7 @@ function doSignZone()
 	let keyPolicy = document.signZoneForm.keyPolicy.value;
 	let keyDNSSEC = document.signZoneForm.keyDNSSEC.value;
 
-	if (keyDNSSEC == "NSEC3") nextFn = setNSEC3;
+	if (keyDNSSEC == "NSEC3") nextFn = setNSEC3.bind({ msg: false});
 
 	if (keyPolicy == "CSK") {
 		let json = { "keytype": "csk", "active": true, "algorithm": keyAlg, "bits": keyBits, };
@@ -1195,9 +1195,9 @@ function showKeys(data)
 	x = x + btn('clickAddKey()',"Add Key","Add a DNSSEC Key to "+ctx.zone,sz) + sp;
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != ""))
-		x = x + btn('setNSEC3(true)'," Roll NSEC3","Change the NSEC3PARAM for "+ctx.zone,sz) + sp;
+		x = x + btn('x = setNSEC3.bind({ msg: true}); x()'," Roll NSEC3","Change the NSEC3PARAM for "+ctx.zone,sz) + sp;
 	else
-		x = x + btn('setNSEC3(false)'," Add NSEC3","Switch this zone to NSEC3 "+ctx.zone,sz) + sp;
+		x = x + btn('x = setNSEC3.bind({ msg: false}); x()'," Add NSEC3","Switch this zone to NSEC3 "+ctx.zone,sz) + sp;
 
 	x = x + "</td></tr></table>"
 
@@ -1281,9 +1281,9 @@ function showKeys(data)
 				zkey_txt = zsk_rollover[0];
 			else if (keyTypes.zsk.num == 2) {
 				if (keyTypes.zsk.ids[0].id < keyTypes.zsk.ids[1].id)
-					zkey_txt =  zsk_rollover[1];
+					zkey_txt = zsk_rollover[1];
 				else
-					zkey_txt =  zsk_rollover[2];
+					zkey_txt = zsk_rollover[2];
 				}
 			if (key_txt == null) zkey_txt = "";
 			}
@@ -1328,8 +1328,16 @@ function zoneKeys()
 
 function zoneKindChange(sel)
 {
-	s = document.getElementById("extraNewZonePrompt");
-	if (sel.value == "Master") s.innerHTML = "Name Servers :"; else s.innerHTML = "Masters :"
+	m = document.getElementById("asMaster");
+	s = document.getElementById("asSlave");
+	if (sel.value == "Master") {
+		m.style.display = "table-row-group";
+		s.style.display = "none";
+		}
+	else {
+		m.style.display = "none";
+		s.style.display = "table-row-group";
+		}
 }
 
 
@@ -1664,21 +1672,23 @@ function doNewZone()
 
 	let kind = document.newZoneForm.zoneKind.value;
 
-	let dt = []
-	for(i=0;i<4;i++) {
-		let v = document.newZoneForm["extra"+i].value;
-		if (v != "") dt.push(v);
+	let ns = [];
+	let ip = [];
+	for(let i=0;i<4;i++) {
+		let x = document.newZoneForm["ns"+i].value;
+		if (x != "") ns.push(x);
+		x = document.newZoneForm["ip"+i].value;
+		if (x != "") ip.push(x);
 		}
 
-	let ns = [];
-	let ms = [];
-	if (document.newZoneForm.zoneKind.value == "Master")
-		ns = dt; else ms = dt;
+	for(let i in ns)
+		if (ns[i].substr(ns[i].length-1)!=".")
+			ns[i] = ns[i] + "."
 
 	let data = {
 		name: name,
 		kind: kind,
-		masters: ms,
+		masters: ip,
 		nameservers: ns,
 		};
 
@@ -2014,17 +2024,25 @@ function keyEsc(e) {
 
 
 <div id=addZone style="display: none;">
-	<table width=40% align=center>
+	<table width=40% align=center><tbody id="startBody">
 	<colgroup><col width=35%/><col width=65%/></colgroup>
 	<tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr>
 	<form method=post action="/" name=newZoneForm onSubmit="return doNewZone();">
 		<tr><td class=formPrompt>Name :</td><td><input onkeydown="keyEsc(event);" name=zoneName></td></tr>
 		<tr><td class=formPrompt>Type :</td><td><select onChange="zoneKindChange(this);" name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr>
-		<tr><td class=formPrompt><span id="extraNewZonePrompt">Name Servers :</span></td><td>
-			<input size=40 name=extra0><br>
-			<input size=40 name=extra1><br>
-			<input size=40 name=extra2><br>
-			<input size=40 name=extra3><br></td></tr>
+		</tbody><tbody id="asMaster">
+			<tr><td class=formPrompt>Name Servers :</td><td>
+				<input size=40 name=ns0><br>
+				<input size=40 name=ns1><br>
+				<input size=40 name=ns2><br>
+				<input size=40 name=ns3><br></td></tr>
+		</tbody><tbody id="asSlave" style="display: none;">
+			<tr><td class=formPrompt>Master's IPs :</td><td>
+				<input size=40 name=ip0><br>
+				<input size=40 name=ip1><br>
+				<input size=40 name=ip2><br>
+				<input size=40 name=ip3><br></td></tr>
+		</tbody>
 		<tr><td colspan=2><hr></td></tr>
 		<tr><td align=center colspan=2><span title="Cancel adding zone" class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone" class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
 		</tr>
