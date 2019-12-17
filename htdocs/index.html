@@ -194,6 +194,15 @@ var validations = {
 var dsAlg = [ "Reserved","SHA1","SHA256","GOST","SHA384"];
 
 
+var blockedMeta = {
+	"SOA-EDIT": "soa_edit",
+	"SOA-EDIT-API": "soa_edit_api",
+	"NSEC3PARAM": "nsec3param",
+	};
+
+
+
+
 function callApi(sfx,callback,inData)
 {
 	gbl.addH.style.display = "none";
@@ -207,7 +216,7 @@ function callApi(sfx,callback,inData)
 
 	let p = "https";
 	if (!gbl.with_https) p = "http";
-	url = p + "://" + gbl.server + "/api/v1/servers/localhost/" + sfx;
+	let url = p + "://" + gbl.server + "/api/v1/servers/localhost/" + sfx;
 
 	let okResp = 200;
 	let httpCmd = {
@@ -272,20 +281,56 @@ function downloadFile(text, fileType, fileName) {
 
 
 
-function delMetaItem(metaItem,metaValue)
+function doEditMeta(isDel)
 {
-	console.log("DEL>",metaItem,metaValue);
+	let f = document.editMeta;
+	let dataIdx = parseInt(f.dataIdx.value);
+	let itemIdx = parseInt(f.itemIdx.value);
+	let metaValue = document.editMeta.metaValue.value;
+
+	let i = ctx.zoneMeta[dataIdx];
+
+	if (isDel) i.metadata.splice(itemIdx,1);
+	else {
+		i.metadata[itemIdx] = metaValue;
+		i.metadata.sort(function(a,b) {
+			if (a < b) return -1;
+			if (b < a) return 1;
+			return 0;
+			});
+		}
+
+	if (i.kind in blockedMeta) {
+		let json = {}
+		json[blockedMeta[i.kind]] = metaValue;
+		callApi("zones/"+ctx.zone,zoneMeta, { method: "PUT", okResp: 204, json: JSON.stringify(json) } );
+		}
+	else {
+		let hdr = { method: "PUT", okResp: 200, json: JSON.stringify({ metadata: i.metadata }) };
+		callApi("zones/" + ctx.zone + "/metadata/" + i.kind, zoneMeta, hdr);
+		}
 }
 
-function editMetaItem(metaItem,metaValue)
+
+
+function editMetaItem(dataIdx,itemIdx)
 {
+	let metaItem = ctx.zoneMeta[dataIdx].kind;
+	let metaValue = ctx.zoneMeta[dataIdx].metadata[itemIdx];
+
 	let x = "";
 	x = x + "<form name=editMeta onSubmit='return doEditMeta();'>";
+	x = x + "<input type=hidden name=dataIdx value="+dataIdx+">"
+	x = x + "<input type=hidden name=itemIdx value="+itemIdx+">"
 	x = x + "<table border=0 width=40% align=center><tr><td class=formPrompt>Metadata Item: </td><td>"+metaItem+"</td></tr>";
 	x = x + "<tr><Td class=formPrompt>Value: </td><td><input size=50 value='"+metaValue+"' name=metaValue></td></tr>";
 	x = x + "<tr><td colspan=2><hr></td></tr>";
 	x = x + '<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="zoneMeta();">Cancel</span>';
-	x = x + '<span title="Add this RR" class=myBtn onClick="doEditMeta();">Change Metadata</span></td></tr>'
+
+	if (!(metaItem in blockedMeta))
+		x = x + '<span title="Delete this Metadata Item" class=myBtn onClick="doEditMeta(true);">Delete</span>'
+
+	x = x + '<span title="Change this Metadata Item" class=myBtn onClick="doEditMeta(false);">Change</span></td></tr>'
 	x = x + "<input type=hidden name=metaItem value='" + metaItem + "'>";
 	x = x + "<input type=submit style='display: none;'></form></table>";
 	gbl.bot.innerHTML = x;
@@ -315,6 +360,8 @@ function addMetaItem()
 
 	hdr.json = JSON.stringify( { "type": "Metadata", "kind":metaItem, "metadata": metaValue } );
 	callApi(url,zoneMeta,hdr);
+
+	return false;
 }
 
 
@@ -323,6 +370,8 @@ function clickAddMeta()
 {
 	gbl.bot.innerHTML = "";
 	gbl.newM.style.display = "block";
+	document.newMetaForm.metaValue.focus();
+	document.newMetaForm.metaValue.select();
 }
 
 
@@ -342,23 +391,28 @@ function zoneMetaDetails(data)
 		if (a.kind < b.kind) return -1;
 		if (a.kind > b.kind) return 1;
 		return 0;
-		})
+		});
+
+	for(let i of data)
+		i.metadata.sort(function(a,b) {
+			if (a < b) return -1;
+			if (b < a) return 1;
+			return 0;
+			});
 
 	let newTitle = gbl.server + ": " + ctx.zone + ", META Data";
-	window.history.pushState(gbl.server + "/" +ctx.zone + "/META",newTitle,"/");
+	if (!("param" in gbl)) window.history.pushState(gbl.server + "/" +ctx.zone + "/META",newTitle,"/");
 	document.title = newTitle;
 
-	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
-
 	ctx.zoneMeta = data;
+	delete gbl.param;
 
-	for(let i of data) {
-		for(let y of i.metadata) {
-			let td = "<td onClick=\"editMetaItem('"+i.kind.toUpperCase()+"','"+y+"');\">";
-			x = x + "<tr class=dataRow>"
-				+ "<td align=center onClick=\"delMetaItem('"+i.kind.toUpperCase()+"','"+y+"');\">"
-				+ gbl.bin + "</td>" + td + i.kind.toUpperCase() + "</td>";
-			x = x + td + y + "</td></tr>"
+	let x = "<table align=center width=60% border=0 cellspacing=1 cellpadding=0>";
+	for(let i in data) {
+		for(let y in data[i].metadata) {
+			let td = "<td onClick=\"editMetaItem("+i+","+y+");\">";
+			x = x + "<tr class=dataRow>" + td + data[i].kind.toUpperCase() + "</td>";
+			x = x + td + data[i].metadata[y] + "</td></tr>"
 			}
 		}
 
@@ -1424,8 +1478,9 @@ function zoneDetails(data)
 
 	ctx.zoneDetails = data;
 
-	if ("param" in gbl) {
-		if ((data.kind != "Slave")&&(gbl.param.length >= 3)) {
+	if (("param" in gbl)&&(gbl.param.length >= 3)) {
+		if (gbl.param[2] == "META") return zoneMeta();
+		if (data.kind != "Slave") {
 			let x = gbl.param[2].split(":");
 			if (x.length == 2) return clickZoneRecord(x[0],x[1]);
 			}
@@ -1504,6 +1559,7 @@ function loadThisZone()
 }
 
 
+
 function zoneDetailsLoad(zone)
 {
 	document.body.scrollTop = 0;
@@ -1524,8 +1580,11 @@ function zoneDetailsLoad(zone)
 function searchLoadRecord(zone,name,type)
 {
 	gbl.param = [ gbl.server, zone, name + ":" + type ];
+	title = gbl.server + ", Search results - " + name + ":" + type
+	window.history.pushState(gbl.server + "/" + zone + "/" + name + ":" + type,title,"/");
 	zoneDetailsLoad(zone);
 }
+
 
 
 function searchResults(data)
@@ -1535,11 +1594,12 @@ function searchResults(data)
 		return;
 		}
 
-	ctx = {}; topLine();
-
 	let newTitle = gbl.server + ": Search Results"
-	window.history.pushState(gbl.server+"/SEARCH/"+ctx.searchTerm,newTitle,"/");
+	if (!("param" in gbl)) window.history.pushState(gbl.server+"/SEARCH/"+ctx.searchTerm,newTitle,"/");
 	document.title = newTitle
+
+	delete gbl.param;
+	ctx = { searchTerm: ctx.searchTerm }; topLine(); ctx = {};
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
@@ -1638,8 +1698,12 @@ function zoneListDetails(data)
 		})
 
 	ctx.zoneList = data;
-	if ("param" in gbl) {
-		if (gbl.param.length >= 2)
+	if (("param" in gbl)&&(gbl.param.length >= 2)) {
+		if ((gbl.param[1] == "SEARCH")&&(gbl.param.length >= 3)) {
+			ctx.searchTerm = gbl.param[2];
+			return callApi("search-data?q=" + ctx.searchTerm,searchResults);
+			}
+		else
 			return zoneDetailsLoad(gbl.param[1]);
 		}
 
@@ -1742,6 +1806,11 @@ function topLine()
 	let x = "'>" + gbl.page + "</a></font></td><td>"
 		+ btn("goLogin()",gbl.server,"Change server")
 		+ btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);
+
+	if ("searchTerm" in ctx) {
+		url = url + "/SEARCH/" + ctx.searchTerm;
+		delete ctx.searchTerm;
+		}
 
 	if ("zone" in ctx) {
 		url = "/" + ctx.zone;
@@ -2000,7 +2069,7 @@ function keyEsc(e) {
 	<table width=40% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
 	<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
-	<form method=post action="/" name=newMetaForm onSubmit="return doNewMeta();">
+	<form method=post action="/" name=newMetaForm onSubmit="return addMetaItem();">
 		<tr><td class=formPrompt>Metadata: </td><td><select name=metaItem>
 		<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
 		<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
