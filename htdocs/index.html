@@ -7,9 +7,9 @@
 
 <style type='text/css'>
 
-.fullvis { visibility: visible; opacity: 1; }
-.fadein  { visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
-.fadeout { visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
+.fullvis { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:16pt; visibility: visible; opacity: 1; }
+.fadein  { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:16pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
+.fadeout { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:16pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
 
 #topSpan{
 	background-color: #666688;
@@ -233,6 +233,7 @@ function callApi(sfx,callback,inData)
 	fetch(url,httpCmd).then(function(response) {
 		if (response.status != okResp) {
 			popMsg("ERROR: " + response.status + " " + response.statusText);
+			if ((inData != null)&&("callErr" in inData)) return callback(false);
 			return;
 			}
 
@@ -1369,15 +1370,17 @@ function zoneRetrieve()
 
 
 
-function addNewZone()
+function clickAddZone(isFresh)
 {
 	ctx.addZone = true;
 	topLine();
 	gbl.bot.innerHTML = "";
 	gbl.newZ.style.display = "block";
-	let f = document.newZoneForm;
-	f.zoneName.value = "";
-	f.zoneName.focus();
+	if (isFresh) {
+		let f = document.newZoneForm;
+		f.zoneName.value = "";
+		f.zoneName.focus();
+		}
 }
 
 
@@ -1654,7 +1657,12 @@ function searchFormSubmit()
 
 function doMakeZone(data)
 {
-	zoneDetailsLoad(data.name);
+	if (data) 
+		zoneDetailsLoad(data.name);
+	else {
+		clickAddZone(false);
+		popMsg(gbl.warn + " Adding zone failed");
+		}
 }
 
 
@@ -1675,15 +1683,32 @@ function doNewZone()
 	let ns = [];
 	let ip = [];
 	for(let i=0;i<4;i++) {
-		let x = document.newZoneForm["ns"+i].value;
-		if (x != "") ns.push(x);
-		x = document.newZoneForm["ip"+i].value;
-		if (x != "") ip.push(x);
-		}
+		let x = document.newZoneForm["ns"+i];
+		let v = x.value;
 
-	for(let i in ns)
-		if (ns[i].substr(ns[i].length-1)!=".")
-			ns[i] = ns[i] + "."
+		if (v != "") {
+			if (v.substr(v.length-1)!=".") v = v + "."
+
+			if (!fqdnCheck.test(v)) {
+				popMsg(gbl.warn + " Invalid Host Name: "+v);
+				x.focus(); x.select();
+				return;
+				}
+
+			ns.push(v);
+			}
+
+		x = document.newZoneForm["ip"+i];
+		if (x.value != "") {
+			if ((validations["rrA"].test(x.value))||(validations["rrA"].test(x.value)))
+				ip.push(x.value);
+			else {
+				popMsg(gbl.warn + " Invalid IP Address: "+x.value);
+				x.focus(); x.select();
+				return;
+				}
+			}
+		}
 
 	let data = {
 		name: name,
@@ -1692,8 +1717,9 @@ function doNewZone()
 		nameservers: ns,
 		};
 
-	callApi("zones",doMakeZone, { method: "POST", okResp: 201, json: JSON.stringify(data) } );
+	console.log(data);
 
+	callApi("zones",doMakeZone, { method: "POST", callErr: true, okResp: 201, json: JSON.stringify(data) } );
 	return false; // block form submit
 }
 
@@ -1868,7 +1894,7 @@ function topLine()
 
 		}
 	else {
-		if (!("addZone" in ctx)) x = x + btn("addNewZone()","Add Zone","Add a new zone to the database");
+		if (!("addZone" in ctx)) x = x + btn("clickAddZone(true)","Add Zone","Add a new zone to the database");
 		}
 
 	x = x + "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
@@ -1951,6 +1977,7 @@ function unpopMsg()
 	let m = document.getElementById("showMsg");
 	let t1 = m.innerHTML;
 	let t2 = gbl.lastMsg;
+	if (t2 == null) t2 = "";
 
 	if (t1.charCodeAt(0) > 255) { // uncode chars are decoded so must be excluded
 		t1 = t1.substr(t1.indexOf(" "));
