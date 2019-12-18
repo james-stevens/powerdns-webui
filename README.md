@@ -15,7 +15,7 @@ The basic paradigm of the UI will probably stay much as it is, but the underlyin
 I will try and keep the `master` branch stable (i.e. functional & usable) and do all the development in the `dev` branch.
 
 Therefore, if you want to contribute to the development effort, please fork from the `dev` branch.
-Although, my personal recommendation would be to wait until the code had stablised a lot more :)
+Although, my personal recommendation would be to wait until the code has stabilised a lot more :)
 
 # PowerDNS WebUI
 
@@ -48,11 +48,11 @@ NOTE: For CORS, by default, you are allowed to access the Rest/API on the server
 So this requires no special extra consideration.
 
 
-# The Exmaple Config
+# The Example Config
 
 We have provided a fully working example set-up in the `example` directory.
 
-Because this webapp accesses the PowerDNS RestAPI directly from your desktop's browser, to prevent you haveing to give everybody the `api-key`,
+Because this webapp accesses the PowerDNS RestAPI directly from your desktop's browser, to prevent you having to give everybody the `api-key`,
 we would recommend you use a web proxy (e.g. Apache or nginx) and enforce per-user authentication in the proxy.
 This means you will need to configure the proxy to add the `api-key` to each request (see below).
 
@@ -137,13 +137,13 @@ running v4.2.0 over an 18ms latency link and the response time for all actions, 
 
 Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox was identical.
 
-nginx performed the same as Apache - virtuall instant.
+nginx performed the same as Apache - virtually instant.
 
 
 # Security #
 
 This webapp is intended as a SysAdmin aid, and not to be given directly to end-users without the addition of more serverside security.
-Especially, this webapp is not recomended in the situation where you have multiple users owning different domains.
+Especially, this webapp is not recommended in the situation where you have multiple users owning different domains.
 
 There are deliberatly **NO** security options in this webapp, e.g. who can edit/delete zones/names/records etc.
 
