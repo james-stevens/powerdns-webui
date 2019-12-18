@@ -170,17 +170,27 @@ var gbl = {
 	bin: "&#x2702;",
 	warn: "&#x26a0;",
 	page: "&#x1F5CE;",
-	lock: "&#x1F512;",
+	nsec: "&#x1F512;",
+	nsec3: "&#x1F510;",
 	clip: "&#x1F4CE;",
 	};
 
 var ctx = { }; // will store the context of what the user is up to
 
 
+//=============================================================================================
+// Some system constants
+//=============================================================================================
+
+// add a trailing '.' for these record types, if the user forgets
 var autoAddDot = { rrMX: true, rrNS: true, rrCNAME: true, };
 
+
+// regex for an FQDN hostname
 var fqdnCheck = /^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;
 
+
+// regex's for RR validation - just add more here and they will work
 var validations = {
 	rrAAAA: /^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,
 	   rrA: /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,
@@ -191,9 +201,11 @@ var validations = {
 	};
 
 
+// Descriptions for "DS" record algorythm numbers from IANA
 var dsAlg = [ "Reserved","SHA1","SHA256","GOST","SHA384"];
 
 
+// these appear as metadata items but are handled as zone properties - lol
 var blockedMeta = {
 	"SOA-EDIT": "soa_edit",
 	"SOA-EDIT-API": "soa_edit_api",
@@ -202,6 +214,9 @@ var blockedMeta = {
 
 
 
+//=============================================================================================
+// Some library functions
+//=============================================================================================
 
 function callApi(sfx,callback,inData)
 {
@@ -310,6 +325,8 @@ function doEditMeta(isDel)
 		let hdr = { method: "PUT", okResp: 200, json: JSON.stringify({ metadata: i.metadata }) };
 		callApi("zones/" + ctx.zone + "/metadata/" + i.kind, zoneMeta, hdr);
 		}
+
+	return false; // prevent form submit
 }
 
 
@@ -838,19 +855,20 @@ function addAlg()
 
 
 
-function setNSEC3()
+function setNSEC3(delnsec3)
 {
-	let salt = ""
-	for(let i=0;i<5;i++)
-		salt = salt + Math.floor(Math.random() * 256).toString(16)
+	let nsec3 = ""
 
-	let nsec3 = "1 0 5 " + salt;
-	let nxtFn = zoneKeys;
-	if (this.msg) { nxtFn = function() { popMsg("NSEC3PARAM Changed"); }; }
+	if (delnsec3 == null) {
+		let salt = ""
+		for(let i=0;i<5;i++)
+			salt = salt + Math.floor(Math.random() * 256).toString(16)
+		nsec3 = "1 0 5 " + salt;
+		}
 
 	callApi("zones/"+ctx.zone,function() {
 			ctx.zoneDetails.nsec3param = nsec3;
-			callApi("zones/"+ctx.zone+"/rectify", nxtFn, { method: "PUT" });
+			callApi("zones/"+ctx.zone+"/rectify", zoneKeys, { method: "PUT" });
 		},
 		{ method: "PUT", okResp: 204, json: JSON.stringify({ nsec3param: nsec3 }) } );
 }
@@ -865,7 +883,7 @@ function doSignZone()
 	let keyPolicy = document.signZoneForm.keyPolicy.value;
 	let keyDNSSEC = document.signZoneForm.keyDNSSEC.value;
 
-	if (keyDNSSEC == "NSEC3") nextFn = setNSEC3.bind({ msg: false});
+	if (keyDNSSEC == "NSEC3") nextFn = function() { setNSEC3(null); };
 
 	if (keyPolicy == "CSK") {
 		let json = { "keytype": "csk", "active": true, "algorithm": keyAlg, "bits": keyBits, };
@@ -1156,6 +1174,11 @@ function showKeys(data)
 
 	let keyTypes = { num: 0 };
 
+	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
+		x = x + "<tr class=dataRow><td align=center>" + gbl.tick 
+			+ "</td><td colspan=3></td><td>NSEC3PARAM</td><td>"+ctx.zoneDetails.nsec3param+"</td></tr>"
+		}
+
 	for(let idx in data) {
 		i = data[idx];
 		x = x + "<tr onClick='clickDnssecKey("+idx+");' class=dataRow><td align=center>"
@@ -1195,10 +1218,12 @@ function showKeys(data)
 	x = x + "</table></td><td>"
 	x = x + btn('clickAddKey()',"Add Key","Add a DNSSEC Key to "+ctx.zone,sz) + sp;
 
-	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != ""))
-		x = x + btn('x = setNSEC3.bind({ msg: true}); x()'," Roll NSEC3","Change the NSEC3PARAM for "+ctx.zone,sz) + sp;
+	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
+		x = x + btn("setNSEC3(true)","Del NSEC3","Switch "+ctx.zone+" from NSEC3 to NSEC",sz) + sp;
+		x = x + btn("setNSEC3()","Roll NSEC3","Change the NSEC3PARAM for "+ctx.zone,sz) + sp;
+		}
 	else
-		x = x + btn('x = setNSEC3.bind({ msg: false}); x()'," Add NSEC3","Switch this zone to NSEC3 "+ctx.zone,sz) + sp;
+		x = x + btn("setNSEC3()","Add NSEC3","Switch this zone to NSEC3 "+ctx.zone,sz) + sp;
 
 	x = x + "</td></tr></table>"
 
@@ -1757,8 +1782,8 @@ function zoneListDetails(data)
 		t = "";
 		hlp = "Zone is NOT dnssec signed";
 		if (i.dnssec) {
-			t = gbl.lock;
-			hlp = "Zone is DNSSEC signed"
+			t = gbl.nsec;
+			hlp = "Zone is DNSSEC signed";
 			}
 		x = x + "<td title='" + hlp + "'>" + t + "</td><td>" + i.serial + "</td>";
 
@@ -1819,7 +1844,7 @@ function validInt(x) {
 function btn(call,txt,hlp,sz) {
 	let ex=""
 	if (sz != null) ex = "style='width: " + sz + "px;'"
-	return "<span "+ex+" title='"+hlp+"' class=myBtn onClick='"+call+"; return false;'>"+txt+"</span>";
+	return "<span "+ex+" title=\""+hlp+"\" class=myBtn onClick=\""+call+"; return false;\">"+txt+"</span>";
 }
 
 
