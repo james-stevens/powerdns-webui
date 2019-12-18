@@ -7,7 +7,7 @@ body{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;m
 a{color:#b0b0ff;text-decoration:none;}
 a:hover{text-decoration:underline;}
 form{margin:0px;}.myBtn{text-align:center;display:inline-block;background-color:#d0d0ff;color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;font-weight:bold;border-radius:25px;padding:5px;padding-left:10px;padding-right:10px;cursor:pointer;margin-top:0px;margin-left:10px;margin-bottom:2px;margin-right:2px;}.myBtn:hover{box-shadow:3px 3px#222244;text-shadow:1px 1px#ffffff;}.myBtn:active{position:relative;box-shadow:none;text-shadow:none;top:1px;left:1px;}.dnskey{color:#383855;}
-td{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",lock:"&#x1F512;",clip:"&#x1F4CE;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];var blockedMeta={"SOA-EDIT":"soa_edit","SOA-EDIT-API":"soa_edit_api","NSEC3PARAM":"nsec3param",};function callApi(sfx,callback,inData)
+td{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",nsec:"&#x1F512;",nsec3:"&#x1F510;",clip:"&#x1F4CE;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var trueOrFalse=/^[01]$/;var validateMeta={"API-RECTIFY":trueOrFalse,"IXFR":trueOrFalse,"NSEC3NARROW":trueOrFalse,"PRESIGNED":trueOrFalse,"PUBLISH-CDNSKEY":trueOrFalse,"SLAVE-RENOTIFY":trueOrFalse,"SOA-EDIT-API":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,"SOA-EDIT-DNSUPDATE":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];var blockedMeta={"SOA-EDIT":"soa_edit","SOA-EDIT-API":"soa_edit_api","NSEC3PARAM":"nsec3param",};function callApi(sfx,callback,inData)
 {gbl.addH.style.display="none";gbl.newZ.style.display="none";gbl.newM.style.display="none";if((inData!=null)&&(inData.method=="PUT"))
 msg("Requesting ... "+gbl.timer);else
 msg("Loading ... "+gbl.timer);let p="https";if(!gbl.with_https)p="http";let url=p+"://"+gbl.server+"/api/v1/servers/localhost/"+sfx;let okResp=200;let httpCmd={headers:{'X-API-Key':gbl.apikey},method:'GET',};if(inData!=null){httpCmd.method=inData.method;httpCmd.body=inData.json;if("okResp"in inData)okResp=inData.okResp;}
@@ -18,10 +18,12 @@ catch{param=data;}
 callback(param);}});});}
 function downloadFile(text,fileType,fileName){var blob=new Blob([text],{type:fileType});var a=document.createElement('a');a.download=fileName;a.href=URL.createObjectURL(blob);a.dataset.downloadurl=[fileType,a.download,a.href].join(':');a.style.display="none";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(a.href);},1500);msg("");}
 function doEditMeta(isDel)
-{let f=document.editMeta;let dataIdx=parseInt(f.dataIdx.value);let itemIdx=parseInt(f.itemIdx.value);let metaValue=document.editMeta.metaValue.value;let i=ctx.zoneMeta[dataIdx];if(isDel)i.metadata.splice(itemIdx,1);else{i.metadata[itemIdx]=metaValue;i.metadata.sort(function(a,b){if(a<b)return-1;if(b<a)return 1;return 0;});}
+{let f=document.editMeta;let dataIdx=parseInt(f.dataIdx.value);let itemIdx=parseInt(f.itemIdx.value);let metaValue=document.editMeta.metaValue.value;let i=ctx.zoneMeta[dataIdx];if((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))){popMsg(gbl.warn+" Invalid value for "+i.kind);document.editMeta.metaValue.focus();document.editMeta.metaValue.select();return false;}
+if(isDel)i.metadata.splice(itemIdx,1);else{i.metadata[itemIdx]=metaValue;i.metadata.sort(function(a,b){if(a<b)return-1;if(b<a)return 1;return 0;});}
 if(i.kind in blockedMeta){let json={}
 json[blockedMeta[i.kind]]=metaValue;callApi("zones/"+ctx.zone,zoneMeta,{method:"PUT",okResp:204,json:JSON.stringify(json)});}
-else{let hdr={method:"PUT",okResp:200,json:JSON.stringify({metadata:i.metadata})};callApi("zones/"+ctx.zone+"/metadata/"+i.kind,zoneMeta,hdr);}}
+else{let hdr={method:"PUT",okResp:200,json:JSON.stringify({metadata:i.metadata})};callApi("zones/"+ctx.zone+"/metadata/"+i.kind,zoneMeta,hdr);}
+return false;}
 function editMetaItem(dataIdx,itemIdx)
 {let metaItem=ctx.zoneMeta[dataIdx].kind;let metaValue=ctx.zoneMeta[dataIdx].metadata[itemIdx];let x="";x=x+"<form name=editMeta onSubmit='return doEditMeta();'>";x=x+"<input type=hidden name=dataIdx value="+dataIdx+">"
 x=x+"<input type=hidden name=itemIdx value="+itemIdx+">"
@@ -39,7 +41,7 @@ function zoneMeta()
 {ctx.meta=true;topLine();callApi("zones/"+ctx.zone+"/metadata",zoneMetaDetails);return false;}
 function zoneMetaDetails(data)
 {data.sort(function(a,b){if(a.kind<b.kind)return-1;if(a.kind>b.kind)return 1;return 0;});for(let i of data)
-i.metadata.sort(function(a,b){if(a<b)return-1;if(b<a)return 1;return 0;});let newTitle=gbl.server+": "+ctx.zone+", META Data";if(!("param"in gbl))window.history.pushState(gbl.server+"/"+ctx.zone+"/META",newTitle,"/");document.title=newTitle;ctx.zoneMeta=data;delete gbl.param;let x="<table align=center width=60% border=0 cellspacing=1 cellpadding=0>";for(let i in data){for(let y in data[i].metadata){let td="<td onClick=\"editMetaItem("+i+","+y+");\">";x=x+"<tr class=dataRow>"+td+data[i].kind.toUpperCase()+"</td>";x=x+td+data[i].metadata[y]+"</td></tr>"}}
+i.metadata.sort(function(a,b){if(a<b)return-1;if(b<a)return 1;return 0;});let newTitle=gbl.server+": "+ctx.zone+", META Data";gbl.state={server:gbl.server,zone:ctx.zone,meta:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;ctx.zoneMeta=data;delete gbl.param;let x="<table align=center width=60% border=0 cellspacing=1 cellpadding=0>";for(let i in data){for(let y in data[i].metadata){let td="<td onClick=\"editMetaItem("+i+","+y+");\">";x=x+"<tr class=dataRow>"+td+data[i].kind.toUpperCase()+"</td>";x=x+td+data[i].metadata[y]+"</td></tr>"}}
 gbl.bot.innerHTML=x+"</table>";topLine();}
 function addNewRR()
 {ctx.rec.rrs.records.push({content:"",disabled:false});drawOneRecord();clickData(ctx.rec.rrs.records.length-1);}
@@ -113,8 +115,7 @@ ctx.rec.rrs=rrs;ctx.rec.loadedRows=rrs.records.length;drawOneRecord();}
 function drawOneRecord(rrs)
 {delete ctx.edit;let x=gbl.server+": "+ctx.zone+": ";if("showName"in ctx.rec)
 x=x+ctx.rec.showName;else
-x=x+ctx.rec.name;x=x+"/"+ctx.rec.type;if(!("param"in gbl))
-window.history.pushState(gbl.server+"/"+ctx.zone+"/"+ctx.rec.name+":"+ctx.rec.type,x,"/");document.title=x;delete gbl.param;x="<table width=100% border=0 cellspacing=1 cellpadding=0>";x=x+'<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="50%" /></colgroup>'
+x=x+ctx.rec.name;x=x+"/"+ctx.rec.type;gbl.state={server:gbl.server,zone:ctx.zone,name:ctx.rec.name,type:ctx.rec.type};if(!("param"in gbl))window.history.pushState(gbl.state,x,"/");document.title=x;delete gbl.param;x="<table width=100% border=0 cellspacing=1 cellpadding=0>";x=x+'<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="50%" /></colgroup>'
 for(let idx in ctx.rec.rrs.records){let i=ctx.rec.rrs.records[idx];x=x+"<tr class=dataRow>"
 +"<td onClick='deleteRRitem("+idx+");' align=center>"+gbl.bin+"</td>"
 +"<td onClick='clickRecName("+idx+");'><span id=nme"+idx+">"+ctx.rec.name+"</span></td>"
@@ -124,19 +125,20 @@ for(let idx in ctx.rec.rrs.records){let i=ctx.rec.rrs.records[idx];x=x+"<tr clas
 gbl.bot.innerHTML=x+"</table>";topLine();}
 function clickZoneRecord(name,type)
 {if(ctx.zoneDetails.kind=="Slave"){popMsg("Slave zone, editing is disabled");delete gbl.param;return;}
-ctx.rec={name:name,type:type,};delete ctx.meta;getZoneRecord();}
+ctx.rec={name:name,type:type,};getZoneRecord();}
 function getZoneRecord()
 {delete ctx.edit;delete ctx.needSave;topLine();callApi("zones/"+ctx.zone,oneRecord);}
 function addAlg()
 {let x="<tr><Td class=formPrompt>Key Algrythm :</td><td><select name=keyAlg>";["ecdsa256","ecdsa384","rsasha1","rsasha1-nsec3-sha1","rsasha256","rsasha512","dh","dsa","dsa-nsec3-sha1","ecc-gost","ed25519","ed448","gost","indirect","rsamd5"].forEach(function(i){x=x+"<option value="+i+">"+i.toUpperCase()});x=x+"</select></td></tr>";x=x+"<tr><Td class=formPrompt>Key Length (bits) :</td><td><select name=keyBits>";["256","384","1024","2048","4096"].forEach(function(i){x=x+"<option>"+i;});return x+"</select></td></tr>";}
-function setNSEC3()
-{let salt=""
-for(let i=0;i<5;i++)
-salt=salt+Math.floor(Math.random()*256).toString(16)
-let nsec3="1 0 5 "+salt;let nxtFn=zoneKeys;if(this.msg){nxtFn=function(){popMsg("NSEC3PARAM Changed");};}
-callApi("zones/"+ctx.zone,function(){ctx.zoneDetails.nsec3param=nsec3;callApi("zones/"+ctx.zone+"/rectify",nxtFn,{method:"PUT"});},{method:"PUT",okResp:204,json:JSON.stringify({nsec3param:nsec3})});}
+function setNSEC3(delnsec3)
+{let nsec3=""
+let nxtFn=function(){ctx.zoneDetails.nsec3param=nsec3;zoneKeys();}
+if(delnsec3==null){nsec3="1 0 5 ";for(let i=0;i<5;i++)
+nsec3=nsec3+Math.floor(Math.random()*256).toString(16)
+nxtFn=function(){ctx.zoneDetails.nsec3param=nsec3;callApi("zones/"+ctx.zone+"/rectify",zoneKeys,{method:"PUT"});}}
+callApi("zones/"+ctx.zone,nxtFn,{method:"PUT",okResp:204,json:JSON.stringify({nsec3param:nsec3})});}
 function doSignZone()
-{let nextFn=zoneKeys;let keyAlg=document.signZoneForm.keyAlg.value;let keyBits=parseInt(document.signZoneForm.keyBits.value);let keyPolicy=document.signZoneForm.keyPolicy.value;let keyDNSSEC=document.signZoneForm.keyDNSSEC.value;if(keyDNSSEC=="NSEC3")nextFn=setNSEC3.bind({msg:false});if(keyPolicy=="CSK"){let json={"keytype":"csk","active":true,"algorithm":keyAlg,"bits":keyBits,};callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,{method:"POST",okResp:201,json:JSON.stringify(json)});}
+{let nextFn=zoneKeys;let keyAlg=document.signZoneForm.keyAlg.value;let keyBits=parseInt(document.signZoneForm.keyBits.value);let keyPolicy=document.signZoneForm.keyPolicy.value;let keyDNSSEC=document.signZoneForm.keyDNSSEC.value;if(keyDNSSEC=="NSEC3")nextFn=function(){setNSEC3(null);};if(keyPolicy=="CSK"){let json={"keytype":"csk","active":true,"algorithm":keyAlg,"bits":keyBits,};callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,{method:"POST",okResp:201,json:JSON.stringify(json)});}
 else{let json_ksk={"keytype":"ksk","active":true,"algorithm":keyAlg,"bits":keyBits,}
 callApi("zones/"+ctx.zone+"/cryptokeys",function(){let json_zsk={"keytype":"zsk","active":true,"algorithm":keyAlg,"bits":keyBits,}
 callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,{method:"POST",okResp:201,json:JSON.stringify(json_zsk)});},{method:"POST",okResp:201,json:JSON.stringify(json_ksk)});}
@@ -157,8 +159,8 @@ x=x+"<b>CSK</b> uses one key instead of two, but means your zone will double in 
 x=x+"</td></tr></table>"
 gbl.bot.innerHTML=x;}
 function clickDS(txt)
-{let x=txt.split(" ");if(x.length<4){popMsg(gbl.warn+"Copy to clipboard failed");return false;}
-navigator.clipboard.writeText(x[x.length-1]).then(function(){popMsg("Digest copied to clipboard");},function(){popMsg(gbl.warn+"Copy to clipboard failed");});return false;}
+{let x=txt.split(" ");if(x.length<4){popMsg(gbl.warn+" Copy to clipboard failed");return false;}
+navigator.clipboard.writeText(x[x.length-1]).then(function(){popMsg("Digest copied to clipboard");},function(){popMsg(gbl.warn+" Copy to clipboard failed");});return false;}
 function doAddKey()
 {let json={"keytype":document.addKeyForm.keyKind.value,"active":(document.addKeyForm.keyActive.value=="true"),"algorithm":document.addKeyForm.keyAlg.value,"bits":parseInt(document.addKeyForm.keyBits.value),};callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});return false}
 function clickAddKey()
@@ -184,6 +186,11 @@ function startKSK(template)
 callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});}
 function toggleKey(id,act)
 {let p={"active":(!(act))};callApi("zones/"+ctx.zone+"/cryptokeys/"+id,zoneKeys,{method:"PUT",okResp:204,json:JSON.stringify(p)});}
+function deleteAllKeys()
+{let nxtFn=deleteAllKeys;let kId=ctx.zoneKeys[ctx.zoneKeys.length-1].id;ctx.zoneKeys.pop();if(ctx.zoneKeys.length==0){if(("nsec3param"in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param!=""))
+nxtFn=function(){setNSEC3(true);};else
+nxtFn=zoneKeys;}
+callApi("zones/"+ctx.zone+"/cryptokeys/"+kId,nxtFn,{method:"DELETE",okResp:204});}
 function deleteKey(idx)
 {let k=ctx.zoneKeys[idx];callApi("zones/"+ctx.zone+"/cryptokeys/"+k.id,zoneKeys,{method:"DELETE",okResp:204});}
 function cancelKeyAction()
@@ -194,10 +201,11 @@ ctx.dnssec.clickKey=idx;let sz=150;let k=ctx.zoneKeys[idx];let x="<table align=c
 function showKeys(data)
 {data.sort(function(a,b){if(a.keytype<b.keytype)return-1;if(a.keytype>b.keytype)return 1;if(a.active!=b.active){if(a.active)return-1;if(b.active)return 1;}
 if(a.id>b.id)return-1;if(a.id<b.id)return 1;return 0;})
-ctx.zoneKeys=data;if("param"in gbl){if(gbl.param.length>=3){let x=gbl.param[2].split(":");if(x.length==2)return clickZoneRecord(x[0],x[1]);}}
-let newTitle=gbl.server+": "+ctx.zone+", DNSSEC Keys"
-if(!("param"in gbl))window.history.pushState(gbl.server+"/"+ctx.zone+"/KEYS",newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0>";x=x+'<colgroup>';for(let i=0;i<5;i++)x=x+'<col width="50px">';x=x+"</colgroup><tr>";for(let i of["Active","Id","Type/Flags","Bits","Algrythm",""])
-x=x+"<th>"+i+"</th>";x=x+"</tr>";let keyTypes={num:0};for(let idx in data){i=data[idx];x=x+"<tr onClick='clickDnssecKey("+idx+");' class=dataRow><td align=center>"
+ctx.zoneKeys=data;let newTitle=gbl.server+": "+ctx.zone+", DNSSEC Keys"
+gbl.state={server:gbl.server,zone:ctx.zone,keys:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0>";x=x+'<colgroup>';for(let i=0;i<5;i++)x=x+'<col width="50px">';x=x+"</colgroup><tr>";for(let i of["Active","Id","Type/Flags","Bits","Algrythm",""])
+x=x+"<th>"+i+"</th>";x=x+"</tr>";let keyTypes={num:0};if(("nsec3param"in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param!="")){x=x+"<tr class=dataRow><td align=center>"+gbl.tick
++"</td><td colspan=3></td><td>NSEC3PARAM</td><td>"+ctx.zoneDetails.nsec3param+"</td></tr>"}
+for(let idx in data){i=data[idx];x=x+"<tr onClick='clickDnssecKey("+idx+");' class=dataRow><td align=center>"
 let aflag=0;if(i.active){aflag=1;x=x+gbl.tick;}else x=x+gbl.cross;x=x+"</td>";x=x+"<td align=center>"+i.id+"</td>";if(i.keytype in keyTypes){let k=keyTypes[i.keytype];k.num++;k.active+=aflag;k.ids.push({idx:parseInt(idx),id:i.id,act:i.active});}
 else{keyTypes[i.keytype]={ids:[],active:aflag,num:1,}
 keyTypes[i.keytype].ids.push({idx:parseInt(idx),id:i.id,act:i.active});keyTypes.num++;}
@@ -205,9 +213,9 @@ x=x+"<td align=center>"+i.keytype.toUpperCase()+"/"+i.flags+"</td>";x=x+"<td ali
 +"</td><td>"+dsAlg[parseInt(dscol[2])]+"</td><td colspan=3>"+ds+"</td></tr>";}}
 x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"}
 let sp="<div style='height: 7px;'></div>";let sz=100;x=x+"</table></td><td>"
-x=x+btn('clickAddKey()',"Add Key","Add a DNSSEC Key to "+ctx.zone,sz)+sp;if(("nsec3param"in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param!=""))
-x=x+btn('x = setNSEC3.bind({ msg: true}); x()'," Roll NSEC3","Change the NSEC3PARAM for "+ctx.zone,sz)+sp;else
-x=x+btn('x = setNSEC3.bind({ msg: false}); x()'," Add NSEC3","Switch this zone to NSEC3 "+ctx.zone,sz)+sp;x=x+"</td></tr></table>"
+x=x+btn('clickAddKey()',"Add Key","Add a DNSSEC Key to "+ctx.zone,sz)+sp;x=x+btn('deleteAllKeys()',"Unsign","Remove all DNSSEC on "+ctx.zone,sz)+sp;if(("nsec3param"in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param!="")){x=x+btn("setNSEC3(true)","Del NSEC3","Switch "+ctx.zone+" from NSEC3 to NSEC",sz)+sp;x=x+btn("setNSEC3()","Roll NSEC3","Change the NSEC3PARAM for "+ctx.zone,sz)+sp;}
+else
+x=x+btn("setNSEC3()","Add NSEC3","Switch this zone to NSEC3 "+ctx.zone,sz)+sp;x=x+"</td></tr></table>"
 sz=200
 x=x+"<div id='dnssecTop'><table align=center cellspacing=10 cellpadding=0 border=0>"
 let notes="If your zone is currently validating, after <b>every</b> Key Rollover step you must leave a few days<br>"
@@ -270,9 +278,9 @@ function zoneDetails(data)
 {data.rrsets.sort(function(a,b){if((a.name==data.id)&&(b.name==data.id)){for(tag of["SOA","NS","MX"]){if(a.type==tag)return-1;if(b.type==tag)return 1;}}
 else{if(a.name==data.id)return-1;if(b.name==data.id)return 1;if(a.name<b.name)return-1;if(a.name>b.name)return 1;}
 if(a.type<b.type)return-1;if(a.type>b.type)return 1;return 0;})
-ctx.zoneDetails=data;if(("param"in gbl)&&(gbl.param.length>=3)){if(gbl.param[2]=="META")return zoneMeta();if(data.kind!="Slave"){let x=gbl.param[2].split(":");if(x.length==2)return clickZoneRecord(x[0],x[1]);}}
+ctx.zoneDetails=data;if(("param"in gbl)&&("zone"in gbl.param)){if("meta"in gbl.param)return zoneMeta();if("keys"in gbl.param)return zoneKeys();if((data.kind!="Slave")&&("name"in gbl.param)&&("type"in gbl.param)){return clickZoneRecord(gbl.param.name,gbl.param.type);}}
 let newTitle=gbl.server+": "+ctx.zone
-if(!("param"in gbl))window.history.pushState(gbl.server+"/"+ctx.zone,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data.rrsets){x=x+"<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=dataRow>"
+gbl.state={server:gbl.server,zone:ctx.zone};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data.rrsets){x=x+"<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=dataRow>"
 +"<td valign=top>"+i.name.substr(0,i.name.length-ctx.zone.length-1)+"</td>"
 +"<td valign=top align=right>"+i.ttl+"</td>"
 +"<td valign=top>"+i.type+"</td><td valign=top>";if(i.type=="SOA"){data.soaSplit=i.records[0].content.split(" ");x=x+formatSOA(data.soaSplit);}
@@ -293,12 +301,12 @@ function loadThisZone()
 function zoneDetailsLoad(zone)
 {document.body.scrollTop=0;ctx={zone:zone,zoneList:ctx.zoneList,};callApi("zones/"+ctx.zone,zoneDetails);}
 function searchLoadRecord(zone,name,type)
-{gbl.param=[gbl.server,zone,name+":"+type];title=gbl.server+", Search results - "+name+":"+type
-window.history.pushState(gbl.server+"/"+zone+"/"+name+":"+type,title,"/");zoneDetailsLoad(zone);}
+{gbl.param={server:gbl.server,zone:ctx.zone,name:ctx.rec.name,type:ctx.rec.type};gbl.state=gbl.param;title=gbl.server+", Search results - "+name+":"+type
+window.history.pushState(gbl.param,title,"/");zoneDetailsLoad(zone);}
 function searchResults(data)
 {if(data.length<=0){popMsg("No search results");return;}
 let newTitle=gbl.server+": Search Results"
-if(!("param"in gbl))window.history.pushState(gbl.server+"/SEARCH/"+ctx.searchTerm,newTitle,"/");document.title=newTitle
+gbl.state={server:gbl.server,search:ctx.searchTerm};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle
 delete gbl.param;ctx={searchTerm:ctx.searchTerm};topLine();ctx={};let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){x=x+"<tr class=dataRow";if(i.object_type!="zone"){x=x+" onClick='ctx = { zone: \""+i.zone+"\" }; "
 +" searchLoadRecord(\""+i.zone+"\",\""+i.name+"\",\""+i.type+"\");'"
 +"><td valign=top>"+i.name+"</td>"
@@ -311,27 +319,47 @@ x=x+"</tr>";}
 gbl.bot.innerHTML=x+"</table>";}
 function searchFormSubmit()
 {let s=document.searchForm.searchTerm.value;ctx.searchTerm=s;document.searchForm.searchTerm.value="";callApi("search-data?q="+s,searchResults);return false;}
+function loadTsigList()
+{callApi("tsigkeys",showTsigList);}
+function clickTSIG(txt)
+{navigator.clipboard.writeText(txt).then(function(){popMsg("Key copied to clipboard");},function(){popMsg(gbl.warn+" Copy to clipboard failed");});return false;}
+function showTSIG(tsig)
+{callApi("tsigkeys/"+tsig,function(data){let x="<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
++"<tr><td class=formPrompt>TSIG Name :</td><td>"+data.id+"</td></tr>"
++"<tr><td class=formPrompt>TSIG Algorithm :</td><td>"+data.algorithm+"</td></tr>"
++"<tr onClick=\"clickTSIG('"+data.key+"');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>"+data.key+"</td></tr>"
++"<tr><td align=center colspan=2><hr></td></tr>"
++"<tr><td align=center colspan=2>"
++btn("loadTsigList()","Back","Go back to the list of TSIGs")
++btn("deleteTSIG('"+data.id+"')","Delete","Delete this TSIG Key")
++"</td></tr></table>";gbl.bot.innerHTML=x;topLine();});}
+function showTsigList(data)
+{if(data.length<=0){popMsg("No TSIGs found");return;}
+let newTitle=gbl.server+": TSIGs";gbl.state={server:gbl.server,tsig:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle
+delete gbl.param;ctx={};topLine();let x="<table align=center border=0 cellspacing=2 cellpadding=2>"
++"<tr><th>TSIG Name</td><th>Algorithm</td></tr>";for(let i of data)
+x=x+"<tr class=dataRow onClick=\"showTSIG('"+i.id+"');\"><td>"+i.id+"</td><td>"+i.algorithm+"</td></tr>";x=x+"</table>";gbl.bot.innerHTML=x;}
 function doMakeZone(data)
 {if(data)
 zoneDetailsLoad(data.name);else{clickAddZone(false);popMsg(gbl.warn+" Adding zone failed");}}
 function doNewZone()
 {let name=document.newZoneForm.zoneName.value;if(name.substr(name.length-1)!=".")name=name+".";if(!fqdnCheck.test(name)){popMsg(gbl.warn+" Invalid domain name");document.newZoneForm.zoneName.focus();document.newZoneForm.zoneName.select();return false;}
 let kind=document.newZoneForm.zoneKind.value;let ns=[];let ip=[];for(let i=0;i<4;i++){let x=document.newZoneForm["ns"+i];let v=x.value;if(v!=""){if(v.substr(v.length-1)!=".")v=v+"."
-if(!fqdnCheck.test(v)){popMsg(gbl.warn+" Invalid Host Name: "+v);x.focus();x.select();return;}
+if(!fqdnCheck.test(v)){popMsg(gbl.warn+" Invalid Host Name: "+v);x.focus();x.select();return false;}
 ns.push(v);}
 x=document.newZoneForm["ip"+i];if(x.value!=""){if((validations["rrA"].test(x.value))||(validations["rrA"].test(x.value)))
-ip.push(x.value);else{popMsg(gbl.warn+" Invalid IP Address: "+x.value);x.focus();x.select();return;}}}
-let data={name:name,kind:kind,masters:ip,nameservers:ns,};console.log(data);callApi("zones",doMakeZone,{method:"POST",callErr:true,okResp:201,json:JSON.stringify(data)});return false;}
+ip.push(x.value);else{popMsg(gbl.warn+" Invalid IP Address: "+x.value);x.focus();x.select();return false;}}}
+let data={name:name,kind:kind,masters:ip,nameservers:ns,};callApi("zones",doMakeZone,{method:"POST",callErr:true,okResp:201,json:JSON.stringify(data)});return false;}
 function zoneListDetails(data)
 {data.sort(function(a,b){if(a.id<b.id)return-1;if(a.id>b.id)return 1;;return 0;})
-ctx.zoneList=data;if(("param"in gbl)&&(gbl.param.length>=2)){if((gbl.param[1]=="SEARCH")&&(gbl.param.length>=3)){ctx.searchTerm=gbl.param[2];return callApi("search-data?q="+ctx.searchTerm,searchResults);}
-else
-return zoneDetailsLoad(gbl.param[1]);}
-let newTitle=gbl.server+": Zone List";if(!("param"in gbl))window.history.pushState(gbl.server,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){let name=i.id;x=x+"<tr class=dataRow onClick='zoneDetailsLoad(\""+name+"\")'>"
-+"<td>"+name+"</td><td>"+i.kind+"</td>";t="";hlp="Zone is NOT dnssec signed";if(i.dnssec){t=gbl.lock;hlp="Zone is DNSSEC signed"}
+ctx.zoneList=data;if(("param"in gbl)&&("zone"in gbl.param)){if("search"in gbl.param){ctx.searchTerm=gbl.param.search;return callApi("search-data?q="+ctx.searchTerm,searchResults);}
+return zoneDetailsLoad(gbl.param.zone);}
+let newTitle=gbl.server+": Zone List";gbl.state={server:gbl.server};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
+x=x+"<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){let name=i.id;x=x+"<tr class=dataRow onClick='zoneDetailsLoad(\""+name+"\")'>"
++"<td>"+name+"</td><td>"+i.kind+"</td>";t="";hlp="Zone is NOT dnssec signed";if(i.dnssec){t=gbl.nsec;hlp="Zone is DNSSEC signed";}
 x=x+"<td title='"+hlp+"'>"+t+"</td><td>"+i.serial+"</td>";t="";hlp="";if(i.notified_serial!=i.serial){t=gbl.timer;hlp="Zone has unnotified changes";}
 x=x+"<td title='"+hlp+"'>"+t+"</td></tr>";}
-gbl.bot.innerHTML=x+"</table>";topLine();}
+x=x+"</table></td><td>";let sp="<div style='height: 7px;'></div>";let sz=100;x=x+btn("clickAddZone(true)","Add Zone","Add a new zone to the database",sz)+sp;x=x+btn("loadTsigList()","TSIGs","Show the list of TSIGs",sz)+sp;x=x+"</td></tr></table>";topLine();gbl.bot.innerHTML=x;}
 function zoneList()
 {document.body.scrollTop=0;ctx={};topLine();callApi("zones",zoneListDetails);return false;}
 function zoneAxfrData(data)
@@ -341,35 +369,33 @@ function zoneAxfr()
 function validInt(x){return((x!="")&&(x!=null)&&(!(isNaN(x))));}
 function btn(call,txt,hlp,sz){let ex=""
 if(sz!=null)ex="style='width: "+sz+"px;'"
-return"<span "+ex+" title='"+hlp+"' class=myBtn onClick='"+call+"; return false;'>"+txt+"</span>";}
+return"<span "+ex+" title=\""+hlp+"\" class=myBtn onClick=\""+call+"; return false;\">"+txt+"</span>";}
 function goLogin()
 {document.location="/";}
 function topLine()
-{gbl.addH.style.display="none";gbl.newZ.style.display="none";gbl.newM.style.display="none";let url=""
-let y="<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
-+"<font size=+1><a title='Open this page in a new window' target=_blank href='"+window.origin+"?"+gbl.server;let x="'>"+gbl.page+"</a></font></td><td>"
+{gbl.addH.style.display="none";gbl.newZ.style.display="none";gbl.newM.style.display="none";let y="<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
++"<font size=+1><a title='Open this page in a new window' target=_blank href='"+window.origin+"?";let x="'>"+gbl.page+"</a></font></td><td>"
 +btn("goLogin()",gbl.server,"Change server")
-+btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);if("searchTerm"in ctx){url=url+"/SEARCH/"+ctx.searchTerm;delete ctx.searchTerm;}
-if("zone"in ctx){url="/"+ctx.zone;x=x+btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);if("rec"in ctx){let name="@";url=url+"/"+ctx.rec.name+":"+ctx.rec.type;if(ctx.rec.name!=ctx.zone)
++btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);if("searchTerm"in ctx){delete ctx.searchTerm;}
+if("zone"in ctx){x=x+btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);if("rec"in ctx){let name="@";if(ctx.rec.name!=ctx.zone)
 name=ctx.rec.name.substr(0,ctx.rec.name.length-ctx.zone.length-1);ctx.rec.showName=name;x=x+btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);}
-else if("meta"in ctx){url=url+"/META";x=x+btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);}
-else if("zoneKeys"in ctx){url=url+"/KEYS";x=x+btn('zoneKeys()',"DNSSEC","Reload the DNSSEC Keys for "+ctx.zone);}}
+else if("meta"in gbl.state){x=x+btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);}
+else if("zoneKeys"in ctx){x=x+btn('zoneKeys()',"DNSSEC","Reload the DNSSEC Keys for "+ctx.zone);}}
 x=x+"</td><td width=100% align=center><span class='hidden' id='showMsg'></span></td><td>";if("zone"in ctx){if("edit"in ctx){if("needCancel"in ctx.edit)
 x=x+btn(ctx.edit.needCancel+"(false)","Cancel","Cancel this edit");else
 x=x+btn("cancelAllEdits()","Cancel","Cancel this edit");}
 else{if("rec"in ctx)
 x=x+btn("addNewRR()","Add RR","Add another "+ctx.rec.type+" record to "+ctx.rec.name);if("needSave"in ctx)
 x=x+btn(ctx.needSave+"(false)","Cancel","Abandom all changes")
-+btn(ctx.needSave+"(true)","Save","Save your changes to the zone file");if("meta"in ctx)
++btn(ctx.needSave+"(true)","Save","Save your changes to the zone file");if("meta"in gbl.state)
 x=x+btn('clickAddMeta()',"Add Meta","Add a META data record to "+ctx.zone);}}
-else{if(!("addZone"in ctx))x=x+btn("clickAddZone(true)","Add Zone","Add a new zone to the database");}
 x=x+"</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 +"<input placeholder='Search' size=30 name=searchTerm></form></td>"
-+"</tr><table><hr>";gbl.top.innerHTML=y+url+x;}
++"</tr><table><hr>";gbl.top.innerHTML=y+btoa(JSON.stringify(gbl.state))+x;}
 function startUp()
-{window.addEventListener('popstate',function(e){if(e.state==null)goLogin();gbl.param=e.state.split("/");if(gbl.param.length>=1){gbl.server=gbl.param[0];zoneList();return true;}
+{window.addEventListener('popstate',function(e){if(e.state==null)goLogin();gbl.param=e.state;if("server"in gbl.param){gbl.server=gbl.param.server;zoneList();return true;}
 delete gbl.param;document.location="/"
-return true;});gbl.top=document.getElementById("topSpan");gbl.bot=document.getElementById("lowerSpan");gbl.addH=document.getElementById("addName");gbl.newZ=document.getElementById("addZone");gbl.newM=document.getElementById("addMeta");if(window.location.search!=""){gbl.param=window.location.search.substr(1).split("/");if(gbl.param.length>=1){gbl.server=gbl.param[0];zoneList();}}}
+return true;});gbl.top=document.getElementById("topSpan");gbl.bot=document.getElementById("lowerSpan");gbl.addH=document.getElementById("addName");gbl.newZ=document.getElementById("addZone");gbl.newM=document.getElementById("addMeta");if(window.location.search!=""){gbl.param=JSON.parse(atob(window.location.search.substr(1)));if("server"in gbl.param){gbl.state=gbl.param;gbl.server=gbl.param.server;zoneList();}}}
 function initialLogin()
 {let f=document.loginForm;gbl.server=f.server.value;gbl.apikey=f.apikey.value;gbl.with_https=f.with_https.checked;zoneList();return false;}
 function formatSOA(i)
