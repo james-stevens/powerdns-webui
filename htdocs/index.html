@@ -440,7 +440,8 @@ function zoneMetaDetails(data)
 			});
 
 	let newTitle = gbl.server + ": " + ctx.zone + ", META Data";
-	if (!("param" in gbl)) window.history.pushState(gbl.server + "/" +ctx.zone + "/META",newTitle,"/");
+	gbl.state = { server: gbl.server, zone: ctx.zone, meta:true };
+	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 
 	ctx.zoneMeta = data;
@@ -805,8 +806,8 @@ function drawOneRecord(rrs)
 		x = x + ctx.rec.name;
 
 	x = x + "/" + ctx.rec.type;
-	if (!("param" in gbl))
-		window.history.pushState(gbl.server + "/" + ctx.zone + "/" + ctx.rec.name + ":" + ctx.rec.type,x,"/");
+	gbl.state = { server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
+	if (!("param" in gbl)) window.history.pushState(gbl.state,x,"/");
 	document.title = x;
 	delete gbl.param;
 
@@ -839,7 +840,6 @@ function clickZoneRecord(name,type)
 		name: name,
 		type: type,
 		};
-	delete ctx.meta;
 
 	getZoneRecord();
 }
@@ -1198,15 +1198,9 @@ function showKeys(data)
 
 	ctx.zoneKeys = data;
 
-	if ("param" in gbl) {
-		if (gbl.param.length >= 3) {
-			let x = gbl.param[2].split(":");
-			if (x.length == 2) return clickZoneRecord(x[0],x[1]);
-			}
-		}
-
 	let newTitle = gbl.server + ": " + ctx.zone + ", DNSSEC Keys"
-	if (!("param" in gbl)) window.history.pushState(gbl.server+"/"+ctx.zone+"/KEYS",newTitle,"/");
+	gbl.state = { server: gbl.server, zone: ctx.zone, keys:true };
+	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 
 	delete gbl.param;
@@ -1563,16 +1557,17 @@ function zoneDetails(data)
 
 	ctx.zoneDetails = data;
 
-	if (("param" in gbl)&&(gbl.param.length >= 3)) {
-		if (gbl.param[2] == "META") return zoneMeta();
-		if (data.kind != "Slave") {
-			let x = gbl.param[2].split(":");
-			if (x.length == 2) return clickZoneRecord(x[0],x[1]);
+	if (("param" in gbl)&&("zone" in gbl.param)) {
+		if ("meta" in gbl.param) return zoneMeta();
+		if ("keys" in gbl.param) return zoneKeys();
+		if ((data.kind != "Slave")&&("name" in gbl.param)&&("type" in gbl.param)) {
+			return clickZoneRecord(gbl.param.name,gbl.param.type);
 			}
 		}
 
 	let newTitle = gbl.server + ": " + ctx.zone
-	if (!("param" in gbl)) window.history.pushState(gbl.server+"/"+ctx.zone,newTitle,"/");
+	gbl.state = { server: gbl.server, zone: ctx.zone };
+	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 
 	delete gbl.param;
@@ -1664,9 +1659,10 @@ function zoneDetailsLoad(zone)
 
 function searchLoadRecord(zone,name,type)
 {
-	gbl.param = [ gbl.server, zone, name + ":" + type ];
+	gbl.param = { server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
+	gbl.state = gbl.param;
 	title = gbl.server + ", Search results - " + name + ":" + type
-	window.history.pushState(gbl.server + "/" + zone + "/" + name + ":" + type,title,"/");
+	window.history.pushState(gbl.param,title,"/");
 	zoneDetailsLoad(zone);
 }
 
@@ -1680,7 +1676,8 @@ function searchResults(data)
 		}
 
 	let newTitle = gbl.server + ": Search Results"
-	if (!("param" in gbl)) window.history.pushState(gbl.server+"/SEARCH/"+ctx.searchTerm,newTitle,"/");
+	gbl.state = { server: gbl.server, search: ctx.searchTerm};
+	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle
 
 	delete gbl.param;
@@ -1807,17 +1804,18 @@ function zoneListDetails(data)
 		})
 
 	ctx.zoneList = data;
-	if (("param" in gbl)&&(gbl.param.length >= 2)) {
-		if ((gbl.param[1] == "SEARCH")&&(gbl.param.length >= 3)) {
-			ctx.searchTerm = gbl.param[2];
+
+	if (("param" in gbl)&&("zone" in gbl.param)) {
+		if ("search" in gbl.param) {
+			ctx.searchTerm = gbl.param.search;
 			return callApi("search-data?q=" + ctx.searchTerm,searchResults);
 			}
-		else
-			return zoneDetailsLoad(gbl.param[1]);
+		return zoneDetailsLoad(gbl.param.zone);
 		}
 
 	let newTitle = gbl.server+": Zone List";
-	if (!("param" in gbl)) window.history.pushState(gbl.server,newTitle,"/");
+	gbl.state = { server: gbl.server };
+	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 	delete gbl.param;
 
@@ -1907,39 +1905,33 @@ function topLine()
 	gbl.addH.style.display = "none";
 	gbl.newZ.style.display = "none";
 	gbl.newM.style.display = "none";
-	let url = ""
 
 	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
-		+ "<font size=+1><a title='Open this page in a new window' target=_blank href='" + window.origin + "?" + gbl.server;
+		+ "<font size=+1><a title='Open this page in a new window' target=_blank href='" + window.origin + "?";
 
 	let x = "'>" + gbl.page + "</a></font></td><td>"
 		+ btn("goLogin()",gbl.server,"Change server")
 		+ btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);
 
 	if ("searchTerm" in ctx) {
-		url = url + "/SEARCH/" + ctx.searchTerm;
 		delete ctx.searchTerm;
 		}
 
 	if ("zone" in ctx) {
-		url = "/" + ctx.zone;
 		x = x + btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);
 
 		if ("rec" in ctx) {
 			let name = "@";
-			url = url + "/" + ctx.rec.name + ":" + ctx.rec.type;
 			if (ctx.rec.name != ctx.zone)
 				name = ctx.rec.name.substr(0,ctx.rec.name.length - ctx.zone.length - 1);
 
 			ctx.rec.showName = name;
 			x = x + btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);
 			}
-		else if ("meta" in ctx) {
-				url = url + "/META";
+		else if ("meta" in gbl.state) {
 				x = x + btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);
 				}
 		else if ("zoneKeys" in ctx) {
-			url = url + "/KEYS";
 			x = x + btn('zoneKeys()',"DNSSEC","Reload the DNSSEC Keys for "+ctx.zone);
 			}
 		}
@@ -1961,7 +1953,7 @@ function topLine()
 				x = x + btn(ctx.needSave+"(false)","Cancel","Abandom all changes")
 					+ btn(ctx.needSave+"(true)","Save","Save your changes to the zone file");
 
-			if ("meta" in ctx)
+			if ("meta" in gbl.state)
 				x = x + btn('clickAddMeta()',"Add Meta","Add a META data record to "+ctx.zone);
 			}
 
@@ -1974,7 +1966,7 @@ function topLine()
 		+ "<input placeholder='Search' size=30 name=searchTerm></form></td>"
 		+ "</tr><table><hr>";
 
-	gbl.top.innerHTML = y + url + x;
+	gbl.top.innerHTML = y + btoa(JSON.stringify(gbl.state)) + x;
 }
 
 
@@ -1984,9 +1976,9 @@ function startUp()
 	window.addEventListener('popstate', function(e) {
 		if (e.state == null) goLogin();
 
-		gbl.param = e.state.split("/");
-		if (gbl.param.length >= 1) {
-			gbl.server = gbl.param[0];
+		gbl.param = e.state;
+		if ("server" in gbl.param) {
+			gbl.server = gbl.param.server;
 			zoneList();
 			return true;
 			}
@@ -2002,9 +1994,10 @@ function startUp()
 	gbl.newM = document.getElementById("addMeta");
 
 	if (window.location.search != "") {
-		gbl.param = window.location.search.substr(1).split("/");
-		if (gbl.param.length >= 1) {
-			gbl.server = gbl.param[0];
+		gbl.param = JSON.parse(atob(window.location.search.substr(1)));
+		if ("server" in gbl.param) {
+			gbl.state = gbl.param;
+			gbl.server = gbl.param.server;
 			zoneList();
 			}
 		}
