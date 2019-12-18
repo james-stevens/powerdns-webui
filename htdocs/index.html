@@ -1414,8 +1414,8 @@ function zoneKindChange(sel)
 function zoneNotify()
 {
 	callApi("zones/"+ctx.zone+"/notify", function(ret) {
-		if (ret) popMsg("Zone notified"); else popMsg(gbl.warn + " Notify failed");
-		}, { method: "PUT" });
+		if (ret) popMsg(gbl.tick + " Zone notified"); else popMsg(gbl.warn + " Notify failed");
+		}, { method: "PUT", callErr: true });
 }
 
 
@@ -1423,8 +1423,8 @@ function zoneNotify()
 function zoneRectify()
 {
 	callApi("zones/"+ctx.zone+"/rectify", function(ret) {
-		if (ret) popMsg("Zone rectified"); else popMsg(gbl.warn + " Rectify failed");
-		}, { method: "PUT" });
+		if (ret) popMsg(gbl.tick + " Zone rectified"); else popMsg(gbl.warn + " Rectify failed");
+		}, { method: "PUT", callErr: true });
 }
 
 
@@ -1432,8 +1432,8 @@ function zoneRectify()
 function zoneRetrieve()
 {
 	callApi("zones/"+ctx.zone+"/axfr-retrieve", function(ret) {
-		if (ret) popMsg("Zone retrieval requested"); else popMsg(gbl.warn + " Zone retrieval failed");
-		}, { method: "PUT" });
+		if (ret) popMsg(gbl.tick + " Zone retrieval requested"); else popMsg(gbl.warn + " Zone retrieval failed");
+		}, { method: "PUT", callErr: true });
 }
 
 
