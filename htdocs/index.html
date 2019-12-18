@@ -201,6 +201,20 @@ var validations = {
 	};
 
 
+var trueOrFalse = /^[01]$/;
+
+var validateMeta = {
+	"API-RECTIFY": trueOrFalse,
+	"IXFR": trueOrFalse,
+	"NSEC3NARROW": trueOrFalse,
+	"PRESIGNED": trueOrFalse,
+	"PUBLISH-CDNSKEY": trueOrFalse,
+	"SLAVE-RENOTIFY": trueOrFalse,
+	"SOA-EDIT-API": /^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,
+	"SOA-EDIT-DNSUPDATE": /^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,
+	};
+
+
 // Descriptions for "DS" record algorythm numbers from IANA
 var dsAlg = [ "Reserved","SHA1","SHA256","GOST","SHA384"];
 
@@ -305,6 +319,13 @@ function doEditMeta(isDel)
 	let metaValue = document.editMeta.metaValue.value;
 
 	let i = ctx.zoneMeta[dataIdx];
+
+	if ((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))) {
+		popMsg(gbl.warn + " Invalid value for " + i.kind);
+		document.editMeta.metaValue.focus();
+		document.editMeta.metaValue.select();
+		return false;
+		}
 
 	if (isDel) i.metadata.splice(itemIdx,1);
 	else {
@@ -839,6 +860,7 @@ function getZoneRecord()
 // DNSSEC Stuff
 //=============================================================================================
 
+
 function addAlg()
 {
 	let x = "<tr><Td class=formPrompt>Key Algrythm :</td><td><select name=keyAlg>";
@@ -858,18 +880,22 @@ function addAlg()
 function setNSEC3(delnsec3)
 {
 	let nsec3 = ""
-
-	if (delnsec3 == null) {
-		let salt = ""
-		for(let i=0;i<5;i++)
-			salt = salt + Math.floor(Math.random() * 256).toString(16)
-		nsec3 = "1 0 5 " + salt;
+	let nxtFn = function() {
+		ctx.zoneDetails.nsec3param = nsec3;
+		zoneKeys();
 		}
 
-	callApi("zones/"+ctx.zone,function() {
-			ctx.zoneDetails.nsec3param = nsec3;
-			callApi("zones/"+ctx.zone+"/rectify", zoneKeys, { method: "PUT" });
-		},
+	if (delnsec3 == null) {
+		nsec3 = "1 0 5 ";
+		for(let i=0;i<5;i++)
+			nsec3 = nsec3 + Math.floor(Math.random() * 256).toString(16)
+		nxtFn = function() {
+				ctx.zoneDetails.nsec3param = nsec3;
+				callApi("zones/"+ctx.zone+"/rectify", zoneKeys, { method: "PUT" });
+				}
+		}
+
+	callApi("zones/"+ctx.zone, nxtFn,
 		{ method: "PUT", okResp: 204, json: JSON.stringify({ nsec3param: nsec3 }) } );
 }
 
@@ -886,7 +912,9 @@ function doSignZone()
 	if (keyDNSSEC == "NSEC3") nextFn = function() { setNSEC3(null); };
 
 	if (keyPolicy == "CSK") {
+
 		let json = { "keytype": "csk", "active": true, "algorithm": keyAlg, "bits": keyBits, };
+
 		callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,
 			{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
 		}
@@ -1091,11 +1119,31 @@ function toggleKey(id,act)
 
 
 
+function deleteAllKeys()
+{
+	let nxtFn = deleteAllKeys;
+	let kId = ctx.zoneKeys[ctx.zoneKeys.length-1].id;
+
+	ctx.zoneKeys.pop();
+
+	if (ctx.zoneKeys.length == 0) {
+		if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != ""))
+			nxtFn = function() { setNSEC3(true); };
+		else
+			nxtFn = zoneKeys;
+		}
+
+	callApi("zones/"+ctx.zone+"/cryptokeys/" + kId,nxtFn, { method: "DELETE", okResp: 204 } );
+}
+
+
+
 function deleteKey(idx)
 {
 	let k = ctx.zoneKeys[idx];
 	callApi("zones/"+ctx.zone+"/cryptokeys/" + k.id,zoneKeys, { method: "DELETE", okResp: 204 } );
 }
+
 
 
 function cancelKeyAction()
@@ -1217,6 +1265,7 @@ function showKeys(data)
 
 	x = x + "</table></td><td>"
 	x = x + btn('clickAddKey()',"Add Key","Add a DNSSEC Key to "+ctx.zone,sz) + sp;
+	x = x + btn('deleteAllKeys()',"Unsign","Remove all DNSSEC on "+ctx.zone,sz) + sp;
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
 		x = x + btn("setNSEC3(true)","Del NSEC3","Switch "+ctx.zone+" from NSEC3 to NSEC",sz) + sp;
@@ -1717,7 +1766,7 @@ function doNewZone()
 			if (!fqdnCheck.test(v)) {
 				popMsg(gbl.warn + " Invalid Host Name: "+v);
 				x.focus(); x.select();
-				return;
+				return false;
 				}
 
 			ns.push(v);
@@ -1730,7 +1779,7 @@ function doNewZone()
 			else {
 				popMsg(gbl.warn + " Invalid IP Address: "+x.value);
 				x.focus(); x.select();
-				return;
+				return false;
 				}
 			}
 		}
@@ -1742,9 +1791,8 @@ function doNewZone()
 		nameservers: ns,
 		};
 
-	console.log(data);
-
 	callApi("zones",doMakeZone, { method: "POST", callErr: true, okResp: 201, json: JSON.stringify(data) } );
+
 	return false; // block form submit
 }
 
