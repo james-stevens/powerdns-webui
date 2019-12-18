@@ -976,13 +976,13 @@ function clickDS(txt)
 {
 	let x = txt.split(" ");
 	if (x.length < 4) {
-		popMsg(gbl.warn+"Copy to clipboard failed");
+		popMsg(gbl.warn + " Copy to clipboard failed");
 		return false;
 		}
 
 	navigator.clipboard.writeText(x[x.length-1]).then(
 		function() { popMsg("Digest copied to clipboard"); },
-		function() { popMsg(gbl.warn+"Copy to clipboard failed"); }
+		function() { popMsg(gbl.warn + " Copy to clipboard failed"); }
 		);
 
 	return false;
@@ -1720,6 +1720,77 @@ function searchFormSubmit()
 }
 
 
+//=============================================================================================
+// TSIGs
+//=============================================================================================
+
+
+function loadTsigList()
+{
+	callApi("tsigkeys",showTsigList);
+}
+
+
+
+function clickTSIG(txt)
+{
+	navigator.clipboard.writeText(txt).then(
+		function() { popMsg("Key copied to clipboard"); },
+		function() { popMsg(gbl.warn + " Copy to clipboard failed"); }
+		);
+
+	return false;
+}
+
+
+
+function showTSIG(tsig)
+{
+	callApi("tsigkeys/"+tsig,function(data) {
+
+		let x = "<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
+			+ "<tr><td class=formPrompt>TSIG Name :</td><td>"+data.id+"</td></tr>"
+			+ "<tr><td class=formPrompt>TSIG Algorithm :</td><td>"+data.algorithm+"</td></tr>"
+			+ "<tr onClick=\"clickTSIG('"+data.key+"');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>"+data.key+"</td></tr>"
+			+ "<tr><td align=center colspan=2><hr></td></tr>"
+			+ "<tr><td align=center colspan=2>" 
+			+ btn("loadTsigList()","Back","Go back to the list of TSIGs")
+			+ btn("deleteTSIG('"+data.id+"')","Delete","Delete this TSIG Key")
+			+ "</td></tr></table>";
+
+		gbl.bot.innerHTML = x;
+		topLine();
+		});
+}
+
+
+
+function showTsigList(data)
+{
+	if (data.length <= 0) {
+		popMsg("No TSIGs found");
+		return;
+		}
+
+	let newTitle = gbl.server + ": TSIGs";
+	gbl.state = { server: gbl.server, tsig: true };
+	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
+	document.title = newTitle
+
+	delete gbl.param;
+	ctx = {};
+	topLine();
+
+	let x = "<table align=center border=0 cellspacing=2 cellpadding=2>"
+		+ "<tr><th>TSIG Name</td><th>Algorithm</td></tr>";
+
+	for(let i of data)
+		x = x + "<tr class=dataRow onClick=\"showTSIG('"+i.id+"');\"><td>"+i.id+"</td><td>"+i.algorithm+"</td></tr>";
+
+	x = x + "</table>";
+	gbl.bot.innerHTML = x;
+}
+
 
 //=============================================================================================
 // Code to handle the list of zones
@@ -1819,7 +1890,8 @@ function zoneListDetails(data)
 	document.title = newTitle;
 	delete gbl.param;
 
-	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	let x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
+	x = x + "<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
 		let name = i.id;
 		x = x + "<tr class=dataRow onClick='zoneDetailsLoad(\""+name+"\")'>"
@@ -1840,8 +1912,18 @@ function zoneListDetails(data)
 			}
 		x = x + "<td title='" + hlp + "'>" + t + "</td></tr>";
 		}
-	gbl.bot.innerHTML = x + "</table>";
+	x = x + "</table></td><td>";
+
+	let sp = "<div style='height: 7px;'></div>";
+	let sz = 100;
+
+	x = x + btn("clickAddZone(true)","Add Zone","Add a new zone to the database",sz)+sp;
+	x = x + btn("loadTsigList()","TSIGs","Show the list of TSIGs",sz)+sp;
+
+	x = x + "</td></tr></table>";
+
 	topLine();
+	gbl.bot.innerHTML = x;
 }
 
 
@@ -1957,9 +2039,6 @@ function topLine()
 				x = x + btn('clickAddMeta()',"Add Meta","Add a META data record to "+ctx.zone);
 			}
 
-		}
-	else {
-		if (!("addZone" in ctx)) x = x + btn("clickAddZone(true)","Add Zone","Add a new zone to the database");
 		}
 
 	x = x + "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
