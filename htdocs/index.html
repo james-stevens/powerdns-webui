@@ -7,9 +7,9 @@
 
 <style type='text/css'>
 
-.fullvis { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:16pt; visibility: visible; opacity: 1; }
-.fadein  { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:16pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
-.fadeout { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:16pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
+.fullvis { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; }
+.fadein  { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
+.fadeout { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
 
 #topSpan{
 	background-color: #666688;
@@ -2121,7 +2121,7 @@ function topLine()
 			}
 		}
 
-	x = x + "</td><td width=100% align=center><span class='hidden' id='showMsg'></span></td><td>";
+	x = x + "</td><td width=100% align=center><span class='fullvis' id='showMsg'></span></td><td>";
 
 	if ("zone" in ctx) {
 		if ("edit" in ctx) {
