@@ -221,11 +221,11 @@ var dsAlg = [ "Reserved","SHA1","SHA256","GOST","SHA384"];
 
 // these appear as metadata items but are handled as zone properties - lol
 var blockedMeta = {
-	"SOA-EDIT": "soa_edit",
-	"SOA-EDIT-API": "soa_edit_api",
-	"NSEC3PARAM": "nsec3param",
-	"TSIG-ALLOW-AXFR": "master_tsig_key_ids",
-	"AXFR-MASTER-TSIG": "slave_tsig_key_ids",
+	"SOA-EDIT": { name: "soa_edit", list: false },
+	"SOA-EDIT-API": { name: "soa_edit_api", list: false },
+	"NSEC3PARAM": { name: "nsec3param", list: false },
+	"TSIG-ALLOW-AXFR": { name: "master_tsig_key_ids", list: true },
+	"AXFR-MASTER-TSIG": { name: "slave_tsig_key_ids", list: true },
 	};
 
 
@@ -342,9 +342,8 @@ function doEditMeta(isDel)
 
 	if (i.kind in blockedMeta) {
 		let json = {}
-
-		if (i.kind == "NSEC3PARAM") json[blockedMeta[i.kind]] = metaValue;
-		else json[blockedMeta[i.kind]] = i.metadata;
+		json[blockedMeta[i.kind].name] = metaValue;
+		if (blockedMeta[i.kind].list) json[blockedMeta[i.kind].name] = i.metadata;
 
 		callApi("zones/"+ctx.zone, zoneMeta, { method: "PUT", okResp: 204, json: JSON.stringify(json) } );
 		}
@@ -407,14 +406,15 @@ function formAddMeta()
 	let nxtFn = function(res) { if (res == null) clickAddMeta(); else zoneMeta(); };
 	hdr.json = JSON.stringify( { type: "Metadata", kind:metaItem, metadata: metaValue } );
 
-	if (metaItem in blockedMeta) {
+	if (!(metaItem in blockedMeta)) callApi(url, nxtFn, hdr);
+	else {
 		let json = {}
-		json[blockedMeta[metaItem]] = metaValue;
+
+		json[blockedMeta[metaItem].name] = f.metaValue.value;
+		if (blockedMeta[metaItem].list) json[blockedMeta[metaItem].name] = metaValue;
+
 		callApi("zones/"+ctx.zone, nxtFn,
 			{ method: "PUT", callErr: true, okResp: 204, json: JSON.stringify(json) } );
-		}
-	else {
-		callApi(url, nxtFn, hdr);
 		}
 
 
@@ -1809,7 +1809,7 @@ function regenTSIG(id,alg)
 {
 	callApi("tsigkeys/"+id,function() {
 		callApi("tsigkeys",function() { showTSIG(id); },
-			{ method: "POST", okResp: 201, json: JSON.stringify({ name:id, algorithm: alg }) }); 
+			{ method: "POST", okResp: 201, json: JSON.stringify({ name:id, algorithm: alg }) });
 		}
 		,{ method: "DELETE", okResp: 204 });
 }
