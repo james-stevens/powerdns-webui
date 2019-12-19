@@ -224,6 +224,8 @@ var blockedMeta = {
 	"SOA-EDIT": "soa_edit",
 	"SOA-EDIT-API": "soa_edit_api",
 	"NSEC3PARAM": "nsec3param",
+	"TSIG-ALLOW-AXFR": "master_tsig_key_ids",
+	"AXFR-MASTER-TSIG": "slave_tsig_key_ids",
 	};
 
 
@@ -259,7 +261,10 @@ function callApi(sfx,callback,inData)
 
 	fetch(url,httpCmd).then(function(response) {
 		if (response.status != okResp) {
-			popMsg("ERROR: " + response.status + " " + response.statusText);
+			response.text().then(
+				function(data) { e = JSON.parse(data); popMsg(e.error); },
+				function() { popMsg("ERROR: " + response.status + " " + response.statusText); }
+				);
 			if ((inData != null)&&("callErr" in inData)) return callback(null);
 			return;
 			}
@@ -337,8 +342,11 @@ function doEditMeta(isDel)
 
 	if (i.kind in blockedMeta) {
 		let json = {}
-		json[blockedMeta[i.kind]] = metaValue;
-		callApi("zones/"+ctx.zone,zoneMeta, { method: "PUT", okResp: 204, json: JSON.stringify(json) } );
+
+		if (i.kind == "NSEC3PARAM") json[blockedMeta[i.kind]] = metaValue;
+		else json[blockedMeta[i.kind]] = i.metadata;
+
+		callApi("zones/"+ctx.zone, zoneMeta, { method: "PUT", okResp: 204, json: JSON.stringify(json) } );
 		}
 	else {
 		let hdr = { method: "PUT", okResp: 200, json: JSON.stringify({ metadata: i.metadata }) };
@@ -377,13 +385,13 @@ function editMetaItem(dataIdx,itemIdx)
 
 
 
-function addMetaItem()
+function formAddMeta()
 {
 	let f = document.newMetaForm;
 	let metaItem = f.metaItem.value;
 	let metaValue = [ f.metaValue.value ];
 
-	let hdr = { method: "POST", okResp: 201 };
+	let hdr = { method: "POST", okResp: 201, callErr: true };
 	let url = "zones/"+ctx.zone+"/metadata";
 
 	for(let i of ctx.zoneMeta)
@@ -393,10 +401,25 @@ function addMetaItem()
 			hdr.method = "PUT";
 			hdr.okResp = 200;
 			url = url + "/" + metaItem;
+			break;
 			}
 
-	hdr.json = JSON.stringify( { "type": "Metadata", "kind":metaItem, "metadata": metaValue } );
-	callApi(url,zoneMeta,hdr);
+	let nxtFn = function(res) { if (res == null) clickAddMeta(); else zoneMeta(); };
+	hdr.json = JSON.stringify( { type: "Metadata", kind:metaItem, metadata: metaValue } );
+
+	if (metaItem in blockedMeta) {
+		let json = {}
+		json[blockedMeta[metaItem]] = metaValue;
+		callApi("zones/"+ctx.zone, nxtFn,
+			{ method: "PUT", callErr: true, okResp: 204, json: JSON.stringify(json) } );
+		}
+	else {
+		callApi(url, nxtFn, hdr);
+		}
+
+
+	// hdr.json = JSON.stringify( { type: "Metadata", kind:metaItem, metadata: metaValue } );
+	// callApi(url,function(res) { if (res == null) clickAddMeta(); else zoneMeta(); },hdr);
 
 	return false;
 }
@@ -877,16 +900,24 @@ function addAlg()
 
 function setNSEC3(delnsec3)
 {
-	let nsec3 = ""
-	let nxtFn = function() {
-		ctx.zoneDetails.nsec3param = nsec3;
-		zoneKeys();
-		}
+	let nsec3 = "1 0 5 ";
+	let nxtFn = function() { ctx.zoneDetails.nsec3param = ""; zoneKeys(); }
 
 	if (delnsec3 == null) {
-		nsec3 = "1 0 5 ";
-		for(let i=0;i<5;i++)
-			nsec3 = nsec3 + Math.floor(Math.random() * 256).toString(16)
+		let old = "0000000000";
+		let sfx="";
+
+		if (ctx.zoneDetails.nsec3param != "") {
+			i = ctx.zoneDetails.nsec3param.split(" ");
+			nsec3 = i[0] + " " + i[1] + " " + i[2]
+			old = i[3];
+			}
+
+		while(sfx.length < old.length)
+			sfx = sfx + Math.floor(Math.random() * 256).toString(16)
+
+		nsec3 = nsec3 + " " + sfx;
+
 		nxtFn = function() {
 				ctx.zoneDetails.nsec3param = nsec3;
 				callApi("zones/"+ctx.zone+"/rectify", zoneKeys, { method: "PUT" });
@@ -1216,7 +1247,7 @@ function showKeys(data)
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
 		x = x + "<tr class=dataRow><td align=center>" + gbl.tick
-			+ "</td><td colspan=3></td><td>NSEC3PARAM</td><td>"+ctx.zoneDetails.nsec3param+"</td></tr>"
+			+ "</td><td colspan=3></td><td>NSEC3PARAM</td><td>"+ctx.zoneDetails.nsec3param.toUpperCase()+"</td></tr>"
 		}
 
 	for(let idx in data) {
@@ -1728,10 +1759,10 @@ function loadTsigList()
 
 
 
-function clickTSIG(txt)
+function clickTSIG(txt,name)
 {
 	navigator.clipboard.writeText(txt).then(
-		function() { popMsg("Key copied to clipboard"); },
+		function() { popMsg(name + " copied to clipboard"); },
 		function() { popMsg(gbl.warn + " Copy to clipboard failed"); }
 		);
 }
@@ -1791,7 +1822,8 @@ function addTSIG(withClr)
 	gbl.addT.style.display = "block";
 
 	let t = document.newTsigForm.tsigName;
-	if (withClr) t.value = "";
+	let k = document.newTsigForm.tsigKey;
+	if (withClr) { t.value = ""; k.value = ""; }
 	t.focus();
 }
 
@@ -1809,9 +1841,9 @@ function showTSIG(tsig)
 		delete gbl.param; ctx = {}; topLine();
 
 		let x = "<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
-			+ "<tr><td class=formPrompt>TSIG Name :</td><td>"+data.id+"</td></tr>"
+			+ "<tr class=dataRow onClick=\"clickTSIG('"+data.id+"','Name');\"><td class=formPrompt>TSIG Name :</td><td>"+data.id+"</td></tr>"
 			+ "<tr><td class=formPrompt>TSIG Algorithm :</td><td>"+data.algorithm.toUpperCase()+"</td></tr>"
-			+ "<tr onClick=\"clickTSIG('"+data.key+"');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>"+data.key+"</td></tr>"
+			+ "<tr onClick=\"clickTSIG('"+data.key+"','Key');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>"+data.key+"</td></tr>"
 			+ "<tr><td align=center colspan=2><hr></td></tr>"
 			+ "<tr><td align=center colspan=2>"
 			+ btn("loadTsigList()","Back","Go back to the list of TSIGs")
@@ -2334,7 +2366,7 @@ function keyEsc(e) {
 	<table width=40% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
 	<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
-	<form method=post action="/" name=newMetaForm onSubmit="return addMetaItem();">
+	<form method=post action="/" name=newMetaForm onSubmit="return formAddMeta();">
 		<tr><td class=formPrompt>Metadata: </td><td><select name=metaItem>
 			<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
 			<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
@@ -2344,7 +2376,7 @@ function keyEsc(e) {
 		</select></td></tr>
 		<tr><Td class=formPrompt>Value: </td><td><input size=50 name=metaValue></td></tr>
 		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span><span title="Add this Metadata Record" class=myBtn onClick="addMetaItem();">Add Metadata</span></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span><span title="Add this Metadata Record" class=myBtn onClick="formAddMeta();">Add Metadata</span></td></tr>
 	<input type=submit style="display: none;">
 	</form>
 	</table>
