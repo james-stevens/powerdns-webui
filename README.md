@@ -5,6 +5,23 @@ This project has no connection whatsoever with [PowerDNS.COM BV](https://www.pow
 
 It is an independently funded & maintained development effort.
 
+
+# PowerDNS WebUI
+
+`htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript webapp
+to allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
+
+You can clone the project, if you want, but this one file is all you need in order to add a complete WebUI to your PowerDNS Server.
+This gives you the ability to browse & edit all your zone & record data. This webapp has no special serverside
+code, except the RestAPI that PowerDNS has built-in.
+
+It is (currently) primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
+but code for handling native & slave zone will probably be added later, or may just fall out in the process.
+If you are using this webapp for slave & native, please let me know if there are features it needs.
+
+`htdocs/min.html` is a minified version of the same file, minified using `python -m jsmin index.html > min.html`
+
+
 # Status
 
 The main thrust of this development is now complete - I think :)
@@ -25,21 +42,6 @@ This is a summary of the features this WebUI provides to PowerDNS
 	* Convert NSEC to NSEC3 or vice versa
 	* NSEC3PARAM roll-over
 
-
-# PowerDNS WebUI
-
-`htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript webapp
-to allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
-
-You can clone the project, if you want, but this one file is all you need in order to add a complete WebUI to your PowerDNS Server.
-This gives you the ability to browse & edit all your zone & record data. This webapp has no special serverside
-code, except the RestAPI that PowerDNS has built-in.
-
-It is (currently) primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
-but code for handling native & slave zone will probably be added later, or may just fall out in the process.
-If you are using this webapp for slave & native, please let me know if there are features it needs.
-
-`htdocs/min.html` is a minified version of the same file, minified using `python -m jsmin index.html > min.html`
 
 # Browser Security Restrictions
 
