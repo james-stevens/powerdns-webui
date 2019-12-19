@@ -1554,7 +1554,6 @@ function zoneDetails(data)
 	ctx.zoneDetails = data;
 
 	if (("param" in gbl)&&("zone" in gbl.param)) {
-		if ("tsig" in gbl.param) return loadTsigList();
 		if ("meta" in gbl.param) return zoneMeta();
 		if ("keys" in gbl.param) return zoneKeys();
 		if ((data.kind != "Slave")&&("name" in gbl.param)&&("type" in gbl.param)) {
@@ -1802,6 +1801,13 @@ function showTSIG(tsig)
 {
 	callApi("tsigkeys/"+tsig,function(data) {
 
+		let newTitle = gbl.server + ": TSIG "+data.id;
+		gbl.state = { server: gbl.server, tsig: data.id };
+		if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
+		document.title = newTitle;
+
+		delete gbl.param; ctx = {}; topLine();
+
 		let x = "<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
 			+ "<tr><td class=formPrompt>TSIG Name :</td><td>"+data.id+"</td></tr>"
 			+ "<tr><td class=formPrompt>TSIG Algorithm :</td><td>"+data.algorithm.toUpperCase()+"</td></tr>"
@@ -1833,14 +1839,15 @@ function showTsigList(data)
 		return 0;
 		});
 
+	if (("param" in gbl)&&("tsig" in gbl.param)&&(typeof(gbl.param.tsig) != "boolean"))
+		return showTSIG(gbl.param.tsig);
+
 	let newTitle = gbl.server + ": TSIGs";
 	gbl.state = { server: gbl.server, tsig: true };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 
-	delete gbl.param;
-	ctx = {};
-	topLine();
+	delete gbl.param; ctx = {}; topLine();
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>"
 		+ "<colgroup><col width=100%/><col/></colgroup><tr><Td>"
@@ -1941,12 +1948,13 @@ function zoneListDetails(data)
 
 	ctx.zoneList = data;
 
-	if (("param" in gbl)&&("zone" in gbl.param)) {
+	if ("param" in gbl) {
+		if ("tsig" in gbl.param) return loadTsigList();
 		if ("search" in gbl.param) {
 			ctx.searchTerm = gbl.param.search;
 			return callApi("search-data?q=" + ctx.searchTerm,searchResults);
 			}
-		return zoneDetailsLoad(gbl.param.zone);
+		if ("zone" in gbl.param) return zoneDetailsLoad(gbl.param.zone);
 		}
 
 	let newTitle = gbl.server+": Zone List";
