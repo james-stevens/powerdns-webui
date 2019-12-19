@@ -5,46 +5,68 @@ This project has no connection whatsoever with [PowerDNS.COM BV](https://www.pow
 
 It is an independently funded & maintained development effort.
 
-# Work-in-Progress
-
-If you want to, please do report issues you find.
-I'm always happy to fix them, but this code is still undergoing massive development change.
-
-The basic paradigm of the UI will probably stay much as it is, but the underlying code may change.
-
-I will try and keep the `master` branch stable (i.e. functional & usable) and do all the development in the `dev` branch.
-
-Therefore, if you want to contribute to the development effort, please fork from the `dev` branch.
-Although, my personal recommendation would be to wait until the code has stabilised a lot more :)
 
 # PowerDNS WebUI
 
 `htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript webapp
-to allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
+which allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
 
 You can clone the project, if you want, but this one file is all you need in order to add a complete WebUI to your PowerDNS Server.
-This gives you the ability to browse & edit all your zone & record data. This webapp has no special serverside
+This gives you the ability to browse & edit all your zone & record data. This webapp requires no special serverside
 code, except the RestAPI that PowerDNS has built-in.
 
-It is (currently) primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
-but code for handling native & slave zone will probably be added later, or may just fall out in the process.
-If you are using this webapp for slave & native, please let me know if there are features it needs.
+It is primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
+but it should handle native / slave zones OK.
+If you are using this webapp for slave / native, please let me know if there are features it needs.
 
 `htdocs/min.html` is a minified version of the same file, minified using `python -m jsmin index.html > min.html`
 
+
+# Status
+
+The main thrust of this development is now complete - I think :)
+
+This is a summary of the features this WebUI provides to PowerDNS
+
+* **Servers** - contact PowerDNS Servers directly or though a web proxy, HTTP or HTTPS (see below)
+* **Zones** - Add, View, Remove, Sign, Unsign, Force NOTIFY, Rectify, Download in RFC format, force update (slave only)
+* **Metadata** - Add, Edit, Remove Metadata items or individual values, with some local validation
+* **Hosts/names** - Master or Native only - Add, Edit, Remove RRs / RR-Sets with some local validation. Copy records between zones, by renaming the RR-Set
+* **TSIG Keys** - Add, Regenerate, Remove, copy name or key to clipboard
+* **Search** - quick access to native search facility, with click-through to records / zones
+* **Navigation** - fully functional BACK button, link to open any page in a new tab (or link you can email etc)
+* **DNSSEC**
+	* Sign an unsigned zone - NSEC or NSEC3, KSK+ZSK or CSK, any algorythm & key lengths
+	* Unsign a signed zone
+	* Step-by-Step one-button CSK, KSK or ZSK key roll-over
+	* Add, remove, activate / deactivate individual keys
+	* DS digest, auto-copy-to-clipboard
+	* Convert NSEC to NSEC3 or vice versa
+	* NSEC3PARAM roll-over
+
+
+Items that probably could be improved (apart from my spelling ... dyslexia sucks)
+* Some error messages are too long for the space provided.
+* I'd like to be able to automatically maintain a [bind-9.11 catalog zone](https://kb.isc.org/docs/aa-01401), for those who use RFC (not native) slaves.
+
+
+When reporting an issue, please also include any messages in your browser console (in Chrome, press F12).
+
+
+
 # Browser Security Restrictions
 
-Its super simple to use, but does require a little setting up to ensure your browser is happy with stuff.
-These issues are generic browser security restrictions, and nothing specifically to do with this code.
+This webapp is super simple to use, but does require a little setting up to ensure your browser is happy with stuff.
+These issues are generic browser security restrictions, and not specifically to do with this code.
 
-* If your browser received the `index.html` over HTTPS, then the RestAPI **must** be accessed over HTTPS - this is where
+* If your browser received the `index.html` (this webapp) over HTTPS, then the RestAPI **must** be accessed over HTTPS - this is where
 using an HTTP/HTTPS proxy is useful, as PowerDNS does not natively support HTTPS and sending all your data over HTTP
 is probably not what you want.
 
 * You must be [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) compliant - in this context it means the web server
-that gave your browser `index.html` must list (in the header of the response) all the other HTTP/S servers you are allowed to access from the pages it has served you.
+that gave your browser `index.html` must list (in the header of the response) all the other HTTP/S servers you are allowed to access from the webapp.
 
-NOTE: For CORS, by default, you are allowed to access the Rest/API on the server that sent you the `index.html`.
+NOTE: For CORS, by default, you are allowed to access the Rest/API on the server that sent you the webapp.
 So this requires no special extra consideration.
 
 
@@ -135,7 +157,8 @@ I've tested this with the latest Chrome & Firefox running on Xubuntu (Ubuntu + X
 running v4.2.0 over an 18ms latency link and the response time for all actions, including loading a zone with 1000 records
 (500 names, 2 records per name), is virtually instant.
 
-Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox was identical.
+Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox was identical. 
+As far as I know, any ES6 compliant browser should work, but I might be wrong.
 
 nginx performed the same as Apache - virtually instant.
 
@@ -149,9 +172,11 @@ There are deliberatly **NO** security options in this webapp, e.g. who can edit/
 
 As a general principal, when you have a JavaScript+RestAPI webapp the place to put the security is in the serverside RestAPI.
 Any security put into the Javascript can probably be trivially circumvented and is therefore of extremely limited value.
+In fact, in security circles, this is considered worse than having no security, as less experienced sysadmins may be left thinking
+they are safe, when this is not the case.
 
 In various web proxies, there are options to block certain `METHODs`. For example, by blocking all `METHODs` except `GET`,
-you can stop a user from being able to do updates. For more information, please ask Google.
+you can stop a user from being able to make changes. For more information, please ask Google.
 
 In general, therefore, as it is provided, this webapp is probably not going to be that useful for giving to end users.
 However, as an admin-tool, it can be very useful.

@@ -7,11 +7,11 @@ body{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;m
 a{color:#b0b0ff;text-decoration:none;}
 a:hover{text-decoration:underline;}
 form{margin:0px;}.myBtn{text-align:center;display:inline-block;background-color:#d0d0ff;color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;font-weight:bold;border-radius:25px;padding:5px;padding-left:10px;padding-right:10px;cursor:pointer;margin-top:0px;margin-left:10px;margin-bottom:2px;margin-right:2px;}.myBtn:hover{box-shadow:3px 3px#222244;text-shadow:1px 1px#ffffff;}.myBtn:active{position:relative;box-shadow:none;text-shadow:none;top:1px;left:1px;}.dnskey{color:#383855;}
-td{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",nsec:"&#x1F512;",nsec3:"&#x1F510;",clip:"&#x1F4CE;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var trueOrFalse=/^[01]$/;var validateMeta={"API-RECTIFY":trueOrFalse,"IXFR":trueOrFalse,"NSEC3NARROW":trueOrFalse,"PRESIGNED":trueOrFalse,"PUBLISH-CDNSKEY":trueOrFalse,"SLAVE-RENOTIFY":trueOrFalse,"SOA-EDIT-API":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,"SOA-EDIT-DNSUPDATE":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];var blockedMeta={"SOA-EDIT":"soa_edit","SOA-EDIT-API":"soa_edit_api","NSEC3PARAM":"nsec3param",};function callApi(sfx,callback,inData)
-{gbl.addH.style.display="none";gbl.newZ.style.display="none";gbl.newM.style.display="none";if((inData!=null)&&(inData.method=="PUT"))
+td{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",nsec:"&#x1F512;",nsec3:"&#x1F510;",clip:"&#x1F4CE;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var trueOrFalse=/^[01]$/;var validateMeta={"API-RECTIFY":trueOrFalse,"IXFR":trueOrFalse,"NSEC3NARROW":trueOrFalse,"PRESIGNED":trueOrFalse,"PUBLISH-CDNSKEY":trueOrFalse,"SLAVE-RENOTIFY":trueOrFalse,"SOA-EDIT-API":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,"SOA-EDIT-DNSUPDATE":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];var blockedMeta={"SOA-EDIT":"soa_edit","SOA-EDIT-API":"soa_edit_api","NSEC3PARAM":"nsec3param","TSIG-ALLOW-AXFR":"master_tsig_key_ids","AXFR-MASTER-TSIG":"slave_tsig_key_ids",};function callApi(sfx,callback,inData)
+{gbl.forms.forEach(function(i){i.style.display="none";});if((inData!=null)&&(inData.method=="PUT"))
 msg("Requesting ... "+gbl.timer);else
 msg("Loading ... "+gbl.timer);let p="https";if(!gbl.with_https)p="http";let url=p+"://"+gbl.server+"/api/v1/servers/localhost/"+sfx;let okResp=200;let httpCmd={headers:{'X-API-Key':gbl.apikey},method:'GET',};if(inData!=null){httpCmd.method=inData.method;httpCmd.body=inData.json;if("okResp"in inData)okResp=inData.okResp;}
-fetch(url,httpCmd).then(function(response){if(response.status!=okResp){popMsg("ERROR: "+response.status+" "+response.statusText);if((inData!=null)&&("callErr"in inData))return callback(false);return;}
+fetch(url,httpCmd).then(function(response){if(response.status!=okResp){response.text().then(function(data){e=JSON.parse(data);popMsg(e.error);},function(){popMsg("ERROR: "+response.status+" "+response.statusText);});if((inData!=null)&&("callErr"in inData))return callback(null);return;}
 response.text().then(function(data){if((inData!=null)&&(inData.noData))
 callback(true);else{let param=data;try{param=JSON.parse(data);}
 catch{param=data;}
@@ -21,22 +21,25 @@ function doEditMeta(isDel)
 {let f=document.editMeta;let dataIdx=parseInt(f.dataIdx.value);let itemIdx=parseInt(f.itemIdx.value);let metaValue=document.editMeta.metaValue.value;let i=ctx.zoneMeta[dataIdx];if((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))){popMsg(gbl.warn+" Invalid value for "+i.kind);document.editMeta.metaValue.focus();document.editMeta.metaValue.select();return false;}
 if(isDel)i.metadata.splice(itemIdx,1);else{i.metadata[itemIdx]=metaValue;i.metadata.sort(function(a,b){if(a<b)return-1;if(b<a)return 1;return 0;});}
 if(i.kind in blockedMeta){let json={}
-json[blockedMeta[i.kind]]=metaValue;callApi("zones/"+ctx.zone,zoneMeta,{method:"PUT",okResp:204,json:JSON.stringify(json)});}
+if(i.kind=="NSEC3PARAM")json[blockedMeta[i.kind]]=metaValue;else json[blockedMeta[i.kind]]=i.metadata;callApi("zones/"+ctx.zone,zoneMeta,{method:"PUT",okResp:204,json:JSON.stringify(json)});}
 else{let hdr={method:"PUT",okResp:200,json:JSON.stringify({metadata:i.metadata})};callApi("zones/"+ctx.zone+"/metadata/"+i.kind,zoneMeta,hdr);}
 return false;}
 function editMetaItem(dataIdx,itemIdx)
 {let metaItem=ctx.zoneMeta[dataIdx].kind;let metaValue=ctx.zoneMeta[dataIdx].metadata[itemIdx];let x="";x=x+"<form name=editMeta onSubmit='return doEditMeta();'>";x=x+"<input type=hidden name=dataIdx value="+dataIdx+">"
 x=x+"<input type=hidden name=itemIdx value="+itemIdx+">"
-x=x+"<table border=0 width=40% align=center><tr><td class=formPrompt>Metadata Item: </td><td>"+metaItem+"</td></tr>";x=x+"<tr><Td class=formPrompt>Value: </td><td><input size=50 value='"+metaValue+"' name=metaValue></td></tr>";x=x+"<tr><td colspan=2><hr></td></tr>";x=x+'<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="zoneMeta();">Cancel</span>';if(!(metaItem in blockedMeta))
+x=x+"<table border=0 width=40% align=center><tr><td class=formPrompt>Metadata Item: </td><td>"+metaItem+"</td></tr>";x=x+"<tr><Td class=formPrompt>Value: </td><td><input size=50 value='"+metaValue+"' name=metaValue></td></tr>";x=x+"<tr><td colspan=2><hr></td></tr>";x=x+'<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>';if(!(metaItem in blockedMeta))
 x=x+'<span title="Delete this Metadata Item" class=myBtn onClick="doEditMeta(true);">Delete</span>'
 x=x+'<span title="Change this Metadata Item" class=myBtn onClick="doEditMeta(false);">Change</span></td></tr>'
 x=x+"<input type=hidden name=metaItem value='"+metaItem+"'>";x=x+"<input type=submit style='display: none;'></form></table>";gbl.bot.innerHTML=x;document.editMeta.metaValue.focus();document.editMeta.metaValue.select();}
-function addMetaItem()
-{let f=document.newMetaForm;let metaItem=f.metaItem.value;let metaValue=[f.metaValue.value];let hdr={method:"POST",okResp:201};let url="zones/"+ctx.zone+"/metadata";for(let i of ctx.zoneMeta)
-if(i.kind.toUpperCase()==metaItem){metaValue=i.metadata;metaValue.push(f.metaValue.value);hdr.method="PUT";hdr.okResp=200;url=url+"/"+metaItem;}
-hdr.json=JSON.stringify({"type":"Metadata","kind":metaItem,"metadata":metaValue});callApi(url,zoneMeta,hdr);return false;}
+function formAddMeta()
+{let f=document.newMetaForm;let metaItem=f.metaItem.value;let metaValue=[f.metaValue.value];let hdr={method:"POST",okResp:201,callErr:true};let url="zones/"+ctx.zone+"/metadata";for(let i of ctx.zoneMeta)
+if(i.kind.toUpperCase()==metaItem){metaValue=i.metadata;metaValue.push(f.metaValue.value);hdr.method="PUT";hdr.okResp=200;url=url+"/"+metaItem;break;}
+let nxtFn=function(res){if(res==null)clickAddMeta();else zoneMeta();};hdr.json=JSON.stringify({type:"Metadata",kind:metaItem,metadata:metaValue});if(metaItem in blockedMeta){let json={}
+json[blockedMeta[metaItem]]=metaValue;callApi("zones/"+ctx.zone,nxtFn,{method:"PUT",callErr:true,okResp:204,json:JSON.stringify(json)});}
+else{callApi(url,nxtFn,hdr);}
+return false;}
 function clickAddMeta()
-{gbl.bot.innerHTML="";gbl.newM.style.display="block";document.newMetaForm.metaValue.focus();document.newMetaForm.metaValue.select();}
+{gbl.bot.innerHTML="";gbl.addM.style.display="block";document.newMetaForm.metaValue.focus();document.newMetaForm.metaValue.select();}
 function zoneMeta()
 {ctx.meta=true;topLine();callApi("zones/"+ctx.zone+"/metadata",zoneMetaDetails);return false;}
 function zoneMetaDetails(data)
@@ -131,11 +134,12 @@ function getZoneRecord()
 function addAlg()
 {let x="<tr><Td class=formPrompt>Key Algrythm :</td><td><select name=keyAlg>";["ecdsa256","ecdsa384","rsasha1","rsasha1-nsec3-sha1","rsasha256","rsasha512","dh","dsa","dsa-nsec3-sha1","ecc-gost","ed25519","ed448","gost","indirect","rsamd5"].forEach(function(i){x=x+"<option value="+i+">"+i.toUpperCase()});x=x+"</select></td></tr>";x=x+"<tr><Td class=formPrompt>Key Length (bits) :</td><td><select name=keyBits>";["256","384","1024","2048","4096"].forEach(function(i){x=x+"<option>"+i;});return x+"</select></td></tr>";}
 function setNSEC3(delnsec3)
-{let nsec3=""
-let nxtFn=function(){ctx.zoneDetails.nsec3param=nsec3;zoneKeys();}
-if(delnsec3==null){nsec3="1 0 5 ";for(let i=0;i<5;i++)
-nsec3=nsec3+Math.floor(Math.random()*256).toString(16)
-nxtFn=function(){ctx.zoneDetails.nsec3param=nsec3;callApi("zones/"+ctx.zone+"/rectify",zoneKeys,{method:"PUT"});}}
+{let nsec3="1 0 5 ";let nxtFn=function(){ctx.zoneDetails.nsec3param="";zoneKeys();}
+if(delnsec3==null){let old="0000000000";let sfx="";if(ctx.zoneDetails.nsec3param!=""){i=ctx.zoneDetails.nsec3param.split(" ");nsec3=i[0]+" "+i[1]+" "+i[2]
+old=i[3];}
+while(sfx.length<old.length)
+sfx=sfx+Math.floor(Math.random()*256).toString(16)
+nsec3=nsec3+" "+sfx;nxtFn=function(){ctx.zoneDetails.nsec3param=nsec3;callApi("zones/"+ctx.zone+"/rectify",zoneKeys,{method:"PUT"});}}
 callApi("zones/"+ctx.zone,nxtFn,{method:"PUT",okResp:204,json:JSON.stringify({nsec3param:nsec3})});}
 function doSignZone()
 {let nextFn=zoneKeys;let keyAlg=document.signZoneForm.keyAlg.value;let keyBits=parseInt(document.signZoneForm.keyBits.value);let keyPolicy=document.signZoneForm.keyPolicy.value;let keyDNSSEC=document.signZoneForm.keyDNSSEC.value;if(keyDNSSEC=="NSEC3")nextFn=function(){setNSEC3(null);};if(keyPolicy=="CSK"){let json={"keytype":"csk","active":true,"algorithm":keyAlg,"bits":keyBits,};callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,{method:"POST",okResp:201,json:JSON.stringify(json)});}
@@ -204,7 +208,7 @@ if(a.id>b.id)return-1;if(a.id<b.id)return 1;return 0;})
 ctx.zoneKeys=data;let newTitle=gbl.server+": "+ctx.zone+", DNSSEC Keys"
 gbl.state={server:gbl.server,zone:ctx.zone,keys:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0>";x=x+'<colgroup>';for(let i=0;i<5;i++)x=x+'<col width="50px">';x=x+"</colgroup><tr>";for(let i of["Active","Id","Type/Flags","Bits","Algrythm",""])
 x=x+"<th>"+i+"</th>";x=x+"</tr>";let keyTypes={num:0};if(("nsec3param"in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param!="")){x=x+"<tr class=dataRow><td align=center>"+gbl.tick
-+"</td><td colspan=3></td><td>NSEC3PARAM</td><td>"+ctx.zoneDetails.nsec3param+"</td></tr>"}
++"</td><td colspan=3></td><td>NSEC3PARAM</td><td>"+ctx.zoneDetails.nsec3param.toUpperCase()+"</td></tr>"}
 for(let idx in data){i=data[idx];x=x+"<tr onClick='clickDnssecKey("+idx+");' class=dataRow><td align=center>"
 let aflag=0;if(i.active){aflag=1;x=x+gbl.tick;}else x=x+gbl.cross;x=x+"</td>";x=x+"<td align=center>"+i.id+"</td>";if(i.keytype in keyTypes){let k=keyTypes[i.keytype];k.num++;k.active+=aflag;k.ids.push({idx:parseInt(idx),id:i.id,act:i.active});}
 else{keyTypes[i.keytype]={ids:[],active:aflag,num:1,}
@@ -249,13 +253,13 @@ function zoneKindChange(sel)
 {m=document.getElementById("asMaster");s=document.getElementById("asSlave");if(sel.value=="Master"){m.style.display="table-row-group";s.style.display="none";}
 else{m.style.display="none";s.style.display="table-row-group";}}
 function zoneNotify()
-{callApi("zones/"+ctx.zone+"/notify",function(ret){if(ret)popMsg("Zone notified");else popMsg(gbl.warn+" Notify failed");},{method:"PUT"});}
+{callApi("zones/"+ctx.zone+"/notify",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone notified");else popMsg(gbl.warn+" Notify failed");},{method:"PUT",callErr:true});}
 function zoneRectify()
-{callApi("zones/"+ctx.zone+"/rectify",function(ret){if(ret)popMsg("Zone rectified");else popMsg(gbl.warn+" Rectify failed");},{method:"PUT"});}
+{callApi("zones/"+ctx.zone+"/rectify",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone rectified");else popMsg(gbl.warn+" Rectify failed");},{method:"PUT",callErr:true});}
 function zoneRetrieve()
-{callApi("zones/"+ctx.zone+"/axfr-retrieve",function(ret){if(ret)popMsg("Zone retrieval requested");else popMsg(gbl.warn+" Zone retrieval failed");},{method:"PUT"});}
+{callApi("zones/"+ctx.zone+"/axfr-retrieve",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone retrieval requested");else popMsg(gbl.warn+" Zone retrieval failed");},{method:"PUT",callErr:true});}
 function clickAddZone(isFresh)
-{ctx.addZone=true;topLine();gbl.bot.innerHTML="";gbl.newZ.style.display="block";if(isFresh){let f=document.newZoneForm;f.zoneName.value="";f.zoneName.focus();}}
+{ctx.addZone=true;topLine();gbl.bot.innerHTML="";gbl.addZ.style.display="block";if(isFresh){let f=document.newZoneForm;f.zoneName.value="";f.zoneName.focus();}}
 function dropZone()
 {let x="<table align=center><tr><td align=center><h3>Are you sure you want to delete"
 +"<br>the zone '"+ctx.zone+"' and all its records ?</h3></td></tr>"
@@ -267,13 +271,13 @@ function doDropZone()
 {callApi("zones/"+ctx.zone,zoneList,{method:"DELETE",noData:true,okResp:204});}
 function doNewName()
 {let f=document.newNameForm;if(!validInt(f.rrTTL.value)){popMsg(gbl.warn+" Invalid TTL");f.rrTTL.focus();f.rrTTL.select();return;}
-delete ctx.addRR;gbl.addH.style.display="none";if(f.rrName.value=="")
+gbl.addH.style.display="none";if(f.rrName.value=="")
 name=ctx.zone;else
 name=f.rrName.value+"."+ctx.zone;if(!fqdnCheck.test(name)){popMsg(gbl.warn+" Invalid host name");f.rrName.focus();f.rrName.select();return false;}
 if(findRec(ctx.zoneDetails.rrsets,{name:name,type:f.rrType.value})!=null)
 return clickZoneRecord(name,f.rrType.value);ctx.rec={name:name,type:f.rrType.value,rrs:{name:name,type:f.rrType.value,ttl:f.rrTTL.value,records:[],},};ctx.rec.loadedRows=0;ctx.needSave="saveRRChanges";addNewRR();return false;}
 function zoneAddHost()
-{ctx.addRR=true;topLine();gbl.bot.innerHTML="";gbl.addH.style.display="block";let f=document.newNameForm;f.rrName.value="";f.rrTTL.value=gbl.default_ttl;f.rrName.focus();}
+{topLine();gbl.bot.innerHTML="";gbl.addH.style.display="block";let f=document.newNameForm;f.rrName.value="";f.rrTTL.value=gbl.default_ttl;f.rrName.focus();}
 function zoneDetails(data)
 {data.rrsets.sort(function(a,b){if((a.name==data.id)&&(b.name==data.id)){for(tag of["SOA","NS","MX"]){if(a.type==tag)return-1;if(b.type==tag)return 1;}}
 else{if(a.name==data.id)return-1;if(b.name==data.id)return 1;if(a.name<b.name)return-1;if(a.name>b.name)return 1;}
@@ -321,26 +325,41 @@ function searchFormSubmit()
 {let s=document.searchForm.searchTerm.value;ctx.searchTerm=s;document.searchForm.searchTerm.value="";callApi("search-data?q="+s,searchResults);return false;}
 function loadTsigList()
 {callApi("tsigkeys",showTsigList);}
-function clickTSIG(txt)
-{navigator.clipboard.writeText(txt).then(function(){popMsg("Key copied to clipboard");},function(){popMsg(gbl.warn+" Copy to clipboard failed");});return false;}
+function clickTSIG(txt,name)
+{navigator.clipboard.writeText(txt).then(function(){popMsg(name+" copied to clipboard");},function(){popMsg(gbl.warn+" Copy to clipboard failed");});}
+function deleteTSIG(id)
+{callApi("tsigkeys/"+id,loadTsigList,{method:"DELETE",okResp:204});}
+function formAddTsig()
+{let f=document.newTsigForm;let json={name:f.tsigName.value,algorithm:f.tsigAlg.value,key:f.tsigKey.value,};if(json.name.substr(json.name.length-1)!=".")
+json.name=json.name+".";if(!fqdnCheck.test(json.name)){popMsg(gbl.warn+" Invalid TSIG Name");document.newTsigForm.tsigName.focus();document.newTsigForm.tsigName.select();return false;}
+callApi("tsigkeys",function(data){if(data==null)addTSIG(false);else showTSIG(data.id);},{method:"POST",callErr:true,okResp:201,json:JSON.stringify(json)});return false;}
+function regenTSIG(id,alg)
+{callApi("tsigkeys/"+id,function(){callApi("tsigkeys",function(){showTSIG(id);},{method:"POST",okResp:201,json:JSON.stringify({name:id,algorithm:alg})});},{method:"DELETE",okResp:204});}
+function addTSIG(withClr)
+{gbl.bot.innerHTML="";gbl.addT.style.display="block";let t=document.newTsigForm.tsigName;let k=document.newTsigForm.tsigKey;if(withClr){t.value="";k.value="";}
+t.focus();}
 function showTSIG(tsig)
-{callApi("tsigkeys/"+tsig,function(data){let x="<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
-+"<tr><td class=formPrompt>TSIG Name :</td><td>"+data.id+"</td></tr>"
-+"<tr><td class=formPrompt>TSIG Algorithm :</td><td>"+data.algorithm+"</td></tr>"
-+"<tr onClick=\"clickTSIG('"+data.key+"');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>"+data.key+"</td></tr>"
+{callApi("tsigkeys/"+tsig,function(data){let newTitle=gbl.server+": TSIG "+data.id;gbl.state={server:gbl.server,tsig:data.id};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;ctx={};topLine();let x="<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
++"<tr class=dataRow onClick=\"clickTSIG('"+data.id+"','Name');\"><td class=formPrompt>TSIG Name :</td><td>"+data.id+"</td></tr>"
++"<tr><td class=formPrompt>TSIG Algorithm :</td><td>"+data.algorithm.toUpperCase()+"</td></tr>"
++"<tr onClick=\"clickTSIG('"+data.key+"','Key');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>"+data.key+"</td></tr>"
 +"<tr><td align=center colspan=2><hr></td></tr>"
 +"<tr><td align=center colspan=2>"
 +btn("loadTsigList()","Back","Go back to the list of TSIGs")
++btn("regenTSIG('"+data.id+"','"+data.algorithm+"')","Rollover","Replace this TSIG Key, keeping the name")
 +btn("deleteTSIG('"+data.id+"')","Delete","Delete this TSIG Key")
 +"</td></tr></table>";gbl.bot.innerHTML=x;topLine();});}
 function showTsigList(data)
 {if(data.length<=0){popMsg("No TSIGs found");return;}
-let newTitle=gbl.server+": TSIGs";gbl.state={server:gbl.server,tsig:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle
-delete gbl.param;ctx={};topLine();let x="<table align=center border=0 cellspacing=2 cellpadding=2>"
+data.sort(function(a,b){if(a.id<b.id)return-1;if(a.id>b.id)return 1;return 0;});if(("param"in gbl)&&("tsig"in gbl.param)&&(typeof(gbl.param.tsig)!="boolean"))
+return showTSIG(gbl.param.tsig);let newTitle=gbl.server+": TSIGs";gbl.state={server:gbl.server,tsig:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;ctx={};topLine();let x="<table width=100% border=0 cellspacing=0 cellpadding=0>"
++"<colgroup><col width=100%/><col/></colgroup><tr><Td>"
++"<table align=center border=0 cellspacing=2 cellpadding=2>"
 +"<tr><th>TSIG Name</td><th>Algorithm</td></tr>";for(let i of data)
-x=x+"<tr class=dataRow onClick=\"showTSIG('"+i.id+"');\"><td>"+i.id+"</td><td>"+i.algorithm+"</td></tr>";x=x+"</table>";gbl.bot.innerHTML=x;}
+x=x+"<tr class=dataRow onClick=\"showTSIG('"+i.id+"');\"><td>"+i.id+"</td>"
++"<td>"+i.algorithm.toUpperCase()+"</td></tr>";x=x+"</table></td><td>"+btn("addTSIG(true)","Add TSIG","Add a TSIG Key")+"</td></tr></table>";gbl.bot.innerHTML=x;}
 function doMakeZone(data)
-{if(data)
+{if(data!=null)
 zoneDetailsLoad(data.name);else{clickAddZone(false);popMsg(gbl.warn+" Adding zone failed");}}
 function doNewZone()
 {let name=document.newZoneForm.zoneName.value;if(name.substr(name.length-1)!=".")name=name+".";if(!fqdnCheck.test(name)){popMsg(gbl.warn+" Invalid domain name");document.newZoneForm.zoneName.focus();document.newZoneForm.zoneName.select();return false;}
@@ -351,9 +370,8 @@ x=document.newZoneForm["ip"+i];if(x.value!=""){if((validations["rrA"].test(x.val
 ip.push(x.value);else{popMsg(gbl.warn+" Invalid IP Address: "+x.value);x.focus();x.select();return false;}}}
 let data={name:name,kind:kind,masters:ip,nameservers:ns,};callApi("zones",doMakeZone,{method:"POST",callErr:true,okResp:201,json:JSON.stringify(data)});return false;}
 function zoneListDetails(data)
-{data.sort(function(a,b){if(a.id<b.id)return-1;if(a.id>b.id)return 1;;return 0;})
-ctx.zoneList=data;if(("param"in gbl)&&("zone"in gbl.param)){if("search"in gbl.param){ctx.searchTerm=gbl.param.search;return callApi("search-data?q="+ctx.searchTerm,searchResults);}
-return zoneDetailsLoad(gbl.param.zone);}
+{data.sort(function(a,b){if(a.id<b.id)return-1;if(a.id>b.id)return 1;return 0;});ctx.zoneList=data;if("param"in gbl){if("tsig"in gbl.param)return loadTsigList();if("search"in gbl.param){ctx.searchTerm=gbl.param.search;return callApi("search-data?q="+ctx.searchTerm,searchResults);}
+if("zone"in gbl.param)return zoneDetailsLoad(gbl.param.zone);}
 let newTitle=gbl.server+": Zone List";gbl.state={server:gbl.server};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
 x=x+"<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){let name=i.id;x=x+"<tr class=dataRow onClick='zoneDetailsLoad(\""+name+"\")'>"
 +"<td>"+name+"</td><td>"+i.kind+"</td>";t="";hlp="Zone is NOT dnssec signed";if(i.dnssec){t=gbl.nsec;hlp="Zone is DNSSEC signed";}
@@ -373,11 +391,10 @@ return"<span "+ex+" title=\""+hlp+"\" class=myBtn onClick=\""+call+"; return fal
 function goLogin()
 {document.location="/";}
 function topLine()
-{gbl.addH.style.display="none";gbl.newZ.style.display="none";gbl.newM.style.display="none";let y="<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
+{gbl.addH.style.display="none";gbl.addZ.style.display="none";gbl.addM.style.display="none";let y="<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
 +"<font size=+1><a title='Open this page in a new window' target=_blank href='"+window.origin+"?";let x="'>"+gbl.page+"</a></font></td><td>"
 +btn("goLogin()",gbl.server,"Change server")
-+btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);if("searchTerm"in ctx){delete ctx.searchTerm;}
-if("zone"in ctx){x=x+btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);if("rec"in ctx){let name="@";if(ctx.rec.name!=ctx.zone)
++btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);if("searchTerm"in ctx)delete ctx.searchTerm;if("zone"in ctx){x=x+btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);if("rec"in ctx){let name="@";if(ctx.rec.name!=ctx.zone)
 name=ctx.rec.name.substr(0,ctx.rec.name.length-ctx.zone.length-1);ctx.rec.showName=name;x=x+btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);}
 else if("meta"in gbl.state){x=x+btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);}
 else if("zoneKeys"in ctx){x=x+btn('zoneKeys()',"DNSSEC","Reload the DNSSEC Keys for "+ctx.zone);}}
@@ -395,7 +412,7 @@ x=x+"</td><td width=1 align=right><form name=searchForm onSubmit='return searchF
 function startUp()
 {window.addEventListener('popstate',function(e){if(e.state==null)goLogin();gbl.param=e.state;if("server"in gbl.param){gbl.server=gbl.param.server;zoneList();return true;}
 delete gbl.param;document.location="/"
-return true;});gbl.top=document.getElementById("topSpan");gbl.bot=document.getElementById("lowerSpan");gbl.addH=document.getElementById("addName");gbl.newZ=document.getElementById("addZone");gbl.newM=document.getElementById("addMeta");if(window.location.search!=""){gbl.param=JSON.parse(atob(window.location.search.substr(1)));if("server"in gbl.param){gbl.state=gbl.param;gbl.server=gbl.param.server;zoneList();}}}
+return true;});gbl.top=document.getElementById("topSpan");gbl.bot=document.getElementById("lowerSpan");gbl.addH=document.getElementById("addName");gbl.addZ=document.getElementById("addZone");gbl.addM=document.getElementById("addMeta");gbl.addT=document.getElementById("addTsig");gbl.forms=[gbl.addH,gbl.addZ,gbl.addM,gbl.addT];if(window.location.search!=""){gbl.param=JSON.parse(atob(window.location.search.substr(1)));if("server"in gbl.param){gbl.state=gbl.param;gbl.server=gbl.param.server;zoneList();}}}
 function initialLogin()
 {let f=document.loginForm;gbl.server=f.server.value;gbl.apikey=f.apikey.value;gbl.with_https=f.with_https.checked;zoneList();return false;}
 function formatSOA(i)
@@ -411,4 +428,80 @@ function popMsg(txt)
 function msg(myMsg,newClass)
 {if(newClass==null)newClass="fullvis";let m=document.getElementById("showMsg");m.className=newClass;m.innerHTML=myMsg;delete gbl.lastMsg;}
 function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();if("addRR"in ctx)return loadThisZone();if("addZone"in ctx)return zoneList();}}
-</script><head><title>PowerDNS WebUI-Login</title></head><body onLoad="startUp();"><div id="topSpan"><table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr></table></div><div id="lowerSpan"><table align=center><form action="/"onSubmit="return initialLogin()"name=loginForm><tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr><tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr><tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr><tr><td align=center colspan=2><span title="Load zone list"class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addZone style="display: none;"><table width=40%align=center><tbody id="startBody"><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr><form method=post action="/"name=newZoneForm onSubmit="return doNewZone();"><tr><td class=formPrompt>Name:</td><td><input onkeydown="keyEsc(event);"name=zoneName></td></tr><tr><td class=formPrompt>Type:</td><td><select onChange="zoneKindChange(this);"name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr></tbody><tbody id="asMaster"><tr><td class=formPrompt>Name Servers:</td><td><input size=40 name=ns0><br><input size=40 name=ns1><br><input size=40 name=ns2><br><input size=40 name=ns3><br></td></tr></tbody><tbody id="asSlave"style="display: none;"><tr><td class=formPrompt>Master'
+</script><head><title>PowerDNS WebUI-Login</title></head><body onLoad="startUp();"><div id="topSpan"><table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr></table></div><div id="lowerSpan"><table align=center><form action="/"onSubmit="return initialLogin()"name=loginForm><tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr><tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr><tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr><tr><td align=center colspan=2><span title="Load zone list"class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addZone style="display: none;"><table width=40%align=center><tbody id="startBody"><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr><form method=post action="/"name=newZoneForm onSubmit="return doNewZone();"><tr><td class=formPrompt>Name:</td><td><input onkeydown="keyEsc(event);"name=zoneName></td></tr><tr><td class=formPrompt>Type:</td><td><select onChange="zoneKindChange(this);"name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr></tbody><tbody id="asMaster"><tr><td class=formPrompt>Name Servers:</td><td><input size=40 name=ns0><br><input size=40 name=ns1><br><input size=40 name=ns2><br><input size=40 name=ns3><br></td></tr></tbody><tbody id="asSlave"style="display: none;"><tr><td class=formPrompt>Master's IPs :</td><td>
+				<input size=40 name=ip0><br>
+				<input size=40 name=ip1><br>
+				<input size=40 name=ip2><br>
+				<input size=40 name=ip3><br></td></tr>
+		</tbody>
+		<tr><td colspan=2><hr></td></tr>
+		<tr><td align=center colspan=2><span title="Cancel adding zone" class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone" class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
+		</tr>
+	<input type=submit style="display: none;">
+	</form>
+	</table>
+</div>
+
+
+
+<div id=addName style="display: none;">
+	<table width=40% align=center>
+	<colgroup><col width=35%/><col width=65%/></colgroup>
+	<tr><td colspan=2 align=center><h2>Add a New Host</h2></td></tr>
+	<form method=post action="/" name=newNameForm onSubmit="return doNewName();">
+		<tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);" name=rrName></td></tr>
+		<tr><td class=formPrompt>RR Type:</td><td><select name=rrType>
+			<option>A<option>AAAA<option>MX<option>NS<option>TXT
+
+			<option>A6<option>ADDR<option>AFSDB<option>ALIAS
+			<option>CAA<option>CDNSKEY<option>CDS<option>CERT
+			<option>CNAME<option>DHCID<option>DLV<option>DNAME<option>DNSKEY<option>DS
+			<option>EUI48<option>EUI64<option>HINFO<option>IPSECKEY<option>KEY
+			<option>KX<option>LOC<option>LUA<option>MAILA<option>MAILB<option>MB
+			<option>MG<option>MINFO<option>MR<option>MX<option>NAPTR<option>NS
+			<option>OPENPGPKEY<option>OPT<option>PTR
+			<option>RKEY<option>RP<option>RRSIG<option>SIG<option>SMIMEA<option>SOA
+			<option>SPF<option>SRV<option>SSHFP<option>TKEY<option>TLSA<option>TXT
+			<option>URI<option>WKS
+
+		</select></td></tr>
+		<tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr>
+		<tr><td colspan=2><hr></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR" onClick="loadThisZone();">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
+		</tr>
+	<input type=submit style="display: none;">
+	</form>
+	</table>
+</div>
+
+<div id=addMeta style="display: none;">
+	<table width=40% align=center>
+	<colgroup><col width=35%/><col width=65%/></colgroup>
+	<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
+	<form method=post action="/" name=newMetaForm onSubmit="return formAddMeta();">
+		<tr><td class=formPrompt>Metadata: </td><td><select name=metaItem>
+			<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
+			<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
+			<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE
+			<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS
+			<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
+		</select></td></tr>
+		<tr><Td class=formPrompt>Value: </td><td><input size=50 name=metaValue></td></tr>
+		<tr><td colspan=2><hr></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span><span title="Add this Metadata Record" class=myBtn onClick="formAddMeta();">Add Metadata</span></td></tr>
+	<input type=submit style="display: none;">
+	</form>
+	</table>
+</div>
+
+<div id=addTsig style="display: none;">
+	<table width=40% align=center>
+	<colgroup><col width=35%/><col width=65%/></colgroup>
+	<tr><td colspan=2 align=center><h2>Add a New TSIG Key</h2></td></tr>
+	<form method=post action="/" name=newTsigForm onSubmit="return formAddTsig();">
+		<tr><Td class=formPrompt>TSIG Name: </td><td><input size=50 name=tsigName></td></tr>
+		<tr><td class=formPrompt>TSIG Algrythm: </td><td><select name=tsigAlg>
+			<option value="hmac-sha512">HMAC-SHA512<option value="hmac-sha384">HMAC-SHA384<option value="hmac-sha256">HMAC-SHA256
+			<option value="hmac-sha224">HMAC-SHA224<option value="hmac-sha1">HMAC-SHA1<option value="hmac-md5">HMAC-MD5
+		</select></td></tr>
+		<tr><Td class=formPrompt>TSIG Key: </td><td><input placeholder='Leave blank,for auto-generated key'
