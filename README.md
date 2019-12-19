@@ -5,17 +5,26 @@ This project has no connection whatsoever with [PowerDNS.COM BV](https://www.pow
 
 It is an independently funded & maintained development effort.
 
-# Work-in-Progress
+# Status
 
-If you want to, please do report issues you find.
-I'm always happy to fix them, but this code is still undergoing massive development change.
+The main thrust of this development is now complete - I think :)
 
-The basic paradigm of the UI will probably stay much as it is, but the underlying code may change.
+This is a summary of the features this WebUI provides to PowerDNS
 
-I will try and keep the `master` branch stable (i.e. functional & usable) and do all the development in the `dev` branch.
+* Servers - contact PowerDNS Servers directly or though a web proxy, HTTP or HTTPS (see below)
+* Zones - Add, View, Remove, Sign, Unsign, Force NOTIFY, Rectify, Download in RFC format, force update (slave only)
+* Metadata - Add, Edit, Remove Metadata items or individual values, with some local validation
+* Hosts/names - Master or Native only - Add, Edit, Remove RRs / RR-Sets with some local validation
+* TSIG Keys - Add, Regenerate, Remove, copy name or key to clipboard
+* DNSSEC
+* * Sign an unsigned zone - NSEC or NSEC3, KSK+ZSK or CSK, any algorythm & key lengths
+* * Unsign a signed zone
+* * Step-by-Step one-button CSK, KSK or ZSK key roll-over
+* * Add, remove, activate / deactivate individual keys
+* * DS digest, auto-copy-to-clipboard
+* * Convert NSEC to NSEC3 or vice versa
+* * NSEC3PARAM roll-over
 
-Therefore, if you want to contribute to the development effort, please fork from the `dev` branch.
-Although, my personal recommendation would be to wait until the code has stabilised a lot more :)
 
 # PowerDNS WebUI
 
