@@ -17,13 +17,13 @@ This is a summary of the features this WebUI provides to PowerDNS
 * Hosts/names - Master or Native only - Add, Edit, Remove RRs / RR-Sets with some local validation
 * TSIG Keys - Add, Regenerate, Remove, copy name or key to clipboard
 * DNSSEC
-* * Sign an unsigned zone - NSEC or NSEC3, KSK+ZSK or CSK, any algorythm & key lengths
-* * Unsign a signed zone
-* * Step-by-Step one-button CSK, KSK or ZSK key roll-over
-* * Add, remove, activate / deactivate individual keys
-* * DS digest, auto-copy-to-clipboard
-* * Convert NSEC to NSEC3 or vice versa
-* * NSEC3PARAM roll-over
+	* Sign an unsigned zone - NSEC or NSEC3, KSK+ZSK or CSK, any algorythm & key lengths
+	* Unsign a signed zone
+	* Step-by-Step one-button CSK, KSK or ZSK key roll-over
+	* Add, remove, activate / deactivate individual keys
+	* DS digest, auto-copy-to-clipboard
+	* Convert NSEC to NSEC3 or vice versa
+	* NSEC3PARAM roll-over
 
 
 # PowerDNS WebUI
