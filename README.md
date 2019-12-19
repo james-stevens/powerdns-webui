@@ -16,7 +16,7 @@ This gives you the ability to browse & edit all your zone & record data. This we
 code, except the RestAPI that PowerDNS has built-in.
 
 It is primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
-but it should habndle native / slave zones OK.
+but it should handle native / slave zones OK.
 If you are using this webapp for slave / native, please let me know if there are features it needs.
 
 `htdocs/min.html` is a minified version of the same file, minified using `python -m jsmin index.html > min.html`
