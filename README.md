@@ -172,9 +172,11 @@ There are deliberatly **NO** security options in this webapp, e.g. who can edit/
 
 As a general principal, when you have a JavaScript+RestAPI webapp the place to put the security is in the serverside RestAPI.
 Any security put into the Javascript can probably be trivially circumvented and is therefore of extremely limited value.
+In fact, in security circles, this is considered worse than having no security, as less experienced sysadmins may be left thinking
+they are safe, when this is not the case.
 
 In various web proxies, there are options to block certain `METHODs`. For example, by blocking all `METHODs` except `GET`,
-you can stop a user from being able to do updates. For more information, please ask Google.
+you can stop a user from being able to make changes. For more information, please ask Google.
 
 In general, therefore, as it is provided, this webapp is probably not going to be that useful for giving to end users.
 However, as an admin-tool, it can be very useful.
