@@ -28,14 +28,14 @@ The main thrust of this development is now complete - I think :)
 
 This is a summary of the features this WebUI provides to PowerDNS
 
-* Servers - contact PowerDNS Servers directly or though a web proxy, HTTP or HTTPS (see below)
-* Zones - Add, View, Remove, Sign, Unsign, Force NOTIFY, Rectify, Download in RFC format, force update (slave only)
-* Metadata - Add, Edit, Remove Metadata items or individual values, with some local validation
-* Hosts/names - Master or Native only - Add, Edit, Remove RRs / RR-Sets with some local validation. Copy records between zones, by renaming the RR-Set
-* TSIG Keys - Add, Regenerate, Remove, copy name or key to clipboard
-* Search - quick access to native search facility, with click-through to records / zones
-* Navigation - fully functional BACK button, link to open any page in a new tab (or link you can email etc)
-* DNSSEC
+* **Servers** - contact PowerDNS Servers directly or though a web proxy, HTTP or HTTPS (see below)
+* **Zones** - Add, View, Remove, Sign, Unsign, Force NOTIFY, Rectify, Download in RFC format, force update (slave only)
+* **Metadata** - Add, Edit, Remove Metadata items or individual values, with some local validation
+* **Hosts/names** - Master or Native only - Add, Edit, Remove RRs / RR-Sets with some local validation. Copy records between zones, by renaming the RR-Set
+* **TSIG Keys** - Add, Regenerate, Remove, copy name or key to clipboard
+* **Search** - quick access to native search facility, with click-through to records / zones
+* **Navigation** - fully functional BACK button, link to open any page in a new tab (or link you can email etc)
+* **DNSSEC**
 	* Sign an unsigned zone - NSEC or NSEC3, KSK+ZSK or CSK, any algorythm & key lengths
 	* Unsign a signed zone
 	* Step-by-Step one-button CSK, KSK or ZSK key roll-over
