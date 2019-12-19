@@ -234,9 +234,7 @@ var blockedMeta = {
 
 function callApi(sfx,callback,inData)
 {
-	gbl.addH.style.display = "none";
-	gbl.newZ.style.display = "none";
-	gbl.newM.style.display = "none";
+	gbl.forms.forEach(function(i) { i.style.display = "none"; });
 
 	if ((inData != null)&&(inData.method == "PUT"))
 		msg("Requesting ... " + gbl.timer);
@@ -262,7 +260,7 @@ function callApi(sfx,callback,inData)
 	fetch(url,httpCmd).then(function(response) {
 		if (response.status != okResp) {
 			popMsg("ERROR: " + response.status + " " + response.statusText);
-			if ((inData != null)&&("callErr" in inData)) return callback(false);
+			if ((inData != null)&&("callErr" in inData)) return callback(null);
 			return;
 			}
 
@@ -364,7 +362,7 @@ function editMetaItem(dataIdx,itemIdx)
 	x = x + "<table border=0 width=40% align=center><tr><td class=formPrompt>Metadata Item: </td><td>"+metaItem+"</td></tr>";
 	x = x + "<tr><Td class=formPrompt>Value: </td><td><input size=50 value='"+metaValue+"' name=metaValue></td></tr>";
 	x = x + "<tr><td colspan=2><hr></td></tr>";
-	x = x + '<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="zoneMeta();">Cancel</span>';
+	x = x + '<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>';
 
 	if (!(metaItem in blockedMeta))
 		x = x + '<span title="Delete this Metadata Item" class=myBtn onClick="doEditMeta(true);">Delete</span>'
@@ -408,7 +406,7 @@ function addMetaItem()
 function clickAddMeta()
 {
 	gbl.bot.innerHTML = "";
-	gbl.newM.style.display = "block";
+	gbl.addM.style.display = "block";
 	document.newMetaForm.metaValue.focus();
 	document.newMetaForm.metaValue.select();
 }
@@ -1217,7 +1215,7 @@ function showKeys(data)
 	let keyTypes = { num: 0 };
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
-		x = x + "<tr class=dataRow><td align=center>" + gbl.tick 
+		x = x + "<tr class=dataRow><td align=center>" + gbl.tick
 			+ "</td><td colspan=3></td><td>NSEC3PARAM</td><td>"+ctx.zoneDetails.nsec3param+"</td></tr>"
 		}
 
@@ -1414,7 +1412,7 @@ function zoneKindChange(sel)
 function zoneNotify()
 {
 	callApi("zones/"+ctx.zone+"/notify", function(ret) {
-		if (ret) popMsg(gbl.tick + " Zone notified"); else popMsg(gbl.warn + " Notify failed");
+		if (ret!=null) popMsg(gbl.tick + " Zone notified"); else popMsg(gbl.warn + " Notify failed");
 		}, { method: "PUT", callErr: true });
 }
 
@@ -1423,7 +1421,7 @@ function zoneNotify()
 function zoneRectify()
 {
 	callApi("zones/"+ctx.zone+"/rectify", function(ret) {
-		if (ret) popMsg(gbl.tick + " Zone rectified"); else popMsg(gbl.warn + " Rectify failed");
+		if (ret!=null) popMsg(gbl.tick + " Zone rectified"); else popMsg(gbl.warn + " Rectify failed");
 		}, { method: "PUT", callErr: true });
 }
 
@@ -1432,7 +1430,7 @@ function zoneRectify()
 function zoneRetrieve()
 {
 	callApi("zones/"+ctx.zone+"/axfr-retrieve", function(ret) {
-		if (ret) popMsg(gbl.tick + " Zone retrieval requested"); else popMsg(gbl.warn + " Zone retrieval failed");
+		if (ret!=null) popMsg(gbl.tick + " Zone retrieval requested"); else popMsg(gbl.warn + " Zone retrieval failed");
 		}, { method: "PUT", callErr: true });
 }
 
@@ -1443,7 +1441,7 @@ function clickAddZone(isFresh)
 	ctx.addZone = true;
 	topLine();
 	gbl.bot.innerHTML = "";
-	gbl.newZ.style.display = "block";
+	gbl.addZ.style.display = "block";
 	if (isFresh) {
 		let f = document.newZoneForm;
 		f.zoneName.value = "";
@@ -1483,7 +1481,6 @@ function doNewName()
 		return;
 		}
 
-	delete ctx.addRR;
 	gbl.addH.style.display = "none";
 
 	if (f.rrName.value == "")
@@ -1523,7 +1520,6 @@ function doNewName()
 
 function zoneAddHost()
 {
-	ctx.addRR = true;
 	topLine();
 	gbl.bot.innerHTML = "";
 	gbl.addH.style.display = "block";
@@ -1558,6 +1554,7 @@ function zoneDetails(data)
 	ctx.zoneDetails = data;
 
 	if (("param" in gbl)&&("zone" in gbl.param)) {
+		if ("tsig" in gbl.param) return loadTsigList();
 		if ("meta" in gbl.param) return zoneMeta();
 		if ("keys" in gbl.param) return zoneKeys();
 		if ((data.kind != "Slave")&&("name" in gbl.param)&&("type" in gbl.param)) {
@@ -1738,8 +1735,65 @@ function clickTSIG(txt)
 		function() { popMsg("Key copied to clipboard"); },
 		function() { popMsg(gbl.warn + " Copy to clipboard failed"); }
 		);
+}
 
-	return false;
+
+
+function deleteTSIG(id)
+{
+	callApi("tsigkeys/"+id,loadTsigList,{ method: "DELETE", okResp: 204 });
+}
+
+
+
+function formAddTsig()
+{
+	let f = document.newTsigForm;
+	let json = {
+		name: f.tsigName.value,
+		algorithm: f.tsigAlg.value,
+		key: f.tsigKey.value,
+		};
+
+	if (json.name.substr(json.name.length-1)!=".")
+		json.name = json.name + ".";
+
+	if (!fqdnCheck.test(json.name)) {
+		popMsg(gbl.warn + " Invalid TSIG Name");
+		document.newTsigForm.tsigName.focus();
+		document.newTsigForm.tsigName.select();
+		return false;
+		}
+
+	callApi("tsigkeys",function(data) {
+		if (data == null) addTSIG(false); else showTSIG(data.id);
+		},
+		{ method: "POST", callErr: true, okResp: 201, json: JSON.stringify(json) });
+
+	return false; // prevent form submit
+}
+
+
+
+function regenTSIG(id,alg)
+{
+	callApi("tsigkeys/"+id,function() {
+		callApi("tsigkeys",function() { showTSIG(id); },
+			{ method: "POST", okResp: 201, json: JSON.stringify({ name:id, algorithm: alg }) }); 
+		}
+		,{ method: "DELETE", okResp: 204 });
+}
+
+
+
+function addTSIG(withClr)
+{
+	gbl.bot.innerHTML = "";
+	gbl.addT.style.display = "block";
+
+	let t = document.newTsigForm.tsigName;
+	if (withClr) t.value = "";
+	t.focus();
 }
 
 
@@ -1750,11 +1804,12 @@ function showTSIG(tsig)
 
 		let x = "<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
 			+ "<tr><td class=formPrompt>TSIG Name :</td><td>"+data.id+"</td></tr>"
-			+ "<tr><td class=formPrompt>TSIG Algorithm :</td><td>"+data.algorithm+"</td></tr>"
+			+ "<tr><td class=formPrompt>TSIG Algorithm :</td><td>"+data.algorithm.toUpperCase()+"</td></tr>"
 			+ "<tr onClick=\"clickTSIG('"+data.key+"');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>"+data.key+"</td></tr>"
 			+ "<tr><td align=center colspan=2><hr></td></tr>"
-			+ "<tr><td align=center colspan=2>" 
+			+ "<tr><td align=center colspan=2>"
 			+ btn("loadTsigList()","Back","Go back to the list of TSIGs")
+			+ btn("regenTSIG('"+data.id+"','"+data.algorithm+"')","Rollover","Replace this TSIG Key, keeping the name")
 			+ btn("deleteTSIG('"+data.id+"')","Delete","Delete this TSIG Key")
 			+ "</td></tr></table>";
 
@@ -1772,22 +1827,32 @@ function showTsigList(data)
 		return;
 		}
 
+	data.sort(function(a,b) {
+		if (a.id < b.id) return -1;
+		if (a.id > b.id) return 1;
+		return 0;
+		});
+
 	let newTitle = gbl.server + ": TSIGs";
 	gbl.state = { server: gbl.server, tsig: true };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle
+	document.title = newTitle;
 
 	delete gbl.param;
 	ctx = {};
 	topLine();
 
-	let x = "<table align=center border=0 cellspacing=2 cellpadding=2>"
+	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>"
+		+ "<colgroup><col width=100%/><col/></colgroup><tr><Td>"
+		+ "<table align=center border=0 cellspacing=2 cellpadding=2>"
 		+ "<tr><th>TSIG Name</td><th>Algorithm</td></tr>";
 
 	for(let i of data)
-		x = x + "<tr class=dataRow onClick=\"showTSIG('"+i.id+"');\"><td>"+i.id+"</td><td>"+i.algorithm+"</td></tr>";
+		x = x + "<tr class=dataRow onClick=\"showTSIG('"+i.id+"');\"><td>"+i.id+"</td>"
+			+ "<td>"+i.algorithm.toUpperCase()+"</td></tr>";
 
-	x = x + "</table>";
+	x = x + "</table></td><td>" + btn("addTSIG(true)","Add TSIG","Add a TSIG Key") + "</td></tr></table>";
+
 	gbl.bot.innerHTML = x;
 }
 
@@ -1799,7 +1864,7 @@ function showTsigList(data)
 
 function doMakeZone(data)
 {
-	if (data) 
+	if (data != null)
 		zoneDetailsLoad(data.name);
 	else {
 		clickAddZone(false);
@@ -1870,9 +1935,9 @@ function zoneListDetails(data)
 {
 	data.sort(function(a,b) {
 		if (a.id < b.id) return -1;
-		if (a.id > b.id) return 1;;
+		if (a.id > b.id) return 1;
 		return 0;
-		})
+		});
 
 	ctx.zoneList = data;
 
@@ -1985,8 +2050,8 @@ function goLogin()
 function topLine()
 {
 	gbl.addH.style.display = "none";
-	gbl.newZ.style.display = "none";
-	gbl.newM.style.display = "none";
+	gbl.addZ.style.display = "none";
+	gbl.addM.style.display = "none";
 
 	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
 		+ "<font size=+1><a title='Open this page in a new window' target=_blank href='" + window.origin + "?";
@@ -1995,9 +2060,7 @@ function topLine()
 		+ btn("goLogin()",gbl.server,"Change server")
 		+ btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);
 
-	if ("searchTerm" in ctx) {
-		delete ctx.searchTerm;
-		}
+	if ("searchTerm" in ctx) delete ctx.searchTerm;
 
 	if ("zone" in ctx) {
 		x = x + btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);
@@ -2068,9 +2131,13 @@ function startUp()
 
 	gbl.top = document.getElementById("topSpan");
 	gbl.bot = document.getElementById("lowerSpan");
+
 	gbl.addH = document.getElementById("addName");
-	gbl.newZ = document.getElementById("addZone");
-	gbl.newM = document.getElementById("addMeta");
+	gbl.addZ = document.getElementById("addZone");
+	gbl.addM = document.getElementById("addMeta");
+	gbl.addT = document.getElementById("addTsig");
+
+	gbl.forms = [ gbl.addH, gbl.addZ, gbl.addM, gbl.addT ];
 
 	if (window.location.search != "") {
 		gbl.param = JSON.parse(atob(window.location.search.substr(1)));
@@ -2232,18 +2299,18 @@ function keyEsc(e) {
 	<form method=post action="/" name=newNameForm onSubmit="return doNewName();">
 		<tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);" name=rrName></td></tr>
 		<tr><td class=formPrompt>RR Type:</td><td><select name=rrType>
-		<option>A<option>AAAA<option>MX<option>NS<option>TXT
+			<option>A<option>AAAA<option>MX<option>NS<option>TXT
 
-		<option>A6<option>ADDR<option>AFSDB<option>ALIAS
-		<option>CAA<option>CDNSKEY<option>CDS<option>CERT
-		<option>CNAME<option>DHCID<option>DLV<option>DNAME<option>DNSKEY<option>DS
-		<option>EUI48<option>EUI64<option>HINFO<option>IPSECKEY<option>KEY
-		<option>KX<option>LOC<option>LUA<option>MAILA<option>MAILB<option>MB
-		<option>MG<option>MINFO<option>MR<option>MX<option>NAPTR<option>NS
-		<option>OPENPGPKEY<option>OPT<option>PTR
-		<option>RKEY<option>RP<option>RRSIG<option>SIG<option>SMIMEA<option>SOA
-		<option>SPF<option>SRV<option>SSHFP<option>TKEY<option>TLSA<option>TXT
-		<option>URI<option>WKS
+			<option>A6<option>ADDR<option>AFSDB<option>ALIAS
+			<option>CAA<option>CDNSKEY<option>CDS<option>CERT
+			<option>CNAME<option>DHCID<option>DLV<option>DNAME<option>DNSKEY<option>DS
+			<option>EUI48<option>EUI64<option>HINFO<option>IPSECKEY<option>KEY
+			<option>KX<option>LOC<option>LUA<option>MAILA<option>MAILB<option>MB
+			<option>MG<option>MINFO<option>MR<option>MX<option>NAPTR<option>NS
+			<option>OPENPGPKEY<option>OPT<option>PTR
+			<option>RKEY<option>RP<option>RRSIG<option>SIG<option>SMIMEA<option>SOA
+			<option>SPF<option>SRV<option>SSHFP<option>TKEY<option>TLSA<option>TXT
+			<option>URI<option>WKS
 
 		</select></td></tr>
 		<tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr>
@@ -2261,15 +2328,33 @@ function keyEsc(e) {
 	<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
 	<form method=post action="/" name=newMetaForm onSubmit="return addMetaItem();">
 		<tr><td class=formPrompt>Metadata: </td><td><select name=metaItem>
-		<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
-		<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
-		<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE
-		<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS
-		<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
+			<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
+			<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
+			<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE
+			<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS
+			<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
 		</select></td></tr>
 		<tr><Td class=formPrompt>Value: </td><td><input size=50 name=metaValue></td></tr>
 		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Meta Data" onClick="zoneMeta();">Cancel</span><span title="Add this RR" class=myBtn onClick="addMetaItem();">Add Metadata</span></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span><span title="Add this Metadata Record" class=myBtn onClick="addMetaItem();">Add Metadata</span></td></tr>
+	<input type=submit style="display: none;">
+	</form>
+	</table>
+</div>
+
+<div id=addTsig style="display: none;">
+	<table width=40% align=center>
+	<colgroup><col width=35%/><col width=65%/></colgroup>
+	<tr><td colspan=2 align=center><h2>Add a New TSIG Key</h2></td></tr>
+	<form method=post action="/" name=newTsigForm onSubmit="return formAddTsig();">
+		<tr><Td class=formPrompt>TSIG Name: </td><td><input size=50 name=tsigName></td></tr>
+		<tr><td class=formPrompt>TSIG Algrythm: </td><td><select name=tsigAlg>
+			<option value="hmac-sha512">HMAC-SHA512<option value="hmac-sha384">HMAC-SHA384<option value="hmac-sha256">HMAC-SHA256
+			<option value="hmac-sha224">HMAC-SHA224<option value="hmac-sha1">HMAC-SHA1<option value="hmac-md5">HMAC-MD5
+		</select></td></tr>
+		<tr><Td class=formPrompt>TSIG Key: </td><td><input placeholder='Leave blank, for auto-generated key' size=100 name=tsigKey></td></tr>
+		<tr><td colspan=2><hr></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding a TSIG Key" onClick="loadTsigList();">Cancel</span><span title="Add this TSIG Key" class=myBtn onClick="formAddTsig();">Add TSIG</span></td></tr>
 	<input type=submit style="display: none;">
 	</form>
 	</table>
