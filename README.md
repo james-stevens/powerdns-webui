@@ -56,17 +56,17 @@ When reporting an issue, please also include any messages in your browser consol
 
 # Browser Security Restrictions
 
-Its super simple to use, but does require a little setting up to ensure your browser is happy with stuff.
-These issues are generic browser security restrictions, and nothing specifically to do with this code.
+This webapp is super simple to use, but does require a little setting up to ensure your browser is happy with stuff.
+These issues are generic browser security restrictions, and not specifically to do with this code.
 
-* If your browser received the `index.html` over HTTPS, then the RestAPI **must** be accessed over HTTPS - this is where
+* If your browser received the `index.html` (this webapp) over HTTPS, then the RestAPI **must** be accessed over HTTPS - this is where
 using an HTTP/HTTPS proxy is useful, as PowerDNS does not natively support HTTPS and sending all your data over HTTP
 is probably not what you want.
 
 * You must be [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) compliant - in this context it means the web server
-that gave your browser `index.html` must list (in the header of the response) all the other HTTP/S servers you are allowed to access from the pages it has served you.
+that gave your browser `index.html` must list (in the header of the response) all the other HTTP/S servers you are allowed to access from the webapp.
 
-NOTE: For CORS, by default, you are allowed to access the Rest/API on the server that sent you the `index.html`.
+NOTE: For CORS, by default, you are allowed to access the Rest/API on the server that sent you the webapp.
 So this requires no special extra consideration.
 
 
