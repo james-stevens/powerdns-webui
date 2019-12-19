@@ -16,7 +16,7 @@ This gives you the ability to browse & edit all your zone & record data. This we
 code, except the RestAPI that PowerDNS has built-in.
 
 It is (currently) primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
-but code for handling native & slave zone will probably be added later, or may just fall out in the process.
+but it should habndle native & slave zones OK.
 If you are using this webapp for slave & native, please let me know if there are features it needs.
 
 `htdocs/min.html` is a minified version of the same file, minified using `python -m jsmin index.html > min.html`
@@ -31,8 +31,10 @@ This is a summary of the features this WebUI provides to PowerDNS
 * Servers - contact PowerDNS Servers directly or though a web proxy, HTTP or HTTPS (see below)
 * Zones - Add, View, Remove, Sign, Unsign, Force NOTIFY, Rectify, Download in RFC format, force update (slave only)
 * Metadata - Add, Edit, Remove Metadata items or individual values, with some local validation
-* Hosts/names - Master or Native only - Add, Edit, Remove RRs / RR-Sets with some local validation
+* Hosts/names - Master or Native only - Add, Edit, Remove RRs / RR-Sets with some local validation. Copy records between zones, by renaming the RR-Set
 * TSIG Keys - Add, Regenerate, Remove, copy name or key to clipboard
+* Search - quick access to native search facility, with click-through to records / zones
+* Navigation - fully functional BACK button, link to open any page in a new tab (or link you can email etc)
 * DNSSEC
 	* Sign an unsigned zone - NSEC or NSEC3, KSK+ZSK or CSK, any algorythm & key lengths
 	* Unsign a signed zone
