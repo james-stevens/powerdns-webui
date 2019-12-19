@@ -9,15 +9,15 @@ It is an independently funded & maintained development effort.
 # PowerDNS WebUI
 
 `htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript webapp
-to allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
+which allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
 
 You can clone the project, if you want, but this one file is all you need in order to add a complete WebUI to your PowerDNS Server.
-This gives you the ability to browse & edit all your zone & record data. This webapp has no special serverside
+This gives you the ability to browse & edit all your zone & record data. This webapp requires no special serverside
 code, except the RestAPI that PowerDNS has built-in.
 
-It is (currently) primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
-but it should habndle native & slave zones OK.
-If you are using this webapp for slave & native, please let me know if there are features it needs.
+It is primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
+but it should habndle native / slave zones OK.
+If you are using this webapp for slave / native, please let me know if there are features it needs.
 
 `htdocs/min.html` is a minified version of the same file, minified using `python -m jsmin index.html > min.html`
 
@@ -43,6 +43,12 @@ This is a summary of the features this WebUI provides to PowerDNS
 	* DS digest, auto-copy-to-clipboard
 	* Convert NSEC to NSEC3 or vice versa
 	* NSEC3PARAM roll-over
+
+
+Items that probably should be inproved
+* Some error messages are too long for the space provided.
+* I'd like to be able to automatically maintain a [bind-9.11 catalog zone](https://kb.isc.org/docs/aa-01401), for those who use RFC (not native) slaves.
+
 
 
 # Browser Security Restrictions
@@ -148,7 +154,8 @@ I've tested this with the latest Chrome & Firefox running on Xubuntu (Ubuntu + X
 running v4.2.0 over an 18ms latency link and the response time for all actions, including loading a zone with 1000 records
 (500 names, 2 records per name), is virtually instant.
 
-Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox was identical.
+Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox was identical. 
+As far as I know, any ES6 compliant browser should work, but I might be wrong.
 
 nginx performed the same as Apache - virtually instant.
 
