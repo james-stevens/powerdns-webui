@@ -4,6 +4,10 @@
 <head>
 	<title>PowerDNS WebUI - Login</title>
 </head>
+<script language="Javascript">
+var debugAPI = false;
+</script>
+
 
 <style type='text/css'>
 
@@ -155,15 +159,13 @@ td {
 
 <script language="Javascript">
 
-var debugAPI = false;
-
 console.clear();
 
 var gbl = {
 	server: null,
 	apikey: null,
 	with_https: true,
-	default_ttl: 86400,
+	state: { state: "login" },
 
 	tick: "&#x2611;",
 	cross: "&#x2612;",
@@ -202,8 +204,8 @@ var validations = {
 	};
 
 
+// validation regexp for metadata fields
 var trueOrFalse = /^[01]$/;
-
 var validateMeta = {
 	"API-RECTIFY": trueOrFalse,
 	"IXFR": trueOrFalse,
@@ -211,6 +213,7 @@ var validateMeta = {
 	"PRESIGNED": trueOrFalse,
 	"PUBLISH-CDNSKEY": trueOrFalse,
 	"SLAVE-RENOTIFY": trueOrFalse,
+	"SOA-EDIT": /^(INCREMENT-WEEKS|INCEPTION-EPOCH|INCEPTION-INCREMENT|INCEPTION)$/i,
 	"SOA-EDIT-API": /^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,
 	"SOA-EDIT-DNSUPDATE": /^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,
 	};
@@ -220,13 +223,27 @@ var validateMeta = {
 var dsAlg = [ "Reserved","SHA1","SHA256","GOST","SHA384"];
 
 
+// drop downs for metadata items - not implemented, yet
+var metaPickLists = {
+	"PUBLISH-CDNSKEY" : { "Enabled":1, "Disabled":0 },
+	"API-RECTIFY" : { "Enabled":1, "Disabled":0 },
+	"PRESIGNED" : { "Enabled":1, "Disabled":0 },
+	"NSEC3NARROW" : { "Enabled":1, "Disabled":0 },
+	"IXFR" : { "Enabled":1, "Disabled":0 },
+	"eSLAVE-RENOTIFY" : { "Enabled":1, "Disabled":0 },
+	"SOA-EDIT" : [ "INCREMENT-WEEKS","INCEPTION-EPOCH","INCEPTION-INCREMENT","INCEPTION" ],
+	"SOA-EDIT-API": [ "DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE" ],
+	"SOA-EDIT-DNSUPDATE": [ "DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE" ],
+	};
+
+
 // these appear as metadata items but are handled as zone properties - lol
 var blockedMeta = {
-	"SOA-EDIT": { name: "soa_edit", list: false },
-	"SOA-EDIT-API": { name: "soa_edit_api", list: false },
-	"NSEC3PARAM": { name: "nsec3param", list: false },
-	"TSIG-ALLOW-AXFR": { name: "master_tsig_key_ids", list: true },
-	"AXFR-MASTER-TSIG": { name: "slave_tsig_key_ids", list: true },
+	"SOA-EDIT": { name: "soa_edit", list: false, delete: false },
+	"SOA-EDIT-API": { name: "soa_edit_api", list: false, delete: true },
+	"NSEC3PARAM": { name: "nsec3param", list: false, delete: true },
+	"TSIG-ALLOW-AXFR": { name: "master_tsig_key_ids", list: true, delete: true },
+	"AXFR-MASTER-TSIG": { name: "slave_tsig_key_ids", list: true, delete: true },
 	};
 
 
@@ -337,7 +354,10 @@ function doEditMeta(isDel)
 		return false;
 		}
 
-	if (isDel) i.metadata.splice(itemIdx,1);
+	if (isDel) {
+		metaValue = "";
+		i.metadata.splice(itemIdx,1);
+		}
 	else {
 		i.metadata[itemIdx] = metaValue;
 		i.metadata.sort(function(a,b) {
@@ -378,7 +398,7 @@ function editMetaItem(dataIdx,itemIdx)
 	x = x + "<tr><td colspan=2><hr></td></tr>";
 	x = x + '<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>';
 
-	if (!(metaItem in blockedMeta))
+	if ((!(metaItem in blockedMeta))||(blockedMeta[metaItem].delete))
 		x = x + '<span title="Delete this Metadata Item" class=myBtn onClick="doEditMeta(true);">Delete</span>'
 
 	x = x + '<span title="Change this Metadata Item" class=myBtn onClick="doEditMeta(false);">Change</span></td></tr>'
@@ -437,8 +457,8 @@ function clickAddMeta()
 {
 	gbl.bot.innerHTML = "";
 	gbl.addM.style.display = "block";
+	document.newMetaForm.metaValue.value = "";
 	document.newMetaForm.metaValue.focus();
-	document.newMetaForm.metaValue.select();
 }
 
 
@@ -468,7 +488,7 @@ function zoneMetaDetails(data)
 			});
 
 	let newTitle = gbl.server + ": " + ctx.zone + ", META Data";
-	gbl.state = { server: gbl.server, zone: ctx.zone, meta:true };
+	gbl.state = { state: "meta", server: gbl.server, zone: ctx.zone, meta:true };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 
@@ -834,7 +854,7 @@ function drawOneRecord(rrs)
 		x = x + ctx.rec.name;
 
 	x = x + "/" + ctx.rec.type;
-	gbl.state = { server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
+	gbl.state = { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,x,"/");
 	document.title = x;
 	delete gbl.param;
@@ -951,7 +971,11 @@ function addAlg(formName)
 function setNSEC3(delnsec3)
 {
 	let nsec3 = "1 0 5 ";
-	let nxtFn = function() { ctx.zoneDetails.nsec3param = ""; zoneKeys(); }
+	let nxtFn = function() { 
+		gbl.params = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
+		gbl.state = gbl.params;
+		loadThisZone(); 
+		}
 
 	if (delnsec3 == null) {
 		let old = "0000000000";
@@ -1297,7 +1321,7 @@ function showKeys(data)
 	ctx.zoneKeys = data;
 
 	let newTitle = gbl.server + ": " + ctx.zone + ", DNSSEC Keys"
-	gbl.state = { server: gbl.server, zone: ctx.zone, keys:true };
+	gbl.state = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 
@@ -1662,7 +1686,7 @@ function zoneDetails(data)
 		}
 
 	let newTitle = gbl.server + ": " + ctx.zone
-	gbl.state = { server: gbl.server, zone: ctx.zone };
+	gbl.state = { state: "zone", server: gbl.server, zone: ctx.zone };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 
@@ -1678,8 +1702,8 @@ function zoneDetails(data)
 			+ "<td valign=top>" + i.type + "</td><td valign=top>";
 
 		if (i.type == "SOA") {
-			data.soaSplit = i.records[0].content.split(" ");
-			x = x + formatSOA(data.soaSplit);
+			ctx.soaSplit = i.records[0].content.split(" ");
+			x = x + formatSOA(ctx.soaSplit);
 			}
 		else {
 			i.records.sort(function(a,b) {
@@ -1755,7 +1779,7 @@ function zoneDetailsLoad(zone)
 
 function searchLoadRecord(zone,name,type)
 {
-	gbl.param = { server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
+	gbl.param = { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
 	gbl.state = gbl.param;
 	title = gbl.server + ", Search results - " + name + ":" + type
 	window.history.pushState(gbl.param,title,"/");
@@ -1772,7 +1796,7 @@ function searchResults(data)
 		}
 
 	let newTitle = gbl.server + ": Search Results"
-	gbl.state = { server: gbl.server, search: ctx.searchTerm};
+	gbl.state = { state: "search", server: gbl.server, search: ctx.searchTerm};
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle
 
@@ -1903,7 +1927,7 @@ function showTSIG(tsig)
 	callApi("tsigkeys/"+tsig,function(data) {
 
 		let newTitle = gbl.server + ": TSIG "+data.id;
-		gbl.state = { server: gbl.server, tsig: data.id };
+		gbl.state = { state: "tsigdata", server: gbl.server, tsig: data.id };
 		if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 		document.title = newTitle;
 
@@ -1944,7 +1968,7 @@ function showTsigList(data)
 		return showTSIG(gbl.param.tsig);
 
 	let newTitle = gbl.server + ": TSIGs";
-	gbl.state = { server: gbl.server, tsig: true };
+	gbl.state = { state: "tsig", server: gbl.server, tsig: true };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 
@@ -2059,7 +2083,7 @@ function zoneListDetails(data)
 		}
 
 	let newTitle = gbl.server+": Zone List";
-	gbl.state = { server: gbl.server };
+	gbl.state = { state: "zonelist", server: gbl.server };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 	delete gbl.param;
@@ -2092,7 +2116,6 @@ function zoneListDetails(data)
 	let sz = 100;
 
 	x = x + btn("clickAddZone(true)","Add Zone","Add a new zone to the database",sz)+sp;
-	x = x + btn("loadTsigList()","TSIGs","Show the list of TSIGs",sz)+sp;
 
 	x = x + "</td></tr></table>";
 
@@ -2158,9 +2181,7 @@ function goLogin()
 
 function topLine()
 {
-	gbl.addH.style.display = "none";
-	gbl.addZ.style.display = "none";
-	gbl.addM.style.display = "none";
+	gbl.forms.forEach(function(i) { i.style.display = "none"; });
 
 	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
 		+ "<font size=+1><a title='Open this page in a new window' target=_blank href='" + window.origin + "?";
@@ -2168,6 +2189,9 @@ function topLine()
 	let x = "'>" + gbl.page + "</a></font></td><td>"
 		+ btn("goLogin()",gbl.server,"Change server")
 		+ btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);
+
+	if ((gbl.state.state == "tsig")||(gbl.state.state == "tsigdata"))
+		x = x + btn("loadTsigList()","TSIGs","Show the list of TSIGs");
 
 	if ("searchTerm" in ctx) delete ctx.searchTerm;
 
@@ -2182,7 +2206,7 @@ function topLine()
 			ctx.rec.showName = name;
 			x = x + btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);
 			}
-		else if ("meta" in gbl.state) {
+		else if (gbl.state.state == "meta") {
 				x = x + btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);
 				}
 		else if ("zoneKeys" in ctx) {
@@ -2207,11 +2231,14 @@ function topLine()
 				x = x + btn(ctx.needSave+"(false)","Cancel","Abandom all changes")
 					+ btn(ctx.needSave+"(true)","Save","Save your changes to the zone file");
 
-			if ("meta" in gbl.state)
+			if (gbl.state.state == "meta")
 				x = x + btn('clickAddMeta()',"Add Meta","Add a META data record to "+ctx.zone);
 			}
 
 		}
+
+	if (gbl.state.state == "zonelist")
+		x = x + btn("loadTsigList()","TSIGs","Show the list of TSIGs");
 
 	x = x + "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=30 name=searchTerm></form></td>"
@@ -2245,6 +2272,7 @@ function startUp()
 	gbl.addZ = document.getElementById("addZone");
 	gbl.addM = document.getElementById("addMeta");
 	gbl.addT = document.getElementById("addTsig");
+	gbl.optM = document.getElementById("metaOpt");
 
 	gbl.forms = [ gbl.addH, gbl.addZ, gbl.addM, gbl.addT ];
 
@@ -2443,13 +2471,15 @@ function keyEsc(e) {
 			<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS
 			<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
 		</select></td></tr>
-		<tr><Td class=formPrompt>Value: </td><td><input size=50 name=metaValue></td></tr>
+		<tr><Td class=formPrompt>Value: </td><td><span id="metaOpt"><input size=50 name=metaValue></span></td></tr>
 		<tr><td colspan=2><hr></td></tr>
 		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span><span title="Add this Metadata Record" class=myBtn onClick="formAddMeta();">Add Metadata</span></td></tr>
 	<input type=submit style="display: none;">
 	</form>
 	</table>
 </div>
+
+
 
 <div id=addTsig style="display: none;">
 	<table width=40% align=center>
