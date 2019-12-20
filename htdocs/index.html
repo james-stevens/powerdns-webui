@@ -155,6 +155,7 @@ td {
 
 <script language="Javascript">
 
+var debugAPI = false;
 
 console.clear();
 
@@ -236,6 +237,11 @@ var blockedMeta = {
 
 function callApi(sfx,callback,inData)
 {
+	if (debugAPI) {
+		console.log("API>>>",sfx);
+		console.log("API>>>",inData);
+		}
+
 	gbl.forms.forEach(function(i) { i.style.display = "none"; });
 
 	if ((inData != null)&&(inData.method == "PUT"))
@@ -260,6 +266,7 @@ function callApi(sfx,callback,inData)
 		}
 
 	fetch(url,httpCmd).then(function(response) {
+		if (debugAPI) console.log("API-Resp>>>",response);
 		if (response.status != okResp) {
 			response.text().then(
 				function(data) { e = JSON.parse(data); popMsg(e.error); },
@@ -881,19 +888,62 @@ function getZoneRecord()
 // DNSSEC Stuff
 //=============================================================================================
 
-
-function addAlg()
+function showHideBits(formName)
 {
-	let x = "<tr><Td class=formPrompt>Key Algrythm :</td><td><select name=keyAlg>";
-	[
+	let f = document.forms[formName];
+	let k = document.getElementById("key2Lens");
+	let c = document.getElementById("key1Lens");
+
+	let s = "table-row-group";
+	if ((f.keyAlg.value=="ecdsa256")||(f.keyAlg.value=="ecdsa384")) {
+		k.style.display = "none";
+		c.style.display = "none";
+		}
+	else {
+		if (formName == "addKeyForm") c.style.display = "table-row-group";
+		else {
+			if (f.keyPolicy.value == "CSK") {
+				c.style.display = "table-row-group";
+				k.style.display = "none";
+				}
+			else {
+				k.style.display = "table-row-group";
+				c.style.display = "none";
+				}
+			}
+	}
+}
+
+
+
+function addAlg(formName)
+{
+	let keyAlg = [
 		"ecdsa256","ecdsa384","rsasha1","rsasha1-nsec3-sha1","rsasha256","rsasha512","dh","dsa",
 		"dsa-nsec3-sha1","ecc-gost","ed25519","ed448","gost","indirect","rsamd5"
-	].forEach(function (i) { x = x + "<option value="+i+">"+i.toUpperCase() } );
+	]
+	let keyLens = ["1024","2048","4096"];
+
+	let x = "<tr><Td class=formPrompt>Key Algrythm :</td><td><select onChange='showHideBits(\""+formName+"\");' name=keyAlg>";
+	keyAlg.forEach(function (i) { x = x + "<option value="+i+">"+i.toUpperCase() } );
 	x = x + "</select></td></tr>";
 
-	x = x + "<tr><Td class=formPrompt>Key Length (bits) :</td><td><select name=keyBits>";
-	["256","384","1024","2048","4096"].forEach(function (i) { x = x + "<option>"+i; });
-	return x + "</select></td></tr>";
+	let txt = "CSK"; 
+	if (formName=="addKeyForm") txt = "Key";
+	x = x + "<tbody style='display:none;' id='key1Lens'>"
+	x = x + "<tr><Td class=formPrompt>"+txt+" Length (bits) :</td><td><select name=cskBits>";
+	keyLens.forEach(function (i) { x = x + "<option>"+i; });
+	x = x + "</select></td></tr></tbody>";
+
+	x = x + "<tbody style='display:none;' id='key2Lens'>"
+	x = x + "<tr><Td class=formPrompt>KSK Length (bits) :</td><td><select name=kskBits>";
+	keyLens.forEach(function (i) { x = x + "<option>"+i; });
+	x = x + "</select></td></tr>";
+	x = x + "<tr><Td class=formPrompt>ZSK Length (bits) :</td><td><select name=zskBits>";
+	keyLens.forEach(function (i) { x = x + "<option>"+i; });
+	x = x + "</select></td></tr></tbody>";
+
+	return x;
 }
 
 
@@ -923,6 +973,7 @@ function setNSEC3(delnsec3)
 				callApi("zones/"+ctx.zone+"/rectify", zoneKeys, { method: "PUT" });
 				}
 		}
+	else nsec3 = "";
 
 	callApi("zones/"+ctx.zone, nxtFn,
 		{ method: "PUT", okResp: 204, json: JSON.stringify({ nsec3param: nsec3 }) } );
@@ -934,25 +985,38 @@ function doSignZone()
 {
 	let nextFn = zoneKeys;
 	let keyAlg = document.signZoneForm.keyAlg.value;
-	let keyBits = parseInt(document.signZoneForm.keyBits.value);
+	let kskBits = parseInt(document.signZoneForm.kskBits.value);
+	let zskBits = parseInt(document.signZoneForm.zskBits.value);
+	let cskBits = parseInt(document.signZoneForm.cskBits.value);
 	let keyPolicy = document.signZoneForm.keyPolicy.value;
 	let keyDNSSEC = document.signZoneForm.keyDNSSEC.value;
 
-	if (keyDNSSEC == "NSEC3") nextFn = function() { setNSEC3(null); };
+	if (keyAlg == "ecdsa256") {
+		kskBits = 256;
+		zskBits = 256;
+		cskBits = 256;
+		}
+	else if (keyAlg == "ecdsa384") {
+		kskBits = 384;
+		zskBits = 384;
+		cskBits = 384;
+		}
+
+	if (keyDNSSEC == "NSEC3") { nextFn = function() { setNSEC3(null); }; };
 
 	if (keyPolicy == "CSK") {
 
-		let json = { "keytype": "csk", "active": true, "algorithm": keyAlg, "bits": keyBits, };
+		let json = { "keytype": "csk", "active": true, "algorithm": keyAlg, "bits": cskBits, };
 
 		callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,
 			{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
 		}
 	else {
-		let json_ksk = { "keytype": "ksk", "active": true, "algorithm": keyAlg, "bits": keyBits, }
+		let json_ksk = { "keytype": "ksk", "active": true, "algorithm": keyAlg, "bits": kskBits, }
 
 		callApi("zones/"+ctx.zone+"/cryptokeys", function() {
 
-				let json_zsk = { "keytype": "zsk", "active": true, "algorithm": keyAlg, "bits": keyBits, }
+				let json_zsk = { "keytype": "zsk", "active": true, "algorithm": keyAlg, "bits": zskBits, }
 
 				callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,
 					{ method: "POST", okResp: 201, json: JSON.stringify(json_zsk) } );
@@ -969,12 +1033,14 @@ function doSignZone()
 function signZone()
 {
 	let x = "<form onSubmit='return doSignZone();' name=signZoneForm><table align=center>";
-	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
-		+ "<tr><th colspan=2>DNSSEC Sign: " + ctx.zone + "</th></tr>" + addAlg();
 
-	x = x + "<tr><td class=formPrompt>Key Policy: </td><td><select name=keyPolicy>";
+	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
+		+ "<tr><th colspan=2>DNSSEC Sign: " + ctx.zone + "</th></tr>";
+
+	x = x + "<tr><td class=formPrompt>Key Policy: </td><td><select onChange=\"showHideBits('signZoneForm');\" name=keyPolicy>";
 	["KSK+ZSK", "CSK"].forEach(function(i) { x = x + "<option>" + i } );
-	x = x + "</select></td></tr>";
+	x = x + "</select></td></tr>" + addAlg("signZoneForm");
+
 
 	x = x + "<tr><td class=formPrompt>DNSSEC Policy: </td><td><select name=keyDNSSEC>";
 	["NSEC3","NSEC"].forEach(function(i) { x = x + "<option>" + i } );
@@ -1025,8 +1091,11 @@ function doAddKey()
 		"keytype": document.addKeyForm.keyKind.value,
 		"active": (document.addKeyForm.keyActive.value=="true"),
 		"algorithm": document.addKeyForm.keyAlg.value,
-		"bits": parseInt(document.addKeyForm.keyBits.value),
+		"bits": parseInt(document.addKeyForm.cskBits.value),
 		};
+
+    if (json.algorithm == "ecdsa256") json.bits = 256;
+	else if (json.algorithm == "ecdsa384") json.bits = 384;
 
 	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,
 		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
@@ -1043,7 +1112,7 @@ function clickAddKey()
 	x = x + "<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
 	x = x + "<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";
 	["ksk","zsk","csk"].forEach(function (i) { x = x + "<option value="+i+">"+i.toUpperCase() } );
-	x = x + "</select></td></tr>" + addAlg();
+	x = x + "</select></td></tr>" + addAlg("addKeyForm");
 
 	x = x + "<tr><Td class=formPrompt>Key Active :</td><td><select name=keyActive>";
 	["true","false"].forEach(function (i) { x = x + "<option>"+i; });
