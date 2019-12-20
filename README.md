@@ -148,6 +148,17 @@ you can reach, subject to the browser restrictions described above.
 A fully working example configuration, and instructions, are provided in the `example` directory.
 
 
+# An Easier Configuration
+
+A less secure configuration, that is easier to get working, is to set up PowerDNS to listen on the same IP Address
+as a standard HTTP web server, then load the webapp's `index.html` from the web server and tell the webapp to connect directly 
+to the PowerDNS API on port 8081, by adding `:8081` after the server name / ip address. You will also need to enter the 
+`web-api` key and untick the `HTTPS` tick box.
+
+This should satisfy your browser's security checks. I have tested this in both Chrome and Firefox.  
+However, it means all your data, and your API key, will be sent in plain text.
+
+
 # In Operation #
 
 I've tested this with the latest Chrome & Firefox running on Xubuntu (Ubuntu + XFCE) talking to a 95% idle PowerDNS server
