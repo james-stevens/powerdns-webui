@@ -7,19 +7,19 @@ body{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;m
 a{color:#b0b0ff;text-decoration:none;}
 a:hover{text-decoration:underline;}
 form{margin:0px;}.myBtn{text-align:center;display:inline-block;background-color:#d0d0ff;color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;font-weight:bold;border-radius:25px;padding:5px;padding-left:10px;padding-right:10px;cursor:pointer;margin-top:0px;margin-left:10px;margin-bottom:2px;margin-right:2px;}.myBtn:hover{box-shadow:3px 3px#222244;text-shadow:1px 1px#ffffff;}.myBtn:active{position:relative;box-shadow:none;text-shadow:none;top:1px;left:1px;}.dnskey{color:#383855;}
-td{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,state:{state:"login"},tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",nsec:"&#x1F512;",nsec3:"&#x1F510;",clip:"&#x1F4CE;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var trueOrFalse=/^[01]$/;var validateMeta={"API-RECTIFY":trueOrFalse,"IXFR":trueOrFalse,"NSEC3NARROW":trueOrFalse,"PRESIGNED":trueOrFalse,"PUBLISH-CDNSKEY":trueOrFalse,"SLAVE-RENOTIFY":trueOrFalse,"SOA-EDIT":/^(INCREMENT-WEEKS|INCEPTION-EPOCH|INCEPTION-INCREMENT|INCEPTION)$/i,"SOA-EDIT-API":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,"SOA-EDIT-DNSUPDATE":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];var metaPickLists={"PUBLISH-CDNSKEY":{"Enabled":1,"Disabled":0},"API-RECTIFY":{"Enabled":1,"Disabled":0},"PRESIGNED":{"Enabled":1,"Disabled":0},"NSEC3NARROW":{"Enabled":1,"Disabled":0},"IXFR":{"Enabled":1,"Disabled":0},"eSLAVE-RENOTIFY":{"Enabled":1,"Disabled":0},"SOA-EDIT":["INCREMENT-WEEKS","INCEPTION-EPOCH","INCEPTION-INCREMENT","INCEPTION"],"SOA-EDIT-API":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],"SOA-EDIT-DNSUPDATE":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],};var blockedMeta={"SOA-EDIT":{name:"soa_edit",list:false,delete:false},"SOA-EDIT-API":{name:"soa_edit_api",list:false,delete:true},"NSEC3PARAM":{name:"nsec3param",list:false,delete:true},"TSIG-ALLOW-AXFR":{name:"master_tsig_key_ids",list:true,delete:true},"AXFR-MASTER-TSIG":{name:"slave_tsig_key_ids",list:true,delete:true},};function callApi(sfx,callback,inData)
+td{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}.msgPopNo{position:absolute;left:10px;top:20px;visibility:hidden;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:16pt;width:95%;background:#ffd0d0;text-align:center;color:black;opacity:0;transition:visibility 0s 1s,opacity 1s linear;padding:5px;border-radius:10px;}.msgPopYes{position:absolute;left:10px;top:20px;visibility:visible;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:16pt;width:95%;background:#ffd0d0;text-align:center;color:black;opacity:1;transition:opacity 0.5s linear;padding:5px;border-radius:10px;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,state:{state:"login"},tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",nsec:"&#x1F512;",nsec3:"&#x1F510;",clip:"&#x1F4CE;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var trueOrFalse=/^[01]$/;var validateMeta={"API-RECTIFY":trueOrFalse,"IXFR":trueOrFalse,"NSEC3NARROW":trueOrFalse,"PRESIGNED":trueOrFalse,"PUBLISH-CDNSKEY":trueOrFalse,"SLAVE-RENOTIFY":trueOrFalse,"SOA-EDIT":/^(INCREMENT-WEEKS|INCEPTION-EPOCH|INCEPTION-INCREMENT|INCEPTION)$/i,"SOA-EDIT-API":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,"SOA-EDIT-DNSUPDATE":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];var metaPickLists={"PUBLISH-CDNSKEY":{"Enabled":1,"Disabled":0},"API-RECTIFY":{"Enabled":1,"Disabled":0},"PRESIGNED":{"Enabled":1,"Disabled":0},"NSEC3NARROW":{"Enabled":1,"Disabled":0},"IXFR":{"Enabled":1,"Disabled":0},"eSLAVE-RENOTIFY":{"Enabled":1,"Disabled":0},"SOA-EDIT":["INCREMENT-WEEKS","INCEPTION-EPOCH","INCEPTION-INCREMENT","INCEPTION"],"SOA-EDIT-API":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],"SOA-EDIT-DNSUPDATE":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],};var blockedMeta={"SOA-EDIT":{name:"soa_edit",list:false,delete:false},"SOA-EDIT-API":{name:"soa_edit_api",list:false,delete:true},"NSEC3PARAM":{name:"nsec3param",list:false,delete:true},"TSIG-ALLOW-AXFR":{name:"master_tsig_key_ids",list:true,delete:true},"AXFR-MASTER-TSIG":{name:"slave_tsig_key_ids",list:true,delete:true},};function callApi(sfx,callback,inData)
 {if(debugAPI){console.log("API>>>",sfx);console.log("API>>>",inData);}
 gbl.forms.forEach(function(i){i.style.display="none";});if((inData!=null)&&(inData.method=="PUT"))
 msg("Requesting ... "+gbl.timer);else
 msg("Loading ... "+gbl.timer);let p="https";if(!gbl.with_https)p="http";let url=p+"://"+gbl.server+"/api/v1/servers/localhost/"+sfx;let okResp=200;let httpCmd={headers:{'X-API-Key':gbl.apikey},method:'GET',};if(inData!=null){httpCmd.method=inData.method;httpCmd.body=inData.json;if("okResp"in inData)okResp=inData.okResp;}
-fetch(url,httpCmd).then(function(response){if(debugAPI)console.log("API-Resp>>>",response);if(response.status!=okResp){response.text().then(function(data){e=JSON.parse(data);popMsg(e.error);},function(){popMsg("ERROR: "+response.status+" "+response.statusText);});if((inData!=null)&&("callErr"in inData))return callback(null);return;}
+fetch(url,httpCmd).then(function(response){if(debugAPI)console.log("API-Resp>>>",response);if(response.status!=okResp){response.text().then(function(data){e=JSON.parse(data);errMsg(e.error);},function(){errMsg("ERROR: "+response.status+" "+response.statusText);});msg("");if((inData!=null)&&("callErr"in inData))return callback(null);return;}
 response.text().then(function(data){if((inData!=null)&&(inData.noData))
 callback(true);else{let param=data;try{param=JSON.parse(data);}
 catch{param=data;}
 callback(param);}});});}
 function downloadFile(text,fileType,fileName){var blob=new Blob([text],{type:fileType});var a=document.createElement('a');a.download=fileName;a.href=URL.createObjectURL(blob);a.dataset.downloadurl=[fileType,a.download,a.href].join(':');a.style.display="none";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(a.href);},1500);msg("");}
 function doEditMeta(isDel)
-{let f=document.editMeta;let dataIdx=parseInt(f.dataIdx.value);let itemIdx=parseInt(f.itemIdx.value);let metaValue=document.editMeta.metaValue.value;let i=ctx.zoneMeta[dataIdx];if((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))){popMsg(gbl.warn+" Invalid value for "+i.kind);document.editMeta.metaValue.focus();document.editMeta.metaValue.select();return false;}
+{let f=document.editMeta;let dataIdx=parseInt(f.dataIdx.value);let itemIdx=parseInt(f.itemIdx.value);let metaValue=document.editMeta.metaValue.value;let i=ctx.zoneMeta[dataIdx];if((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))){errMsg("Invalid value for "+i.kind);document.editMeta.metaValue.focus();document.editMeta.metaValue.select();return false;}
 if(isDel){metaValue="";i.metadata.splice(itemIdx,1);}
 else{i.metadata[itemIdx]=metaValue;i.metadata.sort(function(a,b){if(a<b)return-1;if(b<a)return 1;return 0;});}
 if(i.kind in blockedMeta){let json={}
@@ -52,7 +52,7 @@ function addNewRR()
 function madeChange(res)
 {if(res)
 loadThisZone();else
-popMsg(gbl.warn+" Update Failed");}
+errMsg("Update Failed");}
 function patchRRdata()
 {return JSON.stringify({rrsets:[{name:ctx.rec.name,ttl:ctx.rec.rrs.ttl,type:ctx.rec.type,changetype:"REPLACE",records:ctx.rec.rrs.records,}]});}
 function saveRRChanges(withSave)
@@ -63,13 +63,13 @@ function changeRR()
 {let newVal=document.rrForm.new.value;if(newVal==""){if(ctx.rec.rrs.records[ctx.edit.dta].content!="")ctx.needSave="saveRRChanges";ctx.rec.rrs.records.splice(ctx.edit.dta,1);drawOneRecord();}
 else{if((ctx.rec.type=="TXT")&&(newVal.substr(0,1)!='"')&&(newVal.substr(newVal.length-1)!='"'))
 newVal='"'+newVal+'"';s=document.getElementById("rrs"+ctx.edit.dta);if(newVal!=ctx.rec.rrs.records[ctx.edit.dta].content){idx="rr"+ctx.rec.type;if((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!="."))
-newVal=newVal+".";if(idx in validations){if(!validations[idx].test(newVal)){popMsg(gbl.warn+" Invalid value");document.rrForm.new.focus();document.rrForm.new.select();return false;}}
+newVal=newVal+".";if(idx in validations){if(!validations[idx].test(newVal)){errMsg("Invalid value");document.rrForm.new.focus();document.rrForm.new.select();return false;}}
 ctx.rec.rrs.records[ctx.edit.dta].content=newVal;s.innerHTML=newVal;ctx.needSave="saveRRChanges";}
 else
 s.innerHTML=ctx.rec.rrs.records[ctx.edit.dta].content;}
 delete ctx.edit;topLine();return false;}
 function changeTTL()
-{let newVal=document.rrForm.new.value;if(!validInt(newVal)){popMsg(gbl.warn+" Invalid TTL");document.rrForm.new.focus();document.rrForm.new.select();return false;}
+{let newVal=document.rrForm.new.value;if(!validInt(newVal)){errMsg("Invalid TTL");document.rrForm.new.focus();document.rrForm.new.select();return false;}
 if(newVal!=ctx.rec.rrs.ttl){ctx.needSave="saveRRChanges";ctx.rec.rrs.ttl=newVal;drawOneRecord();}
 delete ctx.edit;topLine();return false;}
 function clickTTL(idx)
@@ -90,7 +90,7 @@ function changeName()
 {let z=null;let name=document.rrForm.new.value;if(name.substr(name.length-1)!="."){let t=findZoneName(name+".");if(t!=null){z=t;name=name+".";}
 else{name=name+"."+ctx.zone;z=ctx.zone;}}
 else
-z=findZoneName(name);if(z!="")ctx.zone=z;else{popMsg(gbl.warn+" No matching zone");document.rrForm.new.focus();return false;}
+z=findZoneName(name);if(z!="")ctx.zone=z;else{errMsg("No matching zone");document.rrForm.new.focus();return false;}
 if(ctx.rec.name!=name){ctx.rec.name=name;ctx.rec.rrs.name=name;ctx.needSave="saveRRChanges";}
 delete ctx.edit;topLine();drawOneRecord();return false;}
 function clickRecName(idx)
@@ -173,8 +173,8 @@ x=x+"<b>CSK</b> uses one key instead of two, but means your zone will double in 
 x=x+"</td></tr></table>"
 gbl.bot.innerHTML=x;}
 function clickDS(txt)
-{let x=txt.split(" ");if(x.length<4){popMsg(gbl.warn+" Copy to clipboard failed");return false;}
-navigator.clipboard.writeText(x[x.length-1]).then(function(){popMsg("Digest copied to clipboard");},function(){popMsg(gbl.warn+" Copy to clipboard failed");});return false;}
+{let x=txt.split(" ");if(x.length<4){errMsg("Copy to clipboard failed");return false;}
+navigator.clipboard.writeText(x[x.length-1]).then(function(){popMsg("Digest copied to clipboard");},function(){errMsg("Copy to clipboard failed");});return false;}
 function doAddKey()
 {let json={"keytype":document.addKeyForm.keyKind.value,"active":(document.addKeyForm.keyActive.value=="true"),"algorithm":document.addKeyForm.keyAlg.value,"bits":parseInt(document.addKeyForm.cskBits.value),};if(json.algorithm=="ecdsa256")json.bits=256;else if(json.algorithm=="ecdsa384")json.bits=384;callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});return false}
 function clickAddKey()
@@ -263,11 +263,11 @@ function zoneKindChange(sel)
 {m=document.getElementById("asMaster");s=document.getElementById("asSlave");if(sel.value=="Master"){m.style.display="table-row-group";s.style.display="none";}
 else{m.style.display="none";s.style.display="table-row-group";}}
 function zoneNotify()
-{callApi("zones/"+ctx.zone+"/notify",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone notified");else popMsg(gbl.warn+" Notify failed");},{method:"PUT",callErr:true});}
+{callApi("zones/"+ctx.zone+"/notify",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone notified");else errMsg("Notify failed");},{method:"PUT",callErr:true});}
 function zoneRectify()
-{callApi("zones/"+ctx.zone+"/rectify",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone rectified");else popMsg(gbl.warn+" Rectify failed");},{method:"PUT",callErr:true});}
+{callApi("zones/"+ctx.zone+"/rectify",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone rectified");else errMsg("Rectify failed");},{method:"PUT",callErr:true});}
 function zoneRetrieve()
-{callApi("zones/"+ctx.zone+"/axfr-retrieve",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone retrieval requested");else popMsg(gbl.warn+" Zone retrieval failed");},{method:"PUT",callErr:true});}
+{callApi("zones/"+ctx.zone+"/axfr-retrieve",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone retrieval requested");else errMsg("Zone retrieval failed");},{method:"PUT",callErr:true});}
 function clickAddZone(isFresh)
 {ctx.addZone=true;topLine();gbl.bot.innerHTML="";gbl.addZ.style.display="block";if(isFresh){let f=document.newZoneForm;f.zoneName.value="";f.zoneName.focus();}}
 function dropZone()
@@ -280,10 +280,10 @@ function dropZone()
 function doDropZone()
 {callApi("zones/"+ctx.zone,zoneList,{method:"DELETE",noData:true,okResp:204});}
 function doNewName()
-{let f=document.newNameForm;if(!validInt(f.rrTTL.value)){popMsg(gbl.warn+" Invalid TTL");f.rrTTL.focus();f.rrTTL.select();return;}
+{let f=document.newNameForm;if(!validInt(f.rrTTL.value)){errMsg("Invalid TTL");f.rrTTL.focus();f.rrTTL.select();return;}
 gbl.addH.style.display="none";if(f.rrName.value=="")
 name=ctx.zone;else
-name=f.rrName.value+"."+ctx.zone;if(!fqdnCheck.test(name)){popMsg(gbl.warn+" Invalid host name");f.rrName.focus();f.rrName.select();return false;}
+name=f.rrName.value+"."+ctx.zone;if(!fqdnCheck.test(name)){errMsg("Invalid host name");f.rrName.focus();f.rrName.select();return false;}
 if(findRec(ctx.zoneDetails.rrsets,{name:name,type:f.rrType.value})!=null)
 return clickZoneRecord(name,f.rrType.value);ctx.rec={name:name,type:f.rrType.value,rrs:{name:name,type:f.rrType.value,ttl:f.rrTTL.value,records:[],},};ctx.rec.loadedRows=0;ctx.needSave="saveRRChanges";addNewRR();return false;}
 function zoneAddHost()
@@ -336,12 +336,12 @@ function searchFormSubmit()
 function loadTsigList()
 {callApi("tsigkeys",showTsigList);}
 function clickTSIG(txt,name)
-{navigator.clipboard.writeText(txt).then(function(){popMsg(name+" copied to clipboard");},function(){popMsg(gbl.warn+" Copy to clipboard failed");});}
+{navigator.clipboard.writeText(txt).then(function(){popMsg(name+" copied to clipboard");},function(){errMsg("Copy to clipboard failed");});}
 function deleteTSIG(id)
 {callApi("tsigkeys/"+id,loadTsigList,{method:"DELETE",okResp:204});}
 function formAddTsig()
 {let f=document.newTsigForm;let json={name:f.tsigName.value,algorithm:f.tsigAlg.value,key:f.tsigKey.value,};if(json.name.substr(json.name.length-1)!=".")
-json.name=json.name+".";if(!fqdnCheck.test(json.name)){popMsg(gbl.warn+" Invalid TSIG Name");document.newTsigForm.tsigName.focus();document.newTsigForm.tsigName.select();return false;}
+json.name=json.name+".";if(!fqdnCheck.test(json.name)){errMsg("Invalid TSIG Name");document.newTsigForm.tsigName.focus();document.newTsigForm.tsigName.select();return false;}
 callApi("tsigkeys",function(data){if(data==null)addTSIG(false);else showTSIG(data.id);},{method:"POST",callErr:true,okResp:201,json:JSON.stringify(json)});return false;}
 function regenTSIG(id,alg)
 {callApi("tsigkeys/"+id,function(){callApi("tsigkeys",function(){showTSIG(id);},{method:"POST",okResp:201,json:JSON.stringify({name:id,algorithm:alg})});},{method:"DELETE",okResp:204});}
@@ -370,14 +370,14 @@ x=x+"<tr class=dataRow onClick=\"showTSIG('"+i.id+"');\"><td>"+i.id+"</td>"
 +"<td>"+i.algorithm.toUpperCase()+"</td></tr>";x=x+"</table></td><td>"+btn("addTSIG(true)","Add TSIG","Add a TSIG Key")+"</td></tr></table>";gbl.bot.innerHTML=x;}
 function doMakeZone(data)
 {if(data!=null)
-zoneDetailsLoad(data.name);else{clickAddZone(false);popMsg(gbl.warn+" Adding zone failed");}}
+zoneDetailsLoad(data.name);else{clickAddZone(false);errMsg("Adding zone failed");}}
 function doNewZone()
-{let name=document.newZoneForm.zoneName.value;if(name.substr(name.length-1)!=".")name=name+".";if(!fqdnCheck.test(name)){popMsg(gbl.warn+" Invalid domain name");document.newZoneForm.zoneName.focus();document.newZoneForm.zoneName.select();return false;}
+{let name=document.newZoneForm.zoneName.value;if(name.substr(name.length-1)!=".")name=name+".";if(!fqdnCheck.test(name)){errMsg("Invalid domain name");document.newZoneForm.zoneName.focus();document.newZoneForm.zoneName.select();return false;}
 let kind=document.newZoneForm.zoneKind.value;let ns=[];let ip=[];for(let i=0;i<4;i++){let x=document.newZoneForm["ns"+i];let v=x.value;if(v!=""){if(v.substr(v.length-1)!=".")v=v+"."
-if(!fqdnCheck.test(v)){popMsg(gbl.warn+" Invalid Host Name: "+v);x.focus();x.select();return false;}
+if(!fqdnCheck.test(v)){errMsg("Invalid Host Name: "+v);x.focus();x.select();return false;}
 ns.push(v);}
 x=document.newZoneForm["ip"+i];if(x.value!=""){if((validations["rrA"].test(x.value))||(validations["rrA"].test(x.value)))
-ip.push(x.value);else{popMsg(gbl.warn+" Invalid IP Address: "+x.value);x.focus();x.select();return false;}}}
+ip.push(x.value);else{errMsg("Invalid IP Address: "+x.value);x.focus();x.select();return false;}}}
 let data={name:name,kind:kind,masters:ip,nameservers:ns,};callApi("zones",doMakeZone,{method:"POST",callErr:true,okResp:201,json:JSON.stringify(data)});return false;}
 function zoneListDetails(data)
 {data.sort(function(a,b){if(a.id<b.id)return-1;if(a.id>b.id)return 1;return 0;});ctx.zoneList=data;if("param"in gbl){if("tsig"in gbl.param)return loadTsigList();if("search"in gbl.param){ctx.searchTerm=gbl.param.search;return callApi("search-data?q="+ctx.searchTerm,searchResults);}
@@ -432,11 +432,14 @@ function formatSOA(i)
 return soa;}
 function showError(err)
 {gbl.bot.innerHTML="<h1>"+err+"</h1>";}
+function unerrMsg()
+{let m=document.getElementById("myMsgPop");let t1=m.innerHTML;let t2=gbl.lastErrMsg;if(t2==null)t2="";if(t1==t2)m.className="msgPopNo";delete gbl.lastErrMsg;}
+function errMsg(txt)
+{let m=document.getElementById("myMsgPop");m.className='msgPopYes';m.innerHTML=gbl.warn+" "+txt;gbl.lastErrMsg=m.innerHTML;setTimeout(unerrMsg,2500);}
 function unpopMsg()
-{let m=document.getElementById("showMsg");let t1=m.innerHTML;let t2=gbl.lastMsg;if(t2==null)t2="";if(t1.charCodeAt(0)>255){t1=t1.substr(t1.indexOf(" "));t2=t2.substr(t2.indexOf(" "));}
-if(t1==t2)m.className="fadeout";delete gbl.lastMsg;}
+{let m=document.getElementById("showMsg");let t1=m.innerHTML;let t2=gbl.lastMsg;if(t2==null)t2="";if(t1==t2)m.className="fadeout";delete gbl.lastMsg;}
 function popMsg(txt)
-{msg(txt,"fadein");gbl.lastMsg=txt;setTimeout(unpopMsg,2500);}
+{msg(txt,"fadein");gbl.lastMsg=document.getElementById("showMsg").innerHTML;setTimeout(unpopMsg,2500);}
 function msg(myMsg,newClass)
 {if(newClass==null)newClass="fullvis";let m=document.getElementById("showMsg");m.className=newClass;m.innerHTML=myMsg;delete gbl.lastMsg;}
 function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();if("addRR"in ctx)return loadThisZone();if("addZone"in ctx)return zoneList();}}
