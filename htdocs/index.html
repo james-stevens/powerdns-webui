@@ -155,6 +155,39 @@ td {
 	text-align: right;
 	}
 
+
+.msgPopNo {
+	position: absolute;
+	left: 10px;
+	top: 20px;
+	visibility: hidden;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:16pt;
+	width: 95%;
+	background: #ffd0d0;
+	text-align: center;
+	color: black;
+	opacity: 0; transition: visibility 0s 1s, opacity 1s linear; 
+	padding: 5px;
+	border-radius: 10px;
+	}
+
+.msgPopYes {
+	position: absolute;
+	left: 10px;
+	top: 20px;
+	visibility: visible;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:16pt;
+	width: 95%;
+	background: #ffd0d0;
+	text-align: center;
+	color: black;
+	opacity: 1; transition: opacity 0.5s linear;
+	padding: 5px;
+	border-radius: 10px;
+	}
+
 </style>
 
 <script language="Javascript">
@@ -286,9 +319,10 @@ function callApi(sfx,callback,inData)
 		if (debugAPI) console.log("API-Resp>>>",response);
 		if (response.status != okResp) {
 			response.text().then(
-				function(data) { e = JSON.parse(data); popMsg(e.error); },
-				function() { popMsg("ERROR: " + response.status + " " + response.statusText); }
+				function(data) { e = JSON.parse(data); errMsg(e.error); },
+				function() { errMsg("ERROR: " + response.status + " " + response.statusText); }
 				);
+			msg("");
 			if ((inData != null)&&("callErr" in inData)) return callback(null);
 			return;
 			}
@@ -348,7 +382,7 @@ function doEditMeta(isDel)
 	let i = ctx.zoneMeta[dataIdx];
 
 	if ((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))) {
-		popMsg(gbl.warn + " Invalid value for " + i.kind);
+		errMsg("Invalid value for " + i.kind);
 		document.editMeta.metaValue.focus();
 		document.editMeta.metaValue.select();
 		return false;
@@ -529,7 +563,7 @@ function madeChange(res)
 	if (res)
 		loadThisZone();
 	else
-		popMsg(gbl.warn + " Update Failed");
+		errMsg("Update Failed");
 }
 
 
@@ -593,7 +627,7 @@ function changeRR()
 
 			if (idx in validations) {
 				if (!validations[idx].test(newVal)) {
-					popMsg(gbl.warn+" Invalid value");
+					errMsg("Invalid value");
 					document.rrForm.new.focus();
 					document.rrForm.new.select();
 					return false;
@@ -621,7 +655,7 @@ function changeTTL()
 	let newVal = document.rrForm.new.value;
 
 	if (!validInt(newVal)) {
-		popMsg(gbl.warn+" Invalid TTL");
+		errMsg("Invalid TTL");
 		document.rrForm.new.focus();
 		document.rrForm.new.select();
 		return false;
@@ -719,7 +753,7 @@ function changeName()
 
 	if (z != "") ctx.zone = z;
 	else {
-		popMsg(gbl.warn + " No matching zone");
+		errMsg("No matching zone");
 		document.rrForm.new.focus();
 		return false;
 		}
@@ -1095,13 +1129,13 @@ function clickDS(txt)
 {
 	let x = txt.split(" ");
 	if (x.length < 4) {
-		popMsg(gbl.warn + " Copy to clipboard failed");
+		errMsg("Copy to clipboard failed");
 		return false;
 		}
 
 	navigator.clipboard.writeText(x[x.length-1]).then(
 		function() { popMsg("Digest copied to clipboard"); },
-		function() { popMsg(gbl.warn + " Copy to clipboard failed"); }
+		function() { errMsg("Copy to clipboard failed"); }
 		);
 
 	return false;
@@ -1536,7 +1570,7 @@ function zoneKindChange(sel)
 function zoneNotify()
 {
 	callApi("zones/"+ctx.zone+"/notify", function(ret) {
-		if (ret!=null) popMsg(gbl.tick + " Zone notified"); else popMsg(gbl.warn + " Notify failed");
+		if (ret!=null) popMsg(gbl.tick + " Zone notified"); else errMsg("Notify failed");
 		}, { method: "PUT", callErr: true });
 }
 
@@ -1545,7 +1579,7 @@ function zoneNotify()
 function zoneRectify()
 {
 	callApi("zones/"+ctx.zone+"/rectify", function(ret) {
-		if (ret!=null) popMsg(gbl.tick + " Zone rectified"); else popMsg(gbl.warn + " Rectify failed");
+		if (ret!=null) popMsg(gbl.tick + " Zone rectified"); else errMsg("Rectify failed");
 		}, { method: "PUT", callErr: true });
 }
 
@@ -1554,7 +1588,7 @@ function zoneRectify()
 function zoneRetrieve()
 {
 	callApi("zones/"+ctx.zone+"/axfr-retrieve", function(ret) {
-		if (ret!=null) popMsg(gbl.tick + " Zone retrieval requested"); else popMsg(gbl.warn + " Zone retrieval failed");
+		if (ret!=null) popMsg(gbl.tick + " Zone retrieval requested"); else errMsg("Zone retrieval failed");
 		}, { method: "PUT", callErr: true });
 }
 
@@ -1599,7 +1633,7 @@ function doNewName()
 	let f = document.newNameForm;
 
 	if (!validInt(f.rrTTL.value)) {
-		popMsg(gbl.warn+" Invalid TTL");
+		errMsg("Invalid TTL");
 		f.rrTTL.focus();
 		f.rrTTL.select();
 		return;
@@ -1613,7 +1647,7 @@ function doNewName()
 		name = f.rrName.value + "." + ctx.zone;
 
 	if (!fqdnCheck.test(name)) {
-		popMsg(gbl.warn + " Invalid host name");
+		errMsg("Invalid host name");
 		f.rrName.focus();
 		f.rrName.select();
 		return false;
@@ -1856,7 +1890,7 @@ function clickTSIG(txt,name)
 {
 	navigator.clipboard.writeText(txt).then(
 		function() { popMsg(name + " copied to clipboard"); },
-		function() { popMsg(gbl.warn + " Copy to clipboard failed"); }
+		function() { errMsg("Copy to clipboard failed"); }
 		);
 }
 
@@ -1882,7 +1916,7 @@ function formAddTsig()
 		json.name = json.name + ".";
 
 	if (!fqdnCheck.test(json.name)) {
-		popMsg(gbl.warn + " Invalid TSIG Name");
+		errMsg("Invalid TSIG Name");
 		document.newTsigForm.tsigName.focus();
 		document.newTsigForm.tsigName.select();
 		return false;
@@ -2000,7 +2034,7 @@ function doMakeZone(data)
 		zoneDetailsLoad(data.name);
 	else {
 		clickAddZone(false);
-		popMsg(gbl.warn + " Adding zone failed");
+		errMsg("Adding zone failed");
 		}
 }
 
@@ -2011,7 +2045,7 @@ function doNewZone()
 	let name = document.newZoneForm.zoneName.value;
 	if (name.substr(name.length-1)!=".") name = name + ".";
 	if (!fqdnCheck.test(name)) {
-		popMsg(gbl.warn + " Invalid domain name");
+		errMsg("Invalid domain name");
 		document.newZoneForm.zoneName.focus();
 		document.newZoneForm.zoneName.select();
 		return false;
@@ -2029,7 +2063,7 @@ function doNewZone()
 			if (v.substr(v.length-1)!=".") v = v + "."
 
 			if (!fqdnCheck.test(v)) {
-				popMsg(gbl.warn + " Invalid Host Name: "+v);
+				errMsg("Invalid Host Name: "+v);
 				x.focus(); x.select();
 				return false;
 				}
@@ -2042,7 +2076,7 @@ function doNewZone()
 			if ((validations["rrA"].test(x.value))||(validations["rrA"].test(x.value)))
 				ip.push(x.value);
 			else {
-				popMsg(gbl.warn + " Invalid IP Address: "+x.value);
+				errMsg("Invalid IP Address: "+x.value);
 				x.focus(); x.select();
 				return false;
 				}
@@ -2321,6 +2355,29 @@ function showError(err)
 
 
 
+function unerrMsg()
+{
+	let m = document.getElementById("myMsgPop");
+	let t1 = m.innerHTML;
+	let t2 = gbl.lastErrMsg;
+	if (t2 == null) t2 = "";
+	if (t1 == t2) m.className = "msgPopNo";
+	delete gbl.lastErrMsg;
+}
+
+
+
+function errMsg(txt)
+{
+	let m = document.getElementById("myMsgPop");
+	m.className = 'msgPopYes';
+	m.innerHTML = gbl.warn + " " + txt;
+	gbl.lastErrMsg = m.innerHTML;
+	setTimeout(unerrMsg,2500);
+}
+
+
+
 function unpopMsg()
 {
 	let m = document.getElementById("showMsg");
@@ -2330,8 +2387,6 @@ function unpopMsg()
 	if (t1 == t2) m.className = "fadeout";
 	delete gbl.lastMsg;
 }
-
-
 
 function popMsg(txt)
 {
@@ -2493,4 +2548,5 @@ function keyEsc(e) {
 	</table>
 </div>
 
+<div id=myMsgPop class=msgPopNo></div>
 </body></html>

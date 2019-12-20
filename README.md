@@ -43,8 +43,8 @@ This is a summary of the features this WebUI provides to PowerDNS
 
 
 Items that probably could be improved (apart from my spelling ... dyslexia sucks)
-* Some error messages are too long for the space provided.
 * I'd like to be able to automatically maintain a [bind-9.11 catalog zone](https://kb.isc.org/docs/aa-01401), for those who use RFC (not native) slaves.
+* Use a dropdown list to pick values for metadata items that have a know & limited value range, e.g. `SOA-EDIT`
 
 
 When reporting an issue, please also include any messages in your browser console (in Chrome, press F12).
