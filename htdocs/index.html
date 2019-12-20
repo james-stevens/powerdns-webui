@@ -2327,12 +2327,6 @@ function unpopMsg()
 	let t1 = m.innerHTML;
 	let t2 = gbl.lastMsg;
 	if (t2 == null) t2 = "";
-
-	if (t1.charCodeAt(0) > 255) { // uncode chars are decoded so must be excluded
-		t1 = t1.substr(t1.indexOf(" "));
-		t2 = t2.substr(t2.indexOf(" "));
-		}
-
 	if (t1 == t2) m.className = "fadeout";
 	delete gbl.lastMsg;
 }
@@ -2342,7 +2336,7 @@ function unpopMsg()
 function popMsg(txt)
 {
 	msg(txt,"fadein");
-	gbl.lastMsg = txt;
+	gbl.lastMsg = document.getElementById("showMsg").innerHTML;
 	setTimeout(unpopMsg,2500);
 }
 

@@ -10,10 +10,7 @@ It is an independently funded & maintained development effort.
 
 `htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript webapp
 which allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
-
-You can clone the project, if you want, but this one file is all you need in order to add a complete WebUI to your PowerDNS Server.
-This gives you the ability to browse & edit all your zone & record data. This webapp requires no special serverside
-code, except the RestAPI that PowerDNS has built-in.
+You can clone the project, if you want, but this only file you need in order to add a complete WebUI to your PowerDNS Server.
 
 It is primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
 but it should handle native / slave zones OK.
