@@ -391,9 +391,44 @@ function downloadFile(text, fileType, fileName) {
 
 
 //=============================================================================================
-// Zone META data handling
+// Stats handling
 //=============================================================================================
 
+function loadStats() 
+{
+	callApi("statistics",showStats);
+}
+
+
+
+function showStats(data)
+{
+	data.sort((a,b) => {
+		if (a.name < b.name) return -1;
+		if (a.name > b.name) return 1;
+		return 0;
+		});
+
+	ctx.stats = data;
+
+	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
+	data.forEach(i => {
+		x += `<tr class=dataRow><td>${i.name}</td><td>${i.type}</td>`;
+		if (typeof(i.value) != "object") x += `<td>${i.value}</td></tr>`;
+		else {
+			if (i.value.length > 0) x += "<td>[Click to view]</td>";
+			else x += "<td></td>";
+			}
+		});
+	x += "</table>";
+	gbl.bot.innerHTML = x;
+	topLine()
+}
+
+
+//=============================================================================================
+// Zone META data handling
+//=============================================================================================
 
 
 function doEditMeta(isDel)
@@ -1485,8 +1520,8 @@ function showKeys(data)
 		+ btn('deleteAllKeys()',"Unsign",`Remove all DNSSEC on ${ctx.zone}`,sz) + sp;
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
-		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + sp;
-			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone,sz}`) + sp;
+		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + sp
+			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone}`,sz) + sp;
 		}
 	else
 		x += btn("setNSEC3()","Add NSEC3",`Switch this zone to NSEC3 ${ctx.zone}`,sz) + sp;
@@ -2315,6 +2350,9 @@ function topLine()
 			x += btn('zoneKeys()',"DNSSEC",`Reload the DNSSEC Keys for ${ctx.zone}`);
 			}
 		}
+	else if ("stats" in ctx) {
+		x += btn("loadStats()","Stats","View the server stats");
+		}
 
 	x += "</td><td width=100% align=center><span class='fullvis' id='showMsg'></span></td><td>";
 
@@ -2339,8 +2377,11 @@ function topLine()
 
 		}
 
-	if (gbl.state.state == "zonelist")
-		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs");
+	if (gbl.state.state == "zonelist") {
+		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs")
+		if (!("stats" in ctx))
+			x += btn("loadStats()","Stats","View the server stats");
+		}
 
 	x += "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=30 name=searchTerm></form></td>"
