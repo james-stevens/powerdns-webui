@@ -1448,9 +1448,8 @@ function showKeys(data)
 		i = data[idx];
 		x += `<tr onClick='clickDnssecKey(${idx});' class=dataRow><td align=center>`
 		let aflag = 0;
-		if (i.active) { aflag=1; x += gbl.tick; } else x = x + gbl.cross;
-		x += "</td>";
-		x += `<td align=center>${i.id}</td>`;
+		if (i.active) { aflag=1; x += gbl.tick; } else x += gbl.cross;
+		x += `</td><td align=center>${i.id}</td>`;
 
 		if (i.keytype in keyTypes) {
 			let k = keyTypes[i.keytype];
