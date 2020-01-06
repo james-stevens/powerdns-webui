@@ -398,17 +398,17 @@ function downloadFile(text, fileType, fileName) {
 
 function doEditMeta(isDel)
 {
-	let f = document.editMeta;
+	let f = document.newMetaForm;
 	let dataIdx = parseInt(f.dataIdx.value);
 	let itemIdx = parseInt(f.itemIdx.value);
-	let metaValue = document.editMeta.metaValue.value;
+	let metaValue = document.newMetaForm.metaValue.value;
 
 	let i = ctx.zoneMeta[dataIdx];
 
 	if ((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))) {
 		errMsg(`Invalid value for ${i.kind}`);
-		document.editMeta.metaValue.focus();
-		document.editMeta.metaValue.select();
+		document.newMetaForm.metaValue.focus();
+		document.newMetaForm.metaValue.select();
 		return false;
 		}
 
@@ -446,7 +446,7 @@ function editMetaItem(dataIdx,itemIdx)
 {
 	let metaItem = ctx.zoneMeta[dataIdx].kind;
 	let metaValue = ctx.zoneMeta[dataIdx].metadata[itemIdx];
-	clickAddMeta(metaItem,metaValue);
+	clickAddMeta(metaItem.toUpperCase(),metaValue,dataIdx,itemIdx);
 }
 
 
@@ -462,6 +462,7 @@ function formAddMeta()
 
 	for(let i of ctx.zoneMeta)
 		if (i.kind.toUpperCase() == metaItem) {
+			if (i.metadata.includes(f.metaValue.value)) return zoneMeta();
 			metaValue = i.metadata;
 			metaValue.push(f.metaValue.value);
 			hdr.method = "PUT";
@@ -470,7 +471,7 @@ function formAddMeta()
 			break;
 			}
 
-	let nxtFn = function(res) { if (res == null) clickAddMeta(); else zoneMeta(); };
+	let nxtFn = function(res) { if (res == null) clickAddMeta(metaItem.toUpperCase(),metaValue); else zoneMeta(); };
 	hdr.json = JSON.stringify( { type: "Metadata", kind:metaItem, metadata: metaValue } );
 
 	if (!(metaItem in blockedMeta)) callApi(url, nxtFn, hdr);
@@ -489,21 +490,37 @@ function formAddMeta()
 
 
 
-function clickAddMeta(item,val)
+function showDelete(item,val) {
+	if (!(item in blockedMeta)) return (val != null);
+	if (blockedMeta[item].delete) return (val != null);
+	return false;
+}
+
+
+
+function clickAddMeta(item,val,dataIdx,itemIdx)
 {
-	x = `<form method=post action="/none.cgi" name=newMetaForm onSubmit="return formAddMeta();">
-		<table width=40% align=center>
-		<colgroup><col width=35%/><col width=65%/></colgroup>`;
+	x = '<form method=post action="/none.cgi" name=newMetaForm onSubmit="return formAddMeta();">'
+
+	if (dataIdx != null) x += `<input type=hidden name=dataIdx value=${dataIdx}>`
+	if (itemIdx != null) x += `<input type=hidden name=itemIdx value=${itemIdx}>`
+
+	x += '<table width=40% align=center>'
+	x += '<colgroup><col width=35%/><col width=65%/></colgroup>';
+	let addBtn = "Change";
 
 	if (val == null) {
-		x += `<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
-			<tr><td class=formPrompt>Metadata: </td><td><select onChange='clickAddMeta(this.value);' name=metaItem>`;
+		addBtn = "Add Metadata";
+		x += "<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>"
+			+ "<tr><td class=formPrompt>Metadata: </td><td><select onChange='clickAddMeta(this.value.toUpperCase());' name=metaItem>";
 		allMetaItems.forEach(i => { c=""; if (i==item) c="selected"; x += `<option ${c}>${i}` });
 		x += '</select></td></tr>';
 		}
-	else
+	else {
 		x += `<tr><td colspan=2 align=center><h2>Edit a Metadata Item</h2></td></tr>
 			<tr><td class=formPrompt>Metadata Item: </td><td>${item}</td></tr>`;
+		x += `<input type=hidden name=metaItem value="${item}">`
+		}
 
 	x += '<tr><Td class=formPrompt>Value: </td><td>';
 
@@ -519,11 +536,15 @@ function clickAddMeta(item,val)
 		x += `<input size=50 name=metaValue></td></tr>`;
 
 	x += '<tr><td colspan=2><hr></td></tr>'
-	 + '<tr><td align=center colspan=2>'
-	 + '<span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>'
-	 + '<span title="Add this Metadata Record" class=myBtn onClick="formAddMeta();">Add Metadata</span></td></tr>'
-     + '<input type=submit style="display: none;">'
-     + '</table></form>';
+		+ '<tr><td align=center colspan=2>'
+		+ '<span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>'
+
+	if (showDelete(item,val))
+		x += '<span title="Delete this Metadata Item" class=myBtn onClick="doEditMeta(true);">Delete</span>'
+
+	x += `<span title="Add this Metadata Record" class=myBtn onClick="formAddMeta();">${addBtn}</span></td></tr>`
+		+ '<input type=submit style="display: none;">'
+		+ '</table></form>';
 
 	gbl.bot.innerHTML = x;
 
@@ -2352,11 +2373,10 @@ function startUp()
 
 	gbl.addH = document.getElementById("addName");
 	gbl.addZ = document.getElementById("addZone");
-	gbl.addM = document.getElementById("addMeta");
 	gbl.addT = document.getElementById("addTsig");
 	gbl.optM = document.getElementById("metaOpt");
 
-	gbl.forms = [ gbl.addH, gbl.addZ, gbl.addM, gbl.addT ];
+	gbl.forms = [ gbl.addH, gbl.addZ, gbl.addT ];
 
 	if (window.location.search != "") {
 		gbl.param = JSON.parse(atob(window.location.search.substr(1)));
@@ -2552,27 +2572,6 @@ function keyEsc(e) {
 	</form>
 	</table>
 </div>
-
-<div id=addMeta style="display: none;">
-	<table width=40% align=center>
-	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
-	<form method=post action="/" name=XXXnewMetaForm onSubmit="return formAddMeta();">
-		<tr><td class=formPrompt>Metadata: </td><td><select name=metaItem>
-			<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
-			<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
-			<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE
-			<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS
-			<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
-		</select></td></tr>
-		<tr><Td class=formPrompt>Value: </td><td><span id="metaOpt"><input size=50 name=metaValue></span></td></tr>
-		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span><span title="Add this Metadata Record" class=myBtn onClick="formAddMeta();">Add Metadata</span></td></tr>
-	<input type=submit style="display: none;">
-	</form>
-	</table>
-</div>
-
 
 
 <div id=addTsig style="display: none;">
