@@ -281,6 +281,29 @@ var blockedMeta = {
 	};
 
 
+// All Meta Data Items
+allMetaItems = [
+	'ALLOW-AXFR-FROM',
+	'ALLOW-DNSUPDATE-FROM',
+	'ALSO-NOTIFY',
+	'AXFR-MASTER-TSIG',
+	'AXFR-SOURCE',
+	'FORWARD-DNSUPDATE',
+	'GSS-ACCEPTOR-PRINCIPAL',
+	'GSS-ALLOW-AXFR-PRINCIPAL',
+	'IXFR',
+	'LUA-AXFR-SCRIPT',
+	'NOTIFY-DNSUPDATE',
+	'NSEC3NARROW',
+	'NSEC3PARAM',
+	'PRESIGNED',
+	'PUBLISH-CDNSKEY',
+	'PUBLISH-CDS',
+	'SOA-EDIT',
+	'SOA-EDIT-DNSUPDATE',
+	'TSIG-ALLOW-AXFR',
+	'TSIG-ALLOW-DNSUPDATE',
+	];
 
 //=============================================================================================
 // Some library functions
@@ -423,25 +446,7 @@ function editMetaItem(dataIdx,itemIdx)
 {
 	let metaItem = ctx.zoneMeta[dataIdx].kind;
 	let metaValue = ctx.zoneMeta[dataIdx].metadata[itemIdx];
-
-	let x = `<form name=editMeta onSubmit='return doEditMeta();'>`
-		+ `<input type=hidden name=dataIdx value=${dataIdx}>`
-		+ `<input type=hidden name=itemIdx value=${itemIdx}>`
-		+ `<table border=0 width=40% align=center><tr><td class=formPrompt>Metadata Item: </td><td>${metaItem}</td></tr>`
-		+ `<tr><Td class=formPrompt>Value: </td><td><input size=50 value='${metaValue}' name=metaValue></td></tr>`
-		+ "<tr><td colspan=2><hr></td></tr>"
-		+ '<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>';
-
-	if ((!(metaItem in blockedMeta))||(blockedMeta[metaItem].delete))
-		x += '<span title="Delete this Metadata Item" class=myBtn onClick="doEditMeta(true);">Delete</span>'
-
-	x += '<span title="Change this Metadata Item" class=myBtn onClick="doEditMeta(false);">Change</span></td></tr>'
-		+ `<input type=hidden name=metaItem value='${metaItem}'>`
-		+ "<input type=submit style='display: none;'></form></table>"
-
-	gbl.bot.innerHTML = x;
-	document.editMeta.metaValue.focus();
-	document.editMeta.metaValue.select();
+	clickAddMeta(metaItem,metaValue);
 }
 
 
@@ -484,11 +489,52 @@ function formAddMeta()
 
 
 
-function clickAddMeta()
+function clickAddMeta(item,val)
 {
-	gbl.bot.innerHTML = "";
-	gbl.addM.style.display = "block";
-	document.newMetaForm.metaValue.value = "";
+	x = `<form method=post action="/none.cgi" name=newMetaForm onSubmit="return formAddMeta();">
+		<table width=40% align=center>
+		<colgroup><col width=35%/><col width=65%/></colgroup>`;
+
+	if (val == null) {
+		x += `<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
+			<tr><td class=formPrompt>Metadata: </td><td><select onChange='clickAddMeta(this.value);' name=metaItem>`;
+		allMetaItems.forEach(i => { c=""; if (i==item) c="selected"; x += `<option ${c}>${i}` });
+		x += '</select></td></tr>';
+		}
+	else
+		x += `<tr><td colspan=2 align=center><h2>Edit a Metadata Item</h2></td></tr>
+			<tr><td class=formPrompt>Metadata Item: </td><td>${item}</td></tr>`;
+
+	x += '<tr><Td class=formPrompt>Value: </td><td>';
+
+	if (item in metaPickLists) {
+		x += "<select name=metaValue>";
+		if (Array.isArray(metaPickLists[item]))
+			metaPickLists[item].forEach(i => x += `<option>${i}`);
+		else
+			for(let i in metaPickLists[item]) x += `<option value=${metaPickLists[item][i]}>${i}`;
+		x += "</select>";
+		}
+	else
+		x += `<input size=50 name=metaValue></td></tr>`;
+
+	x += '<tr><td colspan=2><hr></td></tr>'
+	 + '<tr><td align=center colspan=2>'
+	 + '<span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>'
+	 + '<span title="Add this Metadata Record" class=myBtn onClick="formAddMeta();">Add Metadata</span></td></tr>'
+     + '<input type=submit style="display: none;">'
+     + '</table></form>';
+
+	gbl.bot.innerHTML = x;
+
+	if (val != null) document.newMetaForm.metaValue.value = val;
+	else {
+		if (item in metaPickLists)
+			document.newMetaForm.metaValue.selectedIndex = 0;
+		else
+			document.newMetaForm.metaValue.value = "";
+		}
+
 	document.newMetaForm.metaValue.focus();
 }
 
@@ -2511,7 +2557,7 @@ function keyEsc(e) {
 	<table width=40% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
 	<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
-	<form method=post action="/" name=newMetaForm onSubmit="return formAddMeta();">
+	<form method=post action="/" name=XXXnewMetaForm onSubmit="return formAddMeta();">
 		<tr><td class=formPrompt>Metadata: </td><td><select name=metaItem>
 			<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
 			<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
