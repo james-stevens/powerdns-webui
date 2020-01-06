@@ -1,4 +1,4 @@
-<!--- (c) Copyright 2019, James Stevens ... see LICENSE for details --->
+<!--- (c) Copyright 2019-2020, James Stevens ... see LICENSE for details --->
 <!--- Alternative license arrangements are possible, contact me for more information --->
 <html>
 <head>
@@ -198,6 +198,7 @@ var gbl = {
 	server: null,
 	apikey: null,
 	with_https: true,
+	default_ttl: 86400,
 	state: { state: "login" },
 
 	tick: "&#x2611;",
@@ -280,6 +281,29 @@ var blockedMeta = {
 	};
 
 
+// All Meta Data Items
+allMetaItems = [
+	'ALLOW-AXFR-FROM',
+	'ALLOW-DNSUPDATE-FROM',
+	'ALSO-NOTIFY',
+	'AXFR-MASTER-TSIG',
+	'AXFR-SOURCE',
+	'FORWARD-DNSUPDATE',
+	'GSS-ACCEPTOR-PRINCIPAL',
+	'GSS-ALLOW-AXFR-PRINCIPAL',
+	'IXFR',
+	'LUA-AXFR-SCRIPT',
+	'NOTIFY-DNSUPDATE',
+	'NSEC3NARROW',
+	'NSEC3PARAM',
+	'PRESIGNED',
+	'PUBLISH-CDNSKEY',
+	'PUBLISH-CDS',
+	'SOA-EDIT',
+	'SOA-EDIT-DNSUPDATE',
+	'TSIG-ALLOW-AXFR',
+	'TSIG-ALLOW-DNSUPDATE',
+	];
 
 //=============================================================================================
 // Some library functions
@@ -292,16 +316,16 @@ function callApi(sfx,callback,inData)
 		console.log("API>>>",inData);
 		}
 
-	gbl.forms.forEach(function(i) { i.style.display = "none"; });
+	gbl.forms.forEach(i => i.style.display = "none");
 
 	if ((inData != null)&&(inData.method == "PUT"))
-		msg("Requesting ... " + gbl.timer);
+		msg(`Requesting ... ${gbl.timer}`);
 	else
-		msg("Loading ... " + gbl.timer);
+		msg(`Loading ... ${gbl.timer}`);
 
 	let p = "https";
 	if (!gbl.with_https) p = "http";
-	let url = p + "://" + gbl.server + "/api/v1/servers/localhost/" + sfx;
+	let url = `${p}://${gbl.server}/api/v1/servers/localhost/${sfx}`;
 
 	let okResp = 200;
 	let httpCmd = {
@@ -315,19 +339,19 @@ function callApi(sfx,callback,inData)
 		if ("okResp" in inData) okResp = inData.okResp;
 		}
 
-	fetch(url,httpCmd).then(function(response) {
+	fetch(url,httpCmd).then(response => {
 		if (debugAPI) console.log("API-Resp>>>",response);
 		if (response.status != okResp) {
 			response.text().then(
-				function(data) { e = JSON.parse(data); errMsg(e.error); },
-				function() { errMsg("ERROR: " + response.status + " " + response.statusText); }
+				data => { e = JSON.parse(data); errMsg(e.error); },
+				() => errMsg(`ERROR: ${response.status} ${response.statusText}`)
 				);
 			msg("");
 			if ((inData != null)&&("callErr" in inData)) return callback(null);
 			return;
 			}
 
-		response.text().then(function(data) {
+		response.text().then(data => {
 			if ((inData != null)&&(inData.noData))
 				callback(true);
 			else {
@@ -359,7 +383,7 @@ function downloadFile(text, fileType, fileName) {
 	document.body.appendChild(a);
 	a.click();
 	document.body.removeChild(a);
-	setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
+	setTimeout(() => URL.revokeObjectURL(a.href), 1500);
 	msg("");
 }
 
@@ -374,17 +398,17 @@ function downloadFile(text, fileType, fileName) {
 
 function doEditMeta(isDel)
 {
-	let f = document.editMeta;
+	let f = document.newMetaForm;
 	let dataIdx = parseInt(f.dataIdx.value);
 	let itemIdx = parseInt(f.itemIdx.value);
-	let metaValue = document.editMeta.metaValue.value;
+	let metaValue = document.newMetaForm.metaValue.value;
 
 	let i = ctx.zoneMeta[dataIdx];
 
 	if ((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))) {
-		errMsg("Invalid value for " + i.kind);
-		document.editMeta.metaValue.focus();
-		document.editMeta.metaValue.select();
+		errMsg(`Invalid value for ${i.kind}`);
+		document.newMetaForm.metaValue.focus();
+		document.newMetaForm.metaValue.select();
 		return false;
 		}
 
@@ -394,7 +418,7 @@ function doEditMeta(isDel)
 		}
 	else {
 		i.metadata[itemIdx] = metaValue;
-		i.metadata.sort(function(a,b) {
+		i.metadata.sort((a,b) => {
 			if (a < b) return -1;
 			if (b < a) return 1;
 			return 0;
@@ -406,11 +430,11 @@ function doEditMeta(isDel)
 		json[blockedMeta[i.kind].name] = metaValue;
 		if (blockedMeta[i.kind].list) json[blockedMeta[i.kind].name] = i.metadata;
 
-		callApi("zones/"+ctx.zone, zoneMeta, { method: "PUT", okResp: 204, json: JSON.stringify(json) } );
+		callApi(`zones/${ctx.zone}`, zoneMeta, { method: "PUT", okResp: 204, json: JSON.stringify(json) } );
 		}
 	else {
 		let hdr = { method: "PUT", okResp: 200, json: JSON.stringify({ metadata: i.metadata }) };
-		callApi("zones/" + ctx.zone + "/metadata/" + i.kind, zoneMeta, hdr);
+		callApi(`zones/${ctx.zone}/metadata/${i.kind}`, zoneMeta, hdr);
 		}
 
 	return false; // prevent form submit
@@ -422,25 +446,7 @@ function editMetaItem(dataIdx,itemIdx)
 {
 	let metaItem = ctx.zoneMeta[dataIdx].kind;
 	let metaValue = ctx.zoneMeta[dataIdx].metadata[itemIdx];
-
-	let x = "";
-	x = x + "<form name=editMeta onSubmit='return doEditMeta();'>";
-	x = x + "<input type=hidden name=dataIdx value="+dataIdx+">"
-	x = x + "<input type=hidden name=itemIdx value="+itemIdx+">"
-	x = x + "<table border=0 width=40% align=center><tr><td class=formPrompt>Metadata Item: </td><td>"+metaItem+"</td></tr>";
-	x = x + "<tr><Td class=formPrompt>Value: </td><td><input size=50 value='"+metaValue+"' name=metaValue></td></tr>";
-	x = x + "<tr><td colspan=2><hr></td></tr>";
-	x = x + '<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>';
-
-	if ((!(metaItem in blockedMeta))||(blockedMeta[metaItem].delete))
-		x = x + '<span title="Delete this Metadata Item" class=myBtn onClick="doEditMeta(true);">Delete</span>'
-
-	x = x + '<span title="Change this Metadata Item" class=myBtn onClick="doEditMeta(false);">Change</span></td></tr>'
-	x = x + "<input type=hidden name=metaItem value='" + metaItem + "'>";
-	x = x + "<input type=submit style='display: none;'></form></table>";
-	gbl.bot.innerHTML = x;
-	document.editMeta.metaValue.focus();
-	document.editMeta.metaValue.select();
+	clickAddMeta(metaItem.toUpperCase(),metaValue,dataIdx,itemIdx);
 }
 
 
@@ -452,19 +458,20 @@ function formAddMeta()
 	let metaValue = [ f.metaValue.value ];
 
 	let hdr = { method: "POST", okResp: 201, callErr: true };
-	let url = "zones/"+ctx.zone+"/metadata";
+	let url = `zones/${ctx.zone}/metadata`;
 
 	for(let i of ctx.zoneMeta)
 		if (i.kind.toUpperCase() == metaItem) {
+			if (i.metadata.includes(f.metaValue.value)) return zoneMeta();
 			metaValue = i.metadata;
 			metaValue.push(f.metaValue.value);
 			hdr.method = "PUT";
 			hdr.okResp = 200;
-			url = url + "/" + metaItem;
+			url = `${url}/${metaItem}`;
 			break;
 			}
 
-	let nxtFn = function(res) { if (res == null) clickAddMeta(); else zoneMeta(); };
+	let nxtFn = function(res) { if (res == null) clickAddMeta(metaItem.toUpperCase(),metaValue); else zoneMeta(); };
 	hdr.json = JSON.stringify( { type: "Metadata", kind:metaItem, metadata: metaValue } );
 
 	if (!(metaItem in blockedMeta)) callApi(url, nxtFn, hdr);
@@ -474,24 +481,81 @@ function formAddMeta()
 		json[blockedMeta[metaItem].name] = f.metaValue.value;
 		if (blockedMeta[metaItem].list) json[blockedMeta[metaItem].name] = metaValue;
 
-		callApi("zones/"+ctx.zone, nxtFn,
+		callApi(`zones/${ctx.zone}`, nxtFn,
 			{ method: "PUT", callErr: true, okResp: 204, json: JSON.stringify(json) } );
 		}
-
-
-	// hdr.json = JSON.stringify( { type: "Metadata", kind:metaItem, metadata: metaValue } );
-	// callApi(url,function(res) { if (res == null) clickAddMeta(); else zoneMeta(); },hdr);
 
 	return false;
 }
 
 
 
-function clickAddMeta()
+function showDelete(item,val) {
+	if (!(item in blockedMeta)) return (val != null);
+	if (blockedMeta[item].delete) return (val != null);
+	return false;
+}
+
+
+
+function clickAddMeta(item,val,dataIdx,itemIdx)
 {
-	gbl.bot.innerHTML = "";
-	gbl.addM.style.display = "block";
-	document.newMetaForm.metaValue.value = "";
+	x = '<form method=post action="/none.cgi" name=newMetaForm onSubmit="return formAddMeta();">'
+
+	if (dataIdx != null) x += `<input type=hidden name=dataIdx value=${dataIdx}>`
+	if (itemIdx != null) x += `<input type=hidden name=itemIdx value=${itemIdx}>`
+
+	x += '<table width=40% align=center>'
+	x += '<colgroup><col width=35%/><col width=65%/></colgroup>';
+	let addBtn = "Change";
+
+	if (val == null) {
+		addBtn = "Add Metadata";
+		x += "<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>"
+			+ "<tr><td class=formPrompt>Metadata: </td><td><select onChange='clickAddMeta(this.value.toUpperCase());' name=metaItem>";
+		allMetaItems.forEach(i => { c=""; if (i==item) c="selected"; x += `<option ${c}>${i}` });
+		x += '</select></td></tr>';
+		}
+	else {
+		x += `<tr><td colspan=2 align=center><h2>Edit a Metadata Item</h2></td></tr>
+			<tr><td class=formPrompt>Metadata Item: </td><td>${item}</td></tr>`;
+		x += `<input type=hidden name=metaItem value="${item}">`
+		}
+
+	x += '<tr><Td class=formPrompt>Value: </td><td>';
+
+	if (item in metaPickLists) {
+		x += "<select name=metaValue>";
+		if (Array.isArray(metaPickLists[item]))
+			metaPickLists[item].forEach(i => x += `<option>${i}`);
+		else
+			for(let i in metaPickLists[item]) x += `<option value=${metaPickLists[item][i]}>${i}`;
+		x += "</select>";
+		}
+	else
+		x += `<input size=50 name=metaValue></td></tr>`;
+
+	x += '<tr><td colspan=2><hr></td></tr>'
+		+ '<tr><td align=center colspan=2>'
+		+ '<span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>'
+
+	if (showDelete(item,val))
+		x += '<span title="Delete this Metadata Item" class=myBtn onClick="doEditMeta(true);">Delete</span>'
+
+	x += `<span title="Add this Metadata Record" class=myBtn onClick="formAddMeta();">${addBtn}</span></td></tr>`
+		+ '<input type=submit style="display: none;">'
+		+ '</table></form>';
+
+	gbl.bot.innerHTML = x;
+
+	if (val != null) document.newMetaForm.metaValue.value = val;
+	else {
+		if (item in metaPickLists)
+			document.newMetaForm.metaValue.selectedIndex = 0;
+		else
+			document.newMetaForm.metaValue.value = "";
+		}
+
 	document.newMetaForm.metaValue.focus();
 }
 
@@ -500,7 +564,7 @@ function clickAddMeta()
 function zoneMeta()
 {
 	ctx.meta = true; topLine();
-	callApi("zones/"+ctx.zone+"/metadata",zoneMetaDetails);
+	callApi(`zones/${ctx.zone}/metadata`,zoneMetaDetails);
 	return false;
 }
 
@@ -508,20 +572,20 @@ function zoneMeta()
 
 function zoneMetaDetails(data)
 {
-	data.sort(function(a,b) {
+	data.sort((a,b) => {
 		if (a.kind < b.kind) return -1;
 		if (a.kind > b.kind) return 1;
 		return 0;
 		});
 
 	for(let i of data)
-		i.metadata.sort(function(a,b) {
+		i.metadata.sort((a,b) => {
 			if (a < b) return -1;
 			if (b < a) return 1;
 			return 0;
 			});
 
-	let newTitle = gbl.server + ": " + ctx.zone + ", META Data";
+	let newTitle = `${gbl.server}: ${ctx.zone}, META Data`;
 	gbl.state = { state: "meta", server: gbl.server, zone: ctx.zone, meta:true };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
@@ -532,13 +596,14 @@ function zoneMetaDetails(data)
 	let x = "<table align=center width=60% border=0 cellspacing=1 cellpadding=0>";
 	for(let i in data) {
 		for(let y in data[i].metadata) {
-			let td = "<td onClick=\"editMetaItem("+i+","+y+");\">";
-			x = x + "<tr class=dataRow>" + td + data[i].kind.toUpperCase() + "</td>";
-			x = x + td + data[i].metadata[y] + "</td></tr>"
+			let td = `<td onClick="editMetaItem(${i},${y});">`;
+			x += `<tr class=dataRow>${td}${data[i].kind.toUpperCase()}</td>`;
+			x += `${td}${data[i].metadata[y]}</td></tr>`;
 			}
 		}
 
-	gbl.bot.innerHTML = x + "</table>";
+	x += "</table>";
+	gbl.bot.innerHTML = x;
 	topLine();
 }
 
@@ -591,7 +656,7 @@ function saveRRChanges(withSave)
 	topLine();
 
 	if (withSave)
-		callApi("zones/"+ctx.zone,madeChange,
+		callApi(`zones/${ctx.zone}`,madeChange,
 			{
 			method: "PATCH",
 			noData: true,
@@ -616,14 +681,13 @@ function changeRR()
 		}
 	else {
 		if ((ctx.rec.type == "TXT")&&(newVal.substr(0,1)!='"')&&(newVal.substr(newVal.length-1)!='"'))
-			newVal = '"' + newVal + '"';
+			newVal = `"${newVal}"`;
 
-		s = document.getElementById("rrs"+ctx.edit.dta);
+		s = document.getElementById(`rrs${ctx.edit.dta}`);
 		if (newVal != ctx.rec.rrs.records[ctx.edit.dta].content) {
 
-			idx = "rr"+ctx.rec.type;
-			if ((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!="."))
-				newVal = newVal + ".";
+			idx = `rr${ctx.rec.type}`;
+			if ((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!="."))  newVal += ".";
 
 			if (idx in validations) {
 				if (!validations[idx].test(newVal)) {
@@ -679,13 +743,13 @@ function clickTTL(idx)
 {
 	if ("edit" in ctx) { if (("ttl" in ctx.edit)&&(ctx.edit.ttl == idx)) return; else cancelAllEdits(); }
 
-	let s = document.getElementById("ttl"+idx);
+	let s = document.getElementById(`ttl${idx}`);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
 	ctx.edit = { ttl: idx, };
 
 	let x = "<form onSubmit='return changeTTL();' name=rrForm>"
-		+ "<input onkeydown=\"keyEsc(event);\" size=10 name=new value=\""+ctx.rec.rrs.ttl+"\"></form>";
+		+ `<input onkeydown="keyEsc(event);" size=10 name=new value="${ctx.rec.rrs.ttl}"></form>`;
 
 	s.innerHTML = x;
 	document.rrForm.new.focus();
@@ -698,17 +762,17 @@ function clickData(idx)
 {
 	if ("edit" in ctx) { if (("dta" in ctx.edit)&&(ctx.edit.dta == idx)) return; else cancelAllEdits(); }
 
-	let s = document.getElementById("rrs"+idx);
+	let s = document.getElementById(`rrs${idx}`);
 	if (s.innerHTML.indexOf("<form") >= 0) return;
 
 	let len = 50
 	if ((ctx.rec.type=="SOA")||(ctx.rec.type=="TXT")) len=100;
 
 	let x = "<form onSubmit='return changeRR();' name=rrForm>"
-		+ "<input onkeydown=\"keyEsc(event);\" size="+len+" name=new"
-		+ " value='"+ctx.rec.rrs.records[idx].content.replace(/'/g,"&apos;")+"'></form>";
+		+ `<input onkeydown="keyEsc(event);" size=${len} name=new`
+		+ ` value='${ctx.rec.rrs.records[idx].content.replace(/'/g,"&apos;")}'></form>`;
 
-	ctx.edit = { dta: idx, };
+	ctx.edit = { dta: idx };
 
 	topLine();
 	s.innerHTML = x;
@@ -738,13 +802,13 @@ function changeName()
 	let z = null;
 	let name = document.rrForm.new.value;
 	if (name.substr(name.length-1)!=".") {
-		let t = findZoneName(name + ".");
+		let t = findZoneName(`${name}.`);
 		if (t != null) {
 			z = t;
-			name = name + ".";
+			name += ".";
 			}
 		else {
-			name = name + "." + ctx.zone;
+			name = `${name}.${ctx.zone}`;
 			z = ctx.zone;
 			}
 		}
@@ -778,11 +842,11 @@ function clickRecName(idx)
 	if ("edit" in ctx) { if (("nme" in ctx.edit)&&(ctx.edit.nme == idx)) return; else cancelAllEdits(); }
 
 	let x = "<form onSubmit='return changeName();' name=rrForm>"
-		+ "<input onkeydown=\"keyEsc(event);\" size=50 name=new value='"+ctx.rec.name+"'></form>";
+		+ `<input onkeydown="keyEsc(event);" size=50 name=new value='${ctx.rec.name}'></form>`;
 
 	ctx.edit = { nme: idx, };
 
-	let s = document.getElementById("nme"+idx);
+	let s = document.getElementById(`nme${idx}`);
 	topLine();
 	s.innerHTML = x;
 	document.rrForm.new.focus();
@@ -795,12 +859,12 @@ function cancelAllEdits()
 	if (!("edit" in ctx)) return;
 
 	if ("nme" in ctx.edit) {
-		let s = document.getElementById("nme"+ctx.edit.nme);
+		let s = document.getElementById(`nme${ctx.edit.nme}`);
 		s.innerHTML = ctx.rec.name;
 		}
 
 	if ("ttl" in ctx.edit) {
-		let s = document.getElementById("ttl"+ctx.edit.ttl);
+		let s = document.getElementById(`ttl${ctx.edit.ttl}`);
 		s.innerHTML = ctx.rec.rrs.ttl;
 		}
 
@@ -814,7 +878,7 @@ function cancelAllEdits()
 			drawOneRecord();
 			}
 		else {
-			let s = document.getElementById("rrs"+ctx.edit.dta);
+			let s = document.getElementById(`rrs${ctx.edit.dta}`);
 			s.innerHTML = ctx.rec.rrs.records[ctx.edit.dta].content;
 			}
 		}
@@ -851,7 +915,7 @@ function findRec(rrsets,rec)
 function oneRecord(data)
 {
 	if (data.id != ctx.zone)
-		return showError("ERROR: Zone does not match loaded data");
+		return errMsg("ERROR: Zone does not match loaded data");
 
 	let rrs = findRec(data.rrsets,ctx.rec);
 
@@ -860,10 +924,10 @@ function oneRecord(data)
 			while ((ctx.rec.rrs.records.length > 0)&&(ctx.rec.rrs.records[ctx.rec.rrs.records.length-1].content == ""))
 				ctx.rec.rrs.records.pop();
 			}
-		return showError("No matching data for " + ctx.rec.name + "/" + ctx.rec.type);
+		return errMsg(`No matching data for ${ctx.rec.name}/${ctx.rec.type}`);
 		}
 
-	rrs.records.sort(function(a,b) {
+	rrs.records.sort((a,b) => {
 		if (a.content < b.content) return -1;
 		if (a.content > b.content) return 1;
 		return 0;
@@ -881,13 +945,13 @@ function drawOneRecord(rrs)
 {
 	delete ctx.edit;
 
-	let x = gbl.server + ": " + ctx.zone + ": ";
+	let x = `${gbl.server}: ${ctx.zone}: `;
 	if ("showName" in ctx.rec)
-		x = x + ctx.rec.showName;
+		x += ctx.rec.showName;
 	else
-		x = x + ctx.rec.name;
+		x += ctx.rec.name;
 
-	x = x + "/" + ctx.rec.type;
+	x += `/${ctx.rec.type}`;
 	gbl.state = { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,x,"/");
 	document.title = x;
@@ -895,18 +959,17 @@ function drawOneRecord(rrs)
 
 
 	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
-	x = x + '<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="50%" /></colgroup>'
-
+	x += '<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="50%" /></colgroup>'
 	for(let idx in ctx.rec.rrs.records) {
 		let i = ctx.rec.rrs.records[idx];
-		x = x + "<tr class=dataRow>"
-			+ "<td onClick='deleteRRitem("+idx+");' align=center>" + gbl.bin + "</td>"
-			+ "<td onClick='clickRecName("+idx+");'><span id=nme"+idx+">" + ctx.rec.name + "</span></td>"
-			+ "<td align=right onClick='clickTTL("+idx+");'><span id=ttl"+idx+">" + ctx.rec.rrs.ttl + "</span></td>"
-			+ "<td>" + ctx.rec.rrs.type + "</td>"
-			+ "<td onClick='clickData("+idx+");'><span id=rrs"+idx+">" + i.content + "</span></td></tr>";
+		x += "<tr class=dataRow>"
+			+ `<td onClick='deleteRRitem(${idx});' align=center>${gbl.bin}</td>`
+			+ `<td onClick='clickRecName(${idx});'><span id=nme${idx}>${ctx.rec.name}</span></td>`
+			+ `<td align=right onClick='clickTTL(${idx});'><span id=ttl${idx}>${ctx.rec.rrs.ttl}</span></td>`
+			+ `<td>${ctx.rec.rrs.type}</td>`
+			+ `<td onClick='clickData(${idx});'><span id=rrs${idx}>${i.content}</span></td></tr>`;
 		}
-	gbl.bot.innerHTML = x + "</table>";
+	gbl.bot.innerHTML = `${x}</table>`;
 	topLine();
 }
 
@@ -934,7 +997,7 @@ function getZoneRecord()
 	delete ctx.needSave;
 
 	topLine();
-	callApi("zones/" + ctx.zone,oneRecord);
+	callApi(`zones/${ctx.zone}`,oneRecord);
 }
 
 
@@ -978,24 +1041,25 @@ function addAlg(formName)
 	]
 	let keyLens = ["1024","2048","4096"];
 
-	let x = "<tr><Td class=formPrompt>Key Algrythm :</td><td><select onChange='showHideBits(\""+formName+"\");' name=keyAlg>";
-	keyAlg.forEach(function (i) { x = x + "<option value="+i+">"+i.toUpperCase() } );
-	x = x + "</select></td></tr>";
+	let x = `<tr><Td class=formPrompt>Key Algrythm :</td><td><select onChange='showHideBits("${formName}");' name=keyAlg>`;
+	keyAlg.forEach(i => { x += `<option value=${i}>${i.toUpperCase()}` } );
+	x += "</select></td></tr>";
 
 	let txt = "CSK"; 
 	if (formName=="addKeyForm") txt = "Key";
-	x = x + "<tbody style='display:none;' id='key1Lens'>"
-	x = x + "<tr><Td class=formPrompt>"+txt+" Length (bits) :</td><td><select name=cskBits>";
-	keyLens.forEach(function (i) { x = x + "<option>"+i; });
-	x = x + "</select></td></tr></tbody>";
+	x += "<tbody style='display:none;' id='key1Lens'>"
+		+ `<tr><Td class=formPrompt>${txt} Length (bits) :</td><td><select name=cskBits>`;
+	keyLens.forEach(i => { x += `<option>${i}`; });
+	x += "</select></td></tr></tbody>";
 
-	x = x + "<tbody style='display:none;' id='key2Lens'>"
-	x = x + "<tr><Td class=formPrompt>KSK Length (bits) :</td><td><select name=kskBits>";
-	keyLens.forEach(function (i) { x = x + "<option>"+i; });
-	x = x + "</select></td></tr>";
-	x = x + "<tr><Td class=formPrompt>ZSK Length (bits) :</td><td><select name=zskBits>";
-	keyLens.forEach(function (i) { x = x + "<option>"+i; });
-	x = x + "</select></td></tr></tbody>";
+	x += "<tbody style='display:none;' id='key2Lens'>"
+	x += "<tr><Td class=formPrompt>KSK Length (bits) :</td><td><select name=kskBits>";
+	keyLens.forEach(i => { x += `<option>${i}`; });
+	x += "</select></td></tr>";
+
+	x += "<tr><Td class=formPrompt>ZSK Length (bits) :</td><td><select name=zskBits>";
+	keyLens.forEach(i => { x += `<option>${i}`; });
+	x += "</select></td></tr></tbody>";
 
 	return x;
 }
@@ -1017,23 +1081,23 @@ function setNSEC3(delnsec3)
 
 		if (ctx.zoneDetails.nsec3param != "") {
 			i = ctx.zoneDetails.nsec3param.split(" ");
-			nsec3 = i[0] + " " + i[1] + " " + i[2]
+			nsec3 = `${i[0]} ${i[1]} ${i[2]}`
 			old = i[3];
 			}
 
 		while(sfx.length < old.length)
 			sfx = sfx + Math.floor(Math.random() * 256).toString(16)
 
-		nsec3 = nsec3 + " " + sfx;
+		nsec3 = `${nsec3} ${sfx}`;
 
 		nxtFn = function() {
 				ctx.zoneDetails.nsec3param = nsec3;
-				callApi("zones/"+ctx.zone+"/rectify", zoneKeys, { method: "PUT" });
+				callApi(`zones/${ctx.zone}/rectify`, zoneKeys, { method: "PUT" });
 				}
 		}
 	else nsec3 = "";
 
-	callApi("zones/"+ctx.zone, nxtFn,
+	callApi(`zones/${ctx.zone}`, nxtFn,
 		{ method: "PUT", okResp: 204, json: JSON.stringify({ nsec3param: nsec3 }) } );
 }
 
@@ -1066,17 +1130,17 @@ function doSignZone()
 
 		let json = { "keytype": "csk", "active": true, "algorithm": keyAlg, "bits": cskBits, };
 
-		callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,
+		callApi(`zones/${ctx.zone}/cryptokeys`,nextFn,
 			{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
 		}
 	else {
 		let json_ksk = { "keytype": "ksk", "active": true, "algorithm": keyAlg, "bits": kskBits, }
 
-		callApi("zones/"+ctx.zone+"/cryptokeys", function() {
+		callApi(`zones/${ctx.zone}/cryptokeys`, () => {
 
 				let json_zsk = { "keytype": "zsk", "active": true, "algorithm": keyAlg, "bits": zskBits, }
 
-				callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,
+				callApi(`zones/${ctx.zone}/cryptokeys`,nextFn,
 					{ method: "POST", okResp: 201, json: JSON.stringify(json_zsk) } );
 				},
 
@@ -1092,34 +1156,35 @@ function signZone()
 {
 	let x = "<form onSubmit='return doSignZone();' name=signZoneForm><table align=center>";
 
-	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
-		+ "<tr><th colspan=2>DNSSEC Sign: " + ctx.zone + "</th></tr>";
+	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
+		+ `<tr><th colspan=2>DNSSEC Sign: ${ctx.zone}</th></tr>`;
 
-	x = x + "<tr><td class=formPrompt>Key Policy: </td><td><select onChange=\"showHideBits('signZoneForm');\" name=keyPolicy>";
-	["KSK+ZSK", "CSK"].forEach(function(i) { x = x + "<option>" + i } );
-	x = x + "</select></td></tr>" + addAlg("signZoneForm");
+	x += `<tr><td class=formPrompt>Key Policy: </td><td><select onChange="showHideBits('signZoneForm');" name=keyPolicy>`;
+	["KSK+ZSK", "CSK"].forEach(i => { x += `<option>${i}` } );
+	x += `</select></td></tr>${addAlg("signZoneForm")}`;
 
 
-	x = x + "<tr><td class=formPrompt>DNSSEC Policy: </td><td><select name=keyDNSSEC>";
-	["NSEC3","NSEC"].forEach(function(i) { x = x + "<option>" + i } );
-	x = x + "</select></td></tr>";
+	x += "<tr><td class=formPrompt>DNSSEC Policy: </td><td><select name=keyDNSSEC>";
+	["NSEC3","NSEC"].forEach(i => { x += `<option>${i}` } );
+	x += "</select></td></tr>";
 
-	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
+	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
 		+ "<tr><td align=center colspan=2>"
-		+ btn("loadThisZone()","Cancel","Do not sign "+ctx.zone)
-		+ btn("doSignZone()","Sign Zone","DNSSEC Sign "+ctx.zone)
+		+ btn("loadThisZone()","Cancel",`Do not sign ${ctx.zone}`)
+		+ btn("doSignZone()","Sign Zone",`DNSSEC Sign ${ctx.zone}`)
 		+ "</td></tr><tr><td><div style='height: 15px;'></div></td></tr>"
 		+ "<input type=submit style='display: none;'></form>";
 
-	x = x + "</table>";
+	x += "</table>";
 
-	x = x + "<P style='height: 25px;'>&nbsp;</p><table border=0 cellspacing=20 align=center>"
-	x = x + "<tr><Td colspan=2>Your friendly paper-clip helper buddy says ....</td></tr>"
-	x = x + "<tr><td><span style='font-size: 65pt'>" + gbl.clip + "</span></td><td>"
-	x = x + "<P>Unless you have a really good reason, you should probably sign your zone using <b>ECDSA256</b><P>"
-	x = x + "<b>NSEC</b> is more space & bandwidth efficient than <b>NSEC3</b>.<br><b>NSEC3</b> will enlarge your zone by typically twice as much as <b>NSEC</b>, but <b>NSEC</b> exposes all your DNS names in a linked list.<P>"
-	x = x + "<b>CSK</b> uses one key instead of two, but means your zone will double in size during key rollover.<br>With <b>KSK+ZSK</b> you have two keys to roll-over, but you can keep the same zone size during the process."
-	x = x + "</td></tr></table>"
+	x += "<P style='height: 25px;'>&nbsp;</p><table border=0 cellspacing=20 align=center>"
+		+ "<tr><Td colspan=2>Your friendly paper-clip helper buddy says ....</td></tr>"
+		+ `<tr><td><span style='font-size: 65pt'>${gbl.clip}</span></td><td>`
+		+ "<P>Unless you have a really good reason, you should probably sign your zone using <b>ECDSA256</b><P>"
+		+ "<b>NSEC</b> is more space & bandwidth efficient than <b>NSEC3</b>.<br><b>NSEC3</b> will enlarge your zone by typically twice as much as <b>NSEC</b>, but <b>NSEC</b> exposes all your DNS names in a linked list.<P>"
+		+ "<b>CSK</b> uses one key instead of two, but means your zone will double in size during key rollover.<br>With <b>KSK+ZSK</b> you have two keys to roll-over, but you can keep the same zone size during the process."
+		+ "</td></tr></table>"
+
 	gbl.bot.innerHTML = x;
 }
 
@@ -1134,8 +1199,8 @@ function clickDS(txt)
 		}
 
 	navigator.clipboard.writeText(x[x.length-1]).then(
-		function() { popMsg("Digest copied to clipboard"); },
-		function() { errMsg("Copy to clipboard failed"); }
+		() => popMsg("Digest copied to clipboard"),
+		() => errMsg("Copy to clipboard failed")
 		);
 
 	return false;
@@ -1155,7 +1220,7 @@ function doAddKey()
     if (json.algorithm == "ecdsa256") json.bits = 256;
 	else if (json.algorithm == "ecdsa384") json.bits = 384;
 
-	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,
+	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
 		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
 
 	return false // prevent submit
@@ -1165,24 +1230,25 @@ function doAddKey()
 
 function clickAddKey()
 {
-	let x = "<form onSubmit='return doAddKey();' name=addKeyForm><table align=center>";
-	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
-	x = x + "<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
-	x = x + "<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";
-	["ksk","zsk","csk"].forEach(function (i) { x = x + "<option value="+i+">"+i.toUpperCase() } );
-	x = x + "</select></td></tr>" + addAlg("addKeyForm");
+	let x = "<form onSubmit='return doAddKey();' name=addKeyForm><table align=center>"
+		+ "<tr><td><div style='height: 15px;'></div></td></tr>"
+		+ "<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
+		+ "<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";
 
-	x = x + "<tr><Td class=formPrompt>Key Active :</td><td><select name=keyActive>";
-	["true","false"].forEach(function (i) { x = x + "<option>"+i; });
-	x = x + "</select></td></tr>";
+	["ksk","zsk","csk"].forEach(i => { x += `<option value=${i}>${i.toUpperCase()}` } );
 
-	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
-	x = x + "<tr><td align=center colspan=2>"
-		+ btn("cancelAddKey()","Cancel","Do not add a key to the zone "+ctx.zone)
-		+ btn("doAddKey()","Add a Key","Add a key to the zone "+ctx.zone)
-		+ "</td></tr>";
-	x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
-	x = x + "<input type=submit style='display: none;'></form>";
+	x += `</select></td></tr>${addAlg("addKeyForm")}`;
+
+	x += "<tr><Td class=formPrompt>Key Active :</td><td><select name=keyActive>";
+	["true","false"].forEach(i => { x += `<option>${i}`; });
+	x += "</select></td></tr>";
+
+	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
+		+ "<tr><td align=center colspan=2>"
+		+ btn("cancelAddKey()","Cancel",`Do not add a key to the zone ${ctx.zone}`)
+		+ btn("doAddKey()","Add a Key",`Add a key to the zone ${ctx.zone}`)
+		+ "</td></tr><tr><td><div style='height: 15px;'></div></td></tr>"
+		+ "<input type=submit style='display: none;'></form>";
 
 	ctx.dnssec.t.style.display = "none";
 	ctx.dnssec.b.innerHTML = x;
@@ -1200,9 +1266,9 @@ function cancelAddKey()
 
 function activateZSK(a,b)
 {
-	callApi("zones/"+ctx.zone+"/cryptokeys/" + ctx.zoneKeys[a].id,
-		function() {
-			callApi("zones/"+ctx.zone+"/cryptokeys/" + ctx.zoneKeys[b].id,zoneKeys,
+	callApi(`zones/${ctx.zone}/cryptokeys/${ctx.zoneKeys[a].id}`,
+		() => {
+			callApi(`zones/${ctx.zone}/cryptokeys/${ctx.zoneKeys[b].id}`,zoneKeys,
 				{
 				method: "PUT",
 				okResp: 204,
@@ -1228,7 +1294,7 @@ function startZSK(template)
 		"bits": k.bits,
 		};
 
-	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,
+	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
 		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
 }
 
@@ -1244,7 +1310,7 @@ function startCSK(template)
 		"bits": k.bits,
 		}
 
-	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,
+	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
 		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
 }
 
@@ -1260,7 +1326,7 @@ function startKSK(template)
 		"bits": k.bits,
 		}
 
-	callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,
+	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
 		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
 }
 
@@ -1269,7 +1335,7 @@ function startKSK(template)
 function toggleKey(id,act)
 {
 	let p = { "active": (!(act)) };
-	callApi("zones/"+ctx.zone+"/cryptokeys/" + id,zoneKeys,
+	callApi(`zones/${ctx.zone}/cryptokeys/${id}`,zoneKeys,
 		{ method: "PUT", okResp: 204, json: JSON.stringify(p) } );
 }
 
@@ -1289,7 +1355,7 @@ function deleteAllKeys()
 			nxtFn = zoneKeys;
 		}
 
-	callApi("zones/"+ctx.zone+"/cryptokeys/" + kId,nxtFn, { method: "DELETE", okResp: 204 } );
+	callApi(`zones/${ctx.zone}/cryptokeys/${kId}`,nxtFn, { method: "DELETE", okResp: 204 } );
 }
 
 
@@ -1297,7 +1363,7 @@ function deleteAllKeys()
 function deleteKey(idx)
 {
 	let k = ctx.zoneKeys[idx];
-	callApi("zones/"+ctx.zone+"/cryptokeys/" + k.id,zoneKeys, { method: "DELETE", okResp: 204 } );
+	callApi(`zones/${ctx.zone}/cryptokeys/${k.id}`,zoneKeys, { method: "DELETE", okResp: 204 } );
 }
 
 
@@ -1325,12 +1391,13 @@ function clickDnssecKey(idx)
 	let sz = 150;
 	let k = ctx.zoneKeys[idx];
 	let x = "<table align=center>";
-	let txt = "Activate Key-" + k.id;
-	if (k.active) txt = "Deactivate Key-" + k.id;
-	x = x + "<tr><td>" + btn('toggleKey('+k.id+","+k.active+')',txt,txt,sz);
-	x = x + "<tr><td>" + btn('deleteKey('+idx+')',"Delete Key-" + k.id,"Delete Key " + k.id,sz);
-	x = x + "<tr><td>" + btn('cancelKeyAction()',"Cancel Action","Cancel an action on this key",sz);
-	x = x + "</table>";
+	let txt = `Activate Key-${k.id}`;
+	if (k.active) txt = `Deactivate Key-${k.id}`;
+
+	x += "<tr><td>" + btn(`toggleKey(${k.id},${k.active})`,txt,txt,sz) + "</td></tr>"
+		+ "<tr><td>" + btn(`deleteKey(${idx})`,`Delete Key-${k.id}`,`Delete Key ${k.id}`,sz) + "</td></tr>"
+		+ "<tr><td>" + btn('cancelKeyAction()',"Cancel Action","Cancel an action on this key",sz) + "</td></tr>"
+		+ "</table>";
 
 	ctx.dnssec.t.style.display = "none";
 	ctx.dnssec.b.innerHTML = x
@@ -1340,7 +1407,7 @@ function clickDnssecKey(idx)
 
 function showKeys(data)
 {
-	data.sort(function(a,b) {
+	data.sort((a,b) => {
 		if (a.keytype < b.keytype) return -1;
 		if (a.keytype > b.keytype) return 1;
 		if (a.active != b.active) {
@@ -1354,7 +1421,7 @@ function showKeys(data)
 
 	ctx.zoneKeys = data;
 
-	let newTitle = gbl.server + ": " + ctx.zone + ", DNSSEC Keys"
+	let newTitle = `${gbl.server}: ${ctx.zone}, DNSSEC Keys`;
 	gbl.state = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
@@ -1362,28 +1429,28 @@ function showKeys(data)
 	delete gbl.param;
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	x = x + "<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0>";
-	x = x + '<colgroup>';
-	for(let i=0;i<5;i++) x = x + '<col width="50px">';
-	x = x + "</colgroup><tr>";
+	x += "<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0><colgroup>";
+	for(let i=0;i<5;i++) x += '<col width="50px">';
+	x += "</colgroup><tr>";
+
 	for (let i of ["Active","Id","Type/Flags","Bits","Algrythm",""])
-		x = x + "<th>"+i+"</th>";
-	x = x + "</tr>";
+		x += `<th>${i}</th>`;
+	x += "</tr>";
 
 	let keyTypes = { num: 0 };
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
-		x = x + "<tr class=dataRow><td align=center>" + gbl.tick
-			+ "</td><td colspan=3></td><td>NSEC3PARAM</td><td>"+ctx.zoneDetails.nsec3param.toUpperCase()+"</td></tr>"
+		x += `<tr class=dataRow><td align=center>${gbl.tick}`
+			+ `</td><td colspan=3></td><td>NSEC3PARAM</td><td>${ctx.zoneDetails.nsec3param.toUpperCase()}</td></tr>`
 		}
 
 	for(let idx in data) {
 		i = data[idx];
-		x = x + "<tr onClick='clickDnssecKey("+idx+");' class=dataRow><td align=center>"
+		x += `<tr onClick='clickDnssecKey(${idx});' class=dataRow><td align=center>`
 		let aflag = 0;
-		if (i.active) { aflag=1; x = x + gbl.tick; } else x = x + gbl.cross;
-		x = x + "</td>";
-		x = x + "<td align=center>" + i.id + "</td>";
+		if (i.active) { aflag=1; x += gbl.tick; } else x = x + gbl.cross;
+		x += "</td>";
+		x += `<td align=center>${i.id}</td>`;
 
 		if (i.keytype in keyTypes) {
 			let k = keyTypes[i.keytype];
@@ -1396,38 +1463,39 @@ function showKeys(data)
 			keyTypes.num++;
 			}
 
-		x = x + "<td align=center>" + i.keytype.toUpperCase() + "/" + i.flags + "</td>";
-		x = x + "<td align=center>" + i.bits + "</td>";
-		x = x + "<td align=left>" + i.algorithm;
-		x = x + "</td><td class=dnskey>" + i.dnskey.substr(1,50) + "...</td></tr>";
+		x += `<td align=center>${i.keytype.toUpperCase()}/${i.flags}</td>`
+			+ `<td align=center>${i.bits}</td>`
+			+ `<td align=left>${i.algorithm}`
+			+ `</td><td class=dnskey>${i.dnskey.substr(1,50)}...</td></tr>`;
+
 		if ("ds" in i) {
 			for (let ds of i.ds) {
 				let dscol = ds.split(" ");
-				x = x + "<tr onClick=\"clickDS('"+ds+"');\" class=dataRow><td></td><td><li>DS"
-					+ "</td><td>" + dsAlg[parseInt(dscol[2])] + "</td><td colspan=3>" + ds + "</td></tr>";
+				x += `<tr onClick="clickDS('${ds}');" class=dataRow><td></td><td><li>DS`
+					+ `</td><td>${dsAlg[parseInt(dscol[2])]}</td><td colspan=3>${ds}</td></tr>`;
 				}
 			}
-		x = x + "<tr><td><div style='height: 15px;'></div></td></tr>"
+		x += "<tr><td><div style='height: 15px;'></div></td></tr>";
 		}
 
 	let sp = "<div style='height: 7px;'></div>";
 	let sz = 100;
 
-	x = x + "</table></td><td>"
-	x = x + btn('clickAddKey()',"Add Key","Add a DNSSEC Key to "+ctx.zone,sz) + sp;
-	x = x + btn('deleteAllKeys()',"Unsign","Remove all DNSSEC on "+ctx.zone,sz) + sp;
+	x += "</table></td><td>"
+		+ btn('clickAddKey()',"Add Key",`Add a DNSSEC Key to ${ctx.zone}`,sz) + sp;
+		+ btn('deleteAllKeys()',"Unsign",`Remove all DNSSEC on ${ctx.zone}`,sz) + sp;
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
-		x = x + btn("setNSEC3(true)","Del NSEC3","Switch "+ctx.zone+" from NSEC3 to NSEC",sz) + sp;
-		x = x + btn("setNSEC3()","Roll NSEC3","Change the NSEC3PARAM for "+ctx.zone,sz) + sp;
+		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + sp;
+			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone,sz}`) + sp;
 		}
 	else
-		x = x + btn("setNSEC3()","Add NSEC3","Switch this zone to NSEC3 "+ctx.zone,sz) + sp;
+		x += btn("setNSEC3()","Add NSEC3",`Switch this zone to NSEC3 ${ctx.zone}`,sz) + sp;
 
-	x = x + "</td></tr></table>"
+	x += "</td></tr></table>";
 
 	sz = 200
-	x = x + "<div id='dnssecTop'><table align=center cellspacing=10 cellpadding=0 border=0>"
+	x += "<div id='dnssecTop'><table align=center cellspacing=10 cellpadding=0 border=0>"
 
 	let notes = "If your zone is currently validating, after <b>every</b> Key Rollover step you must leave a few days<br>"
 		+ "for the internet to take-up your change. Probably a minimum of around 3 to 4 days";
@@ -1445,8 +1513,8 @@ function showKeys(data)
 			let cid1 = keyTypes.csk.ids[keyTypes.csk.ids.length-1].idx;
 
 			let csk_rollover = [
-				"<tr><td>Step 1 of 2: </td><Td>" + btn("startCSK("+cid0+")","Start CSK Rollover","Start a CSK Rollover",sz) + "</td></tr>",
-				"<tr><td>Step 2 of 2: </td><Td>" + btn("deleteKey("+cid1+")","Complete CSK Rollover","Complete a CSK Rollover",sz) + "</td></tr>",
+				`<tr><td>Step 1 of 2: </td><Td>${btn(`startCSK(${cid0})`,"Start CSK Rollover","Start a CSK Rollover",sz)}</td></tr>`,
+				`<tr><td>Step 2 of 2: </td><Td>${btn(`deleteKey(${cid1})`,"Complete CSK Rollover","Complete a CSK Rollover",sz)}</td></tr>`,
 				]
 
 			if (keyTypes.csk.num == 1) key_txt = csk_rollover[0];
@@ -1471,22 +1539,22 @@ function showKeys(data)
 			let zid1 = keyTypes.zsk.ids[keyTypes.zsk.ids.length-1].idx;
 
 			let ksk_rollover = [
-				"<tr><td>" + ksk_link + "Step 1 of 2</a>: </td><Td>"
-					+ btn("startKSK("+kid0+")","Start KSK Rollover","Start a KSK Rollover",sz) + "</td></tr>",
+				`<tr><td>${ksk_link}Step 1 of 2</a>: </td><Td>`
+					+ btn(`startKSK(${kid0})`,"Start KSK Rollover","Start a KSK Rollover",sz) + "</td></tr>",
 
-				"<tr><td>" + ksk_link + "Step 2 of 2</a>: </td><Td>"
-						 + btn("deleteKey("+kid1+")","Complete KSK Rollover","Complete the KSK Rollover",sz) + "</td></tr>",
+				`<tr><td>${ksk_link}Step 2 of 2</a>: </td><Td>`
+						 + btn(`deleteKey(${kid1})`,"Complete KSK Rollover","Complete the KSK Rollover",sz) + "</td></tr>",
 				];
 
 			let zsk_rollover = [
-				"<tr><td>" + zsk_link + "Step 1 of 3</a>: </td><Td>"
-					 + btn("startZSK("+zid0+")","Start ZSK Rollover","Start a ZSK Rollover",sz) + "</td></tr>",
+				`<tr><td>${zsk_link}Step 1 of 3</a>: </td><Td>`
+					 + btn(`startZSK(${zid0})`,"Start ZSK Rollover","Start a ZSK Rollover",sz) + "</td></tr>",
 
-				"<tr><td>" + zsk_link + "Step 2 of 3</a>: </td><Td>"
-					+ btn("activateZSK("+zid0+","+zid1+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz) + "</td></tr>",
+				`<tr><td>${zsk_link}Step 2 of 3</a>: </td><Td>`
+					+ btn(`activateZSK(${zid0},${zid1})`,"Activate ZSK Rollover","Activate the ZSK Rollover",sz) + "</td></tr>",
 
-				"<tr><td>" + zsk_link + "Step 3 of 3</a>: </td><Td>"
-					+ btn("deleteKey("+zid1+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz) + "</td></tr>",
+				`<tr><td>${zsk_link}Step 3 of 3</a>: </td><Td>`
+					+ btn(`deleteKey(${zid1})`,"Complete ZSK Rollover","Complete the ZSK Rollover",sz) + "</td></tr>",
 				];
 
 			if (keyTypes.ksk.num == 1)
@@ -1498,7 +1566,7 @@ function showKeys(data)
 
 				notes = "<u>If you have only just created a new KSK, wait a few days before changing your DS records</u>"
 					+ "<P>Once you have changed your DS reocrds, wait a few more days before completing the KSK rollover."
-					+ "<P>The DS records for Key-Id: " + keyTypes.ksk.ids[0].id + ", should be the only ones present<br>"
+					+ `<P>The DS records for Key-Id: ${keyTypes.ksk.ids[0].id}, should be the only ones present<br>`
 					+ "in the parent zone, for a few days, before completing the KSK rollover.";
 				}
 
@@ -1515,18 +1583,18 @@ function showKeys(data)
 		}
 
 
-	x = x + "<tr><td colspan=2><hr></td></tr>"
+	x += "<tr><td colspan=2><hr></td></tr>"
 
 	if (key_txt == null)
-		x = x + "<tr><td><h3>DNSSEC Key Rollover State could not be detected</h3></td></tr>"
+		x += "<tr><td><h3>DNSSEC Key Rollover State could not be detected</h3></td></tr>"
 	else
-		x = x + key_txt + zkey_txt;
+		x += key_txt + zkey_txt;
 
-	x = x + "<tr><td colspan=2><hr></td></tr>"
+	x += "<tr><td colspan=2><hr></td></tr>"
 
-	x = x + "</table>";
-	if (notes != null) x = x + "<center>"+notes+"</center>";
-	x = x + "</div><div id='dnssecBot'></div>"
+	x += "</table>";
+	if (notes != null) x += `<center>${notes}</center>`;
+	x += "</div><div id='dnssecBot'></div>"
 
 	gbl.bot.innerHTML = x;
 
@@ -1542,7 +1610,7 @@ function showKeys(data)
 
 function zoneKeys()
 {
-	callApi("zones/"+ctx.zone+"/cryptokeys",showKeys);
+	callApi(`zones/${ctx.zone}/cryptokeys`,showKeys);
 }
 
 
@@ -1569,8 +1637,8 @@ function zoneKindChange(sel)
 
 function zoneNotify()
 {
-	callApi("zones/"+ctx.zone+"/notify", function(ret) {
-		if (ret!=null) popMsg(gbl.tick + " Zone notified"); else errMsg("Notify failed");
+	callApi(`zones/${ctx.zone}/notify`, ret => {
+		if (ret!=null) popMsg(`${gbl.tick} Zone notified`); else errMsg("Notify failed");
 		}, { method: "PUT", callErr: true });
 }
 
@@ -1578,8 +1646,8 @@ function zoneNotify()
 
 function zoneRectify()
 {
-	callApi("zones/"+ctx.zone+"/rectify", function(ret) {
-		if (ret!=null) popMsg(gbl.tick + " Zone rectified"); else errMsg("Rectify failed");
+	callApi(`zones/${ctx.zone}/rectify`, ret => {
+		if (ret!=null) popMsg(`${gbl.tick} Zone rectified`); else errMsg("Rectify failed");
 		}, { method: "PUT", callErr: true });
 }
 
@@ -1587,8 +1655,8 @@ function zoneRectify()
 
 function zoneRetrieve()
 {
-	callApi("zones/"+ctx.zone+"/axfr-retrieve", function(ret) {
-		if (ret!=null) popMsg(gbl.tick + " Zone retrieval requested"); else errMsg("Zone retrieval failed");
+	callApi(`zones/${ctx.zone}/axfr-retrieve`, ret => {
+		if (ret!=null) popMsg(`${gbl.tick} Zone retrieval requested`); else errMsg("Zone retrieval failed");
 		}, { method: "PUT", callErr: true });
 }
 
@@ -1612,18 +1680,18 @@ function clickAddZone(isFresh)
 function dropZone()
 {
 	let x = "<table align=center><tr><td align=center><h3>Are you sure you want to delete"
-		+ "<br>the zone '"+ctx.zone+"' and all its records ?</h3></td></tr>"
+		+ `<br>the zone '${ctx.zone}' and all its records ?</h3></td></tr>`
 		+ "<tr><td align=center>"
-		+ btn("loadThisZone();","Cancel","Do not delete the zone "+ctx.zone)
+		+ btn("loadThisZone();","Cancel",`Do not delete the zone ${ctx.zone}`)
 		+ "&nbsp;"
-		+ btn("doDropZone()","Drop '"+ctx.zone+"'","Delete the zone "+ctx.zone+" and ALL its records");
+		+ btn("doDropZone()",`Drop '${ctx.zone}'`,`Delete the zone ${ctx.zone} and ALL its records`);
 	gbl.bot.innerHTML = x;
 }
 
 
 function doDropZone()
 {
-	callApi("zones/"+ctx.zone,zoneList, { method: "DELETE", noData: true, okResp: 204 });
+	callApi(`zones/${ctx.zone}`,zoneList, { method: "DELETE", noData: true, okResp: 204 });
 }
 
 
@@ -1644,7 +1712,7 @@ function doNewName()
 	if (f.rrName.value == "")
 		name = ctx.zone;
 	else
-		name = f.rrName.value + "." + ctx.zone;
+		name = `${f.rrName.value}.${ctx.zone}`;
 
 	if (!fqdnCheck.test(name)) {
 		errMsg("Invalid host name");
@@ -1691,7 +1759,7 @@ function zoneAddHost()
 
 function zoneDetails(data)
 {
-	data.rrsets.sort(function(a,b) {
+	data.rrsets.sort((a,b) => {
 		if ((a.name == data.id)&&(b.name == data.id)) {
 			for(tag of ["SOA","NS","MX"]) {
 				if (a.type == tag) return -1;
@@ -1719,68 +1787,69 @@ function zoneDetails(data)
 			}
 		}
 
-	let newTitle = gbl.server + ": " + ctx.zone
+	let newTitle = `${gbl.server}: ${ctx.zone}`;
 	gbl.state = { state: "zone", server: gbl.server, zone: ctx.zone };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 
 	delete gbl.param;
 
-	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
-	x = x + "<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";
+	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>"
+		+ "<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";
 
 	for(let i of data.rrsets) {
-		x = x + "<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=dataRow>"
-			+ "<td valign=top>" + i.name.substr(0,i.name.length - ctx.zone.length - 1) + "</td>"
-			+ "<td valign=top align=right>" + i.ttl + "</td>"
-			+ "<td valign=top>" + i.type + "</td><td valign=top>";
+		x += `<tr onClick="clickZoneRecord('${i.name}','${i.type}');" class=dataRow>`
+			+ `<td valign=top>${i.name.substr(0,i.name.length - ctx.zone.length - 1)}</td>`
+			+ `<td valign=top align=right>${i.ttl}</td>`
+			+ `<td valign=top>${i.type}</td><td valign=top>`;
 
 		if (i.type == "SOA") {
 			ctx.soaSplit = i.records[0].content.split(" ");
-			x = x + formatSOA(ctx.soaSplit);
+			x += formatSOA(ctx.soaSplit);
 			}
 		else {
-			i.records.sort(function(a,b) {
+			i.records.sort((a,b) => {
 				if (a.content < b.content) return -1;
 				if (a.content > b.content) return 1;
 				return 0;
 				})
 
 			for(let rrs of i.records)
-				x = x + "" + rrs.content + "<br>";
+				x += `${rrs.content}<br>`;
 			}
-		x = x + "</td></tr>";
+		x += "</td></tr>";
 		}
 
 	let sp = "<div style='height: 7px;'></div>";
 	let sz = 100;
 
-	x = x + "</table></td><td align=center>";
+	x += "</table></td><td align=center>";
 
 	if (ctx.zoneDetails.kind != "Slave")
-		x = x + btn("zoneAddHost()","Add Host","Add a host to the zone "+ctx.zone,sz) + sp;
+		x += btn("zoneAddHost()","Add Host",`Add a host to the zone ${ctx.zone}`,sz) + sp;
 
-	x = x + btn("zoneAxfr()","Download","Download "+ctx.zone+" in RFC/AXFR format",sz) + sp
-		+ btn('zoneMeta()',"Metadata","Load the META data for "+ctx.zone,sz) + sp
-		+ btn('zoneNotify()',"Notify Zone","Notify the slaves of "+ctx.zone,sz) + sp;
+	x += btn("zoneAxfr()","Download",`Download ${ctx.zone} in RFC/AXFR format`,sz) + sp
+		+ btn('zoneMeta()',"Metadata",`Load the META data for ${ctx.zone}`,sz) + sp
+		+ btn('zoneNotify()',"Notify Zone",`Notify the slaves of ${ctx.zone}`,sz) + sp;
 
 	if (ctx.zoneDetails.dnssec)
-		x = x + btn('zoneRectify()',"Rectify Zone","Rectify the data for "+ctx.zone,sz) + sp;
+		x += btn('zoneRectify()',"Rectify Zone",`Rectify the data for ${ctx.zone}`,sz) + sp;
 
 	if (ctx.zoneDetails.kind == "Slave")
-		x = x + btn('zoneRetrieve()',"Retrieve Zone","Retrieve "+ctx.zone+" from masters",sz) + sp;
+		x += btn('zoneRetrieve()',"Retrieve Zone",`Retrieve ${ctx.zone} from its master(s)`,sz) + sp;
 
-	x = x + btn('dropZone()',"Drop Zone","Delete "+ctx.zone+" and ALL its records",sz);
+	x += btn('dropZone()',"Drop Zone",`Delete ${ctx.zone} and ALL its records`,sz);
 
-	x = x + "<hr>";
+	x += "<hr>";
 
 	if (ctx.zoneDetails.dnssec) {
-		x = x + btn('zoneKeys()',"DNSSEC Keys","View DNSSEC keys for "+ctx.zone,sz) + sp;
+		x += btn('zoneKeys()',"DNSSEC Keys",`View DNSSEC keys for ${ctx.zone}`,sz) + sp;
 		}
 	else
-		x = x + btn('signZone()',"Sign Zone","DNSSEC sign "+ctx.zone,sz) + sp;
+		x += btn('signZone()',"Sign Zone",`DNSSEC sign ${ctx.zone}`,sz) + sp;
 
-	gbl.bot.innerHTML = x + "</td></tr></table>";
+	x += "</td></tr></table>";
+	gbl.bot.innerHTML = x;
 
 	topLine();
 }
@@ -1801,7 +1870,7 @@ function zoneDetailsLoad(zone)
 		zone: zone,
 		zoneList: ctx.zoneList,
 		};
-	callApi("zones/" + ctx.zone,zoneDetails);
+	callApi(`zones/${ctx.zone}`,zoneDetails);
 }
 
 
@@ -1815,7 +1884,7 @@ function searchLoadRecord(zone,name,type)
 {
 	gbl.param = { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
 	gbl.state = gbl.param;
-	title = gbl.server + ", Search results - " + name + ":" + type
+	title = `${gbl.server}, Search results - ${name}:${type}`
 	window.history.pushState(gbl.param,title,"/");
 	zoneDetailsLoad(zone);
 }
@@ -1829,8 +1898,8 @@ function searchResults(data)
 		return;
 		}
 
-	let newTitle = gbl.server + ": Search Results"
-	gbl.state = { state: "search", server: gbl.server, search: ctx.searchTerm};
+	let newTitle = `${gbl.server}: Search Results`;
+	gbl.state = { state: "search", server: gbl.server, search: ctx.searchTerm };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle
 
@@ -1839,27 +1908,28 @@ function searchResults(data)
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
-		x = x + "<tr class=dataRow";
+		x += "<tr class=dataRow";
 		if (i.object_type != "zone") {
-			x = x + " onClick='ctx = { zone: \""+i.zone+"\" }; "
-				+ " searchLoadRecord(\""+i.zone+"\",\""+i.name+"\",\""+i.type+"\");'"
-				+ "><td valign=top>" + i.name + "</td>"
-				+ "<td valign=top align=right>" + i.ttl + "</td>"
-				+ "<td valign=top>" + i.type + "</td>";
+			x += ` onClick='ctx = { zone: "${i.zone}" }; `
+				+ ` searchLoadRecord("${i.zone}","${i.name}","${i.type}");'`
+				+ `><td valign=top>${i.name}</td>`
+				+ `<td valign=top align=right>${i.ttl}</td>`
+				+ `<td valign=top>${i.type}</td>`;
 
 			if (i.type == "SOA")
-				x = x + "<td valign=top>" + formatSOA(i.content.split(" ")) + "</td>";
+				x += `<td valign=top>${formatSOA(i.content.split(" "))}</td>`;
 			else
-				x = x + "<td valign=top>" + i.content + "</td>";
+				x += `<td valign=top>${i.content}</td>`;
 			}
 
 		else {
-			x = x + " onClick='return zoneDetailsLoad(\""+i.name+"\");'>";
-			x = x + "<td>" + i.name + "</td><td colspan=3>[Zone Apex]</td>";
+			x += ` onClick='return zoneDetailsLoad("${i.name}");'>`
+				+ `<td>${i.name}</td><td colspan=3>[Zone Apex]</td>`;
 			}
-		x = x + "</tr>";
+		x += "</tr>";
 		}
-	gbl.bot.innerHTML = x + "</table>";
+	x += "</table>";
+	gbl.bot.innerHTML = x;
 }
 
 
@@ -1869,7 +1939,7 @@ function searchFormSubmit()
 	let s = document.searchForm.searchTerm.value;
 	ctx.searchTerm = s;
 	document.searchForm.searchTerm.value = "";
-	callApi("search-data?q=" + s,searchResults);
+	callApi(`search-data?q=${s}`,searchResults);
 	return false;
 }
 
@@ -1889,8 +1959,8 @@ function loadTsigList()
 function clickTSIG(txt,name)
 {
 	navigator.clipboard.writeText(txt).then(
-		function() { popMsg(name + " copied to clipboard"); },
-		function() { errMsg("Copy to clipboard failed"); }
+		() => popMsg(`${name} copied to clipboard`),
+		() => errMsg("Copy to clipboard failed")
 		);
 }
 
@@ -1898,7 +1968,7 @@ function clickTSIG(txt,name)
 
 function deleteTSIG(id)
 {
-	callApi("tsigkeys/"+id,loadTsigList,{ method: "DELETE", okResp: 204 });
+	callApi(`tsigkeys/${id}`,loadTsigList,{ method: "DELETE", okResp: 204 });
 }
 
 
@@ -1913,7 +1983,7 @@ function formAddTsig()
 		};
 
 	if (json.name.substr(json.name.length-1)!=".")
-		json.name = json.name + ".";
+		json.name += ".";
 
 	if (!fqdnCheck.test(json.name)) {
 		errMsg("Invalid TSIG Name");
@@ -1922,7 +1992,7 @@ function formAddTsig()
 		return false;
 		}
 
-	callApi("tsigkeys",function(data) {
+	callApi("tsigkeys",data => {
 		if (data == null) addTSIG(false); else showTSIG(data.id);
 		},
 		{ method: "POST", callErr: true, okResp: 201, json: JSON.stringify(json) });
@@ -1934,8 +2004,8 @@ function formAddTsig()
 
 function regenTSIG(id,alg)
 {
-	callApi("tsigkeys/"+id,function() {
-		callApi("tsigkeys",function() { showTSIG(id); },
+	callApi(`tsigkeys/${id}`,() => {
+		callApi("tsigkeys",() => showTSIG(id),
 			{ method: "POST", okResp: 201, json: JSON.stringify({ name:id, algorithm: alg }) });
 		}
 		,{ method: "DELETE", okResp: 204 });
@@ -1958,9 +2028,9 @@ function addTSIG(withClr)
 
 function showTSIG(tsig)
 {
-	callApi("tsigkeys/"+tsig,function(data) {
+	callApi(`tsigkeys/${tsig}`,data => {
 
-		let newTitle = gbl.server + ": TSIG "+data.id;
+		let newTitle = `${gbl.server}: TSIG ${data.id}`;
 		gbl.state = { state: "tsigdata", server: gbl.server, tsig: data.id };
 		if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 		document.title = newTitle;
@@ -1968,14 +2038,14 @@ function showTSIG(tsig)
 		delete gbl.param; ctx = {}; topLine();
 
 		let x = "<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
-			+ "<tr class=dataRow onClick=\"clickTSIG('"+data.id+"','Name');\"><td class=formPrompt>TSIG Name :</td><td>"+data.id+"</td></tr>"
-			+ "<tr><td class=formPrompt>TSIG Algorithm :</td><td>"+data.algorithm.toUpperCase()+"</td></tr>"
-			+ "<tr onClick=\"clickTSIG('"+data.key+"','Key');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>"+data.key+"</td></tr>"
+			+ `<tr class=dataRow onClick=\"clickTSIG('${data.id}','Name');\"><td class=formPrompt>TSIG Name :</td><td>${data.id}</td></tr>`
+			+ `<tr><td class=formPrompt>TSIG Algorithm :</td><td>${data.algorithm.toUpperCase()}</td></tr>`
+			+ `<tr onClick=\"clickTSIG('${data.key}','Key');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>${data.key}</td></tr>`
 			+ "<tr><td align=center colspan=2><hr></td></tr>"
 			+ "<tr><td align=center colspan=2>"
 			+ btn("loadTsigList()","Back","Go back to the list of TSIGs")
-			+ btn("regenTSIG('"+data.id+"','"+data.algorithm+"')","Rollover","Replace this TSIG Key, keeping the name")
-			+ btn("deleteTSIG('"+data.id+"')","Delete","Delete this TSIG Key")
+			+ btn(`regenTSIG('${data.id}','${data.algorithm}')`,"Rollover","Replace this TSIG Key, keeping the name")
+			+ btn(`deleteTSIG('${data.id}')`,"Delete","Delete this TSIG Key")
 			+ "</td></tr></table>";
 
 		gbl.bot.innerHTML = x;
@@ -1992,7 +2062,7 @@ function showTsigList(data)
 		return;
 		}
 
-	data.sort(function(a,b) {
+	data.sort((a,b) => {
 		if (a.id < b.id) return -1;
 		if (a.id > b.id) return 1;
 		return 0;
@@ -2001,7 +2071,7 @@ function showTsigList(data)
 	if (("param" in gbl)&&("tsig" in gbl.param)&&(typeof(gbl.param.tsig) != "boolean"))
 		return showTSIG(gbl.param.tsig);
 
-	let newTitle = gbl.server + ": TSIGs";
+	let newTitle = `${gbl.server}: TSIGs`;
 	gbl.state = { state: "tsig", server: gbl.server, tsig: true };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
@@ -2014,10 +2084,10 @@ function showTsigList(data)
 		+ "<tr><th>TSIG Name</td><th>Algorithm</td></tr>";
 
 	for(let i of data)
-		x = x + "<tr class=dataRow onClick=\"showTSIG('"+i.id+"');\"><td>"+i.id+"</td>"
-			+ "<td>"+i.algorithm.toUpperCase()+"</td></tr>";
+		x += `<tr class=dataRow onClick="showTSIG('${i.id}');"><td>${i.id}</td>`
+			+ `<td>${i.algorithm.toUpperCase()}</td></tr>`;
 
-	x = x + "</table></td><td>" + btn("addTSIG(true)","Add TSIG","Add a TSIG Key") + "</td></tr></table>";
+	x += "</table></td><td>" + btn("addTSIG(true)","Add TSIG","Add a TSIG Key") + "</td></tr></table>";
 
 	gbl.bot.innerHTML = x;
 }
@@ -2043,7 +2113,7 @@ function doMakeZone(data)
 function doNewZone()
 {
 	let name = document.newZoneForm.zoneName.value;
-	if (name.substr(name.length-1)!=".") name = name + ".";
+	if (name.substr(name.length-1)!=".") name += ".";
 	if (!fqdnCheck.test(name)) {
 		errMsg("Invalid domain name");
 		document.newZoneForm.zoneName.focus();
@@ -2056,14 +2126,14 @@ function doNewZone()
 	let ns = [];
 	let ip = [];
 	for(let i=0;i<4;i++) {
-		let x = document.newZoneForm["ns"+i];
+		let x = document.newZoneForm[`ns${i}`];
 		let v = x.value;
 
 		if (v != "") {
-			if (v.substr(v.length-1)!=".") v = v + "."
+			if (v.substr(v.length-1)!=".") v += ".";
 
 			if (!fqdnCheck.test(v)) {
-				errMsg("Invalid Host Name: "+v);
+				errMsg(`Invalid Host Name: ${v}`);
 				x.focus(); x.select();
 				return false;
 				}
@@ -2071,12 +2141,12 @@ function doNewZone()
 			ns.push(v);
 			}
 
-		x = document.newZoneForm["ip"+i];
+		x = document.newZoneForm[`ip${i}`];
 		if (x.value != "") {
 			if ((validations["rrA"].test(x.value))||(validations["rrA"].test(x.value)))
 				ip.push(x.value);
 			else {
-				errMsg("Invalid IP Address: "+x.value);
+				errMsg(`Invalid IP Address: ${x.value}`);
 				x.focus(); x.select();
 				return false;
 				}
@@ -2099,7 +2169,7 @@ function doNewZone()
 
 function zoneListDetails(data)
 {
-	data.sort(function(a,b) {
+	data.sort((a,b) => {
 		if (a.id < b.id) return -1;
 		if (a.id > b.id) return 1;
 		return 0;
@@ -2111,23 +2181,23 @@ function zoneListDetails(data)
 		if ("tsig" in gbl.param) return loadTsigList();
 		if ("search" in gbl.param) {
 			ctx.searchTerm = gbl.param.search;
-			return callApi("search-data?q=" + ctx.searchTerm,searchResults);
+			return callApi(`search-data?q=${ctx.searchTerm}`,searchResults);
 			}
 		if ("zone" in gbl.param) return zoneDetailsLoad(gbl.param.zone);
 		}
 
-	let newTitle = gbl.server+": Zone List";
+	let newTitle = `${gbl.server}: Zone List`;
 	gbl.state = { state: "zonelist", server: gbl.server };
 	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
 	document.title = newTitle;
 	delete gbl.param;
 
 	let x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
-	x = x + "<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";
+	x += "<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
 		let name = i.id;
-		x = x + "<tr class=dataRow onClick='zoneDetailsLoad(\""+name+"\")'>"
-			+ "<td>" + name + "</td><td>" + i.kind + "</td>";
+		x += `<tr class=dataRow onClick='zoneDetailsLoad("${name}")'>`
+			+ `<td>${name}</td><td>${i.kind}</td>`;
 
 		t = "";
 		hlp = "Zone is NOT dnssec signed";
@@ -2135,23 +2205,23 @@ function zoneListDetails(data)
 			t = gbl.nsec;
 			hlp = "Zone is DNSSEC signed";
 			}
-		x = x + "<td title='" + hlp + "'>" + t + "</td><td>" + i.serial + "</td>";
+		x += `<td title='${hlp}'>${t}</td><td>${i.serial}</td>`;
 
 		t = ""; hlp = "";
 		if (i.notified_serial != i.serial) {
 			t = gbl.timer;
 			hlp = "Zone has unnotified changes";
 			}
-		x = x + "<td title='" + hlp + "'>" + t + "</td></tr>";
+		x += `<td title='${hlp}'>${t}</td></tr>`;
 		}
-	x = x + "</table></td><td>";
+	x += "</table></td><td>";
 
 	let sp = "<div style='height: 7px;'></div>";
 	let sz = 100;
 
-	x = x + btn("clickAddZone(true)","Add Zone","Add a new zone to the database",sz)+sp;
+	x += btn("clickAddZone(true)","Add Zone","Add a new zone to the database",sz)+sp;
 
-	x = x + "</td></tr></table>";
+	x += "</td></tr></table>";
 
 	topLine();
 	gbl.bot.innerHTML = x;
@@ -2176,8 +2246,7 @@ function zoneList()
 function zoneAxfrData(data)
 {
 	let name = ctx.zone.replace(/\./g,"_");
-	name = name.substr(0,name.length-1) + ".txt";
-	//fileDownload(name,data);
+	name = `${name.substr(0,name.length-1)}.txt`;
 	downloadFile(data,"text/plain",name);
 }
 
@@ -2186,7 +2255,7 @@ function zoneAxfrData(data)
 
 function zoneAxfr()
 {
-	callApi("zones/"+ctx.zone+"/export",zoneAxfrData);
+	callApi(`zones/${ctx.zone}/export`,zoneAxfrData);
 }
 
 
@@ -2202,8 +2271,8 @@ function validInt(x) {
 
 function btn(call,txt,hlp,sz) {
 	let ex=""
-	if (sz != null) ex = "style='width: " + sz + "px;'"
-	return "<span "+ex+" title=\""+hlp+"\" class=myBtn onClick=\""+call+"; return false;\">"+txt+"</span>";
+	if (sz != null) ex = `style='width: ${sz}px;'`
+	return `<span ${ex} title="${hlp}" class=myBtn onClick="${call}; return false;">${txt}</span>`;
 }
 
 
@@ -2215,22 +2284,22 @@ function goLogin()
 
 function topLine()
 {
-	gbl.forms.forEach(function(i) { i.style.display = "none"; });
+	gbl.forms.forEach(i => i.style.display = "none");
 
 	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
-		+ "<font size=+1><a title='Open this page in a new window' target=_blank href='" + window.origin + "?";
+		+ `<font size=+1><a title='Open this page in a new window' target=_blank href='${window.origin}?`;
 
-	let x = "'>" + gbl.page + "</a></font></td><td>"
+	let x = `'>${gbl.page}</a></font></td><td>`
 		+ btn("goLogin()",gbl.server,"Change server")
-		+ btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);
+		+ btn("zoneList()","Zones",`Reload the list of zones at ${gbl.server}`);
 
 	if ((gbl.state.state == "tsig")||(gbl.state.state == "tsigdata"))
-		x = x + btn("loadTsigList()","TSIGs","Show the list of TSIGs");
+		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs");
 
 	if ("searchTerm" in ctx) delete ctx.searchTerm;
 
 	if ("zone" in ctx) {
-		x = x + btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);
+		x += btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),`Reload all records in ${ctx.zone}`);
 
 		if ("rec" in ctx) {
 			let name = "@";
@@ -2238,43 +2307,43 @@ function topLine()
 				name = ctx.rec.name.substr(0,ctx.rec.name.length - ctx.zone.length - 1);
 
 			ctx.rec.showName = name;
-			x = x + btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);
+			x += btn('getZoneRecord()',`${name}/${ctx.rec.type}`,`Reload the ${ctx.rec.type} recods for ${name}`);
 			}
 		else if (gbl.state.state == "meta") {
-				x = x + btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);
+				x += btn('zoneMeta()',"META",`Reload the META data for ${ctx.zone}`);
 				}
 		else if ("zoneKeys" in ctx) {
-			x = x + btn('zoneKeys()',"DNSSEC","Reload the DNSSEC Keys for "+ctx.zone);
+			x += btn('zoneKeys()',"DNSSEC",`Reload the DNSSEC Keys for ${ctx.zone}`);
 			}
 		}
 
-	x = x + "</td><td width=100% align=center><span class='fullvis' id='showMsg'></span></td><td>";
+	x += "</td><td width=100% align=center><span class='fullvis' id='showMsg'></span></td><td>";
 
 	if ("zone" in ctx) {
 		if ("edit" in ctx) {
 			if ("needCancel" in ctx.edit)
-				x = x + btn(ctx.edit.needCancel+"(false)","Cancel","Cancel this edit");
+				x += btn(`${ctx.edit.needCancel}(false)`,"Cancel","Cancel this edit");
 			else
-				x = x + btn("cancelAllEdits()","Cancel","Cancel this edit");
+				x += btn("cancelAllEdits()","Cancel","Cancel this edit");
 			}
 		else {
 			if ("rec" in ctx)
-				x = x + btn("addNewRR()","Add RR","Add another "+ctx.rec.type+" record to "+ctx.rec.name);
+				x += btn("addNewRR()","Add RR",`Add another ${ctx.rec.type} record to ${ctx.rec.name}`);
 
 			if ("needSave" in ctx)
-				x = x + btn(ctx.needSave+"(false)","Cancel","Abandom all changes")
-					+ btn(ctx.needSave+"(true)","Save","Save your changes to the zone file");
+				x += btn(`${ctx.needSave}(false)`,"Cancel","Abandom all changes")
+					+ btn(`${ctx.needSave}(true)`,"Save","Save your changes to the zone file");
 
 			if (gbl.state.state == "meta")
-				x = x + btn('clickAddMeta()',"Add Meta","Add a META data record to "+ctx.zone);
+				x += btn('clickAddMeta()',"Add Meta",`Add a META data record to ${ctx.zone}`);
 			}
 
 		}
 
 	if (gbl.state.state == "zonelist")
-		x = x + btn("loadTsigList()","TSIGs","Show the list of TSIGs");
+		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs");
 
-	x = x + "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
+	x += "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=30 name=searchTerm></form></td>"
 		+ "</tr><table><hr>";
 
@@ -2285,7 +2354,7 @@ function topLine()
 
 function startUp()
 {
-	window.addEventListener('popstate', function(e) {
+	window.addEventListener('popstate', e => {
 		if (e.state == null) goLogin();
 
 		gbl.param = e.state;
@@ -2304,11 +2373,10 @@ function startUp()
 
 	gbl.addH = document.getElementById("addName");
 	gbl.addZ = document.getElementById("addZone");
-	gbl.addM = document.getElementById("addMeta");
 	gbl.addT = document.getElementById("addTsig");
 	gbl.optM = document.getElementById("metaOpt");
 
-	gbl.forms = [ gbl.addH, gbl.addZ, gbl.addM, gbl.addT ];
+	gbl.forms = [ gbl.addH, gbl.addZ, gbl.addT ];
 
 	if (window.location.search != "") {
 		gbl.param = JSON.parse(atob(window.location.search.substr(1)));
@@ -2318,6 +2386,9 @@ function startUp()
 			zoneList();
 			}
 		}
+
+	let f = document.loginForm;
+	if (f.server.value == "") f.server.value = window.location.hostname;
 }
 
 
@@ -2337,21 +2408,15 @@ function initialLogin()
 
 function formatSOA(i)
 {
-	let soa = i[0] + " " + i[1] + "<br>";
+	let soa = `${i[0]} ${i[1]}<br>`;
 	let idx = 2;
 	for(let tag of ["serial","refresh","retry","expire","minimum"]) {
-		soa = soa + "<span style='display: inline-block; width:50px'></span>";
-		soa = soa + "<span style='display: inline-block; width:100px'>" + i[idx++] + "</span>;" + tag + "<br>";
+		soa += `<span style='display: inline-block; width:50px'></span>`;
+		soa += `<span style='display: inline-block; width:100px'>${i[idx++]}</span>;${tag}<br>`;
 		}
 	return soa;
 }
 
-
-
-function showError(err)
-{
-	gbl.bot.innerHTML = "<h1>"+err+"</h1>";
-}
 
 
 
@@ -2371,7 +2436,7 @@ function errMsg(txt)
 {
 	let m = document.getElementById("myMsgPop");
 	m.className = 'msgPopYes';
-	m.innerHTML = gbl.warn + " " + txt;
+	m.innerHTML = `${gbl.warn} ${txt}`;
 	gbl.lastErrMsg = m.innerHTML;
 	setTimeout(unerrMsg,2500);
 }
@@ -2436,7 +2501,7 @@ function keyEsc(e) {
 <div id="lowerSpan">
 	<table align=center>
 	<form action="/" onSubmit="return initialLogin()" name=loginForm>
-		<tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr>
+		<tr><td class=formPrompt>Server:</td><td><input name=server value=""></td></tr>
 		<tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr>
 		<tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr>
 		<tr><td align=center colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
@@ -2507,27 +2572,6 @@ function keyEsc(e) {
 	</form>
 	</table>
 </div>
-
-<div id=addMeta style="display: none;">
-	<table width=40% align=center>
-	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
-	<form method=post action="/" name=newMetaForm onSubmit="return formAddMeta();">
-		<tr><td class=formPrompt>Metadata: </td><td><select name=metaItem>
-			<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
-			<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
-			<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE
-			<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS
-			<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
-		</select></td></tr>
-		<tr><Td class=formPrompt>Value: </td><td><span id="metaOpt"><input size=50 name=metaValue></span></td></tr>
-		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span><span title="Add this Metadata Record" class=myBtn onClick="formAddMeta();">Add Metadata</span></td></tr>
-	<input type=submit style="display: none;">
-	</form>
-	</table>
-</div>
-
 
 
 <div id=addTsig style="display: none;">

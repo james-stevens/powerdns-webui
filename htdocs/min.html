@@ -1,4 +1,4 @@
-<!---(c)Copyright 2019,James Stevens...see LICENSE for details---><!---Alternative license arrangements are possible,contact me for more information---><html><head><title>PowerDNS WebUI-Login</title></head><script language="Javascript">var debugAPI=false;</script><style type='text/css'>.fullvis{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14pt;visibility:visible;opacity:1;}.fadein{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14pt;visibility:visible;opacity:1;transition:opacity 0.5s linear;}.fadeout{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14pt;visibility:hidden;opacity:0;transition:visibility 0s 1s,opacity 1s linear;}#topSpan{background-color:#666688;height:55px;line-height:55px;margin-top:0px;padding-left:0px;padding-top:1px;position:-webkit-sticky;position:sticky;top:0px;}
+<!---(c)Copyright 2019-2020,James Stevens...see LICENSE for details---><!---Alternative license arrangements are possible,contact me for more information---><html><head><title>PowerDNS WebUI-Login</title></head><script language="Javascript">var debugAPI=false;</script><style type='text/css'>.fullvis{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14pt;visibility:visible;opacity:1;}.fadein{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14pt;visibility:visible;opacity:1;transition:opacity 0.5s linear;}.fadeout{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14pt;visibility:hidden;opacity:0;transition:visibility 0s 1s,opacity 1s linear;}#topSpan{background-color:#666688;height:55px;line-height:55px;margin-top:0px;padding-left:0px;padding-top:1px;position:-webkit-sticky;position:sticky;top:0px;}
 html{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;background-color:#666688;scrollbar-base-color:#666699;scrollbar-arrow-color:#ddddff;}
 th{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;background-color:#a0a0cc;font-weight:bold;padding-left:6px;padding-right:6px;}
 select{color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8pt;}
@@ -7,46 +7,60 @@ body{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;m
 a{color:#b0b0ff;text-decoration:none;}
 a:hover{text-decoration:underline;}
 form{margin:0px;}.myBtn{text-align:center;display:inline-block;background-color:#d0d0ff;color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;font-weight:bold;border-radius:25px;padding:5px;padding-left:10px;padding-right:10px;cursor:pointer;margin-top:0px;margin-left:10px;margin-bottom:2px;margin-right:2px;}.myBtn:hover{box-shadow:3px 3px#222244;text-shadow:1px 1px#ffffff;}.myBtn:active{position:relative;box-shadow:none;text-shadow:none;top:1px;left:1px;}.dnskey{color:#383855;}
-td{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}.msgPopNo{position:absolute;left:10px;top:20px;visibility:hidden;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:16pt;width:95%;background:#ffd0d0;text-align:center;color:black;opacity:0;transition:visibility 0s 1s,opacity 1s linear;padding:5px;border-radius:10px;}.msgPopYes{position:absolute;left:10px;top:20px;visibility:visible;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:16pt;width:95%;background:#ffd0d0;text-align:center;color:black;opacity:1;transition:opacity 0.5s linear;padding:5px;border-radius:10px;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,state:{state:"login"},tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",nsec:"&#x1F512;",nsec3:"&#x1F510;",clip:"&#x1F4CE;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var trueOrFalse=/^[01]$/;var validateMeta={"API-RECTIFY":trueOrFalse,"IXFR":trueOrFalse,"NSEC3NARROW":trueOrFalse,"PRESIGNED":trueOrFalse,"PUBLISH-CDNSKEY":trueOrFalse,"SLAVE-RENOTIFY":trueOrFalse,"SOA-EDIT":/^(INCREMENT-WEEKS|INCEPTION-EPOCH|INCEPTION-INCREMENT|INCEPTION)$/i,"SOA-EDIT-API":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,"SOA-EDIT-DNSUPDATE":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];var metaPickLists={"PUBLISH-CDNSKEY":{"Enabled":1,"Disabled":0},"API-RECTIFY":{"Enabled":1,"Disabled":0},"PRESIGNED":{"Enabled":1,"Disabled":0},"NSEC3NARROW":{"Enabled":1,"Disabled":0},"IXFR":{"Enabled":1,"Disabled":0},"eSLAVE-RENOTIFY":{"Enabled":1,"Disabled":0},"SOA-EDIT":["INCREMENT-WEEKS","INCEPTION-EPOCH","INCEPTION-INCREMENT","INCEPTION"],"SOA-EDIT-API":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],"SOA-EDIT-DNSUPDATE":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],};var blockedMeta={"SOA-EDIT":{name:"soa_edit",list:false,delete:false},"SOA-EDIT-API":{name:"soa_edit_api",list:false,delete:true},"NSEC3PARAM":{name:"nsec3param",list:false,delete:true},"TSIG-ALLOW-AXFR":{name:"master_tsig_key_ids",list:true,delete:true},"AXFR-MASTER-TSIG":{name:"slave_tsig_key_ids",list:true,delete:true},};function callApi(sfx,callback,inData)
+td{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}.msgPopNo{position:absolute;left:10px;top:20px;visibility:hidden;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:16pt;width:95%;background:#ffd0d0;text-align:center;color:black;opacity:0;transition:visibility 0s 1s,opacity 1s linear;padding:5px;border-radius:10px;}.msgPopYes{position:absolute;left:10px;top:20px;visibility:visible;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:16pt;width:95%;background:#ffd0d0;text-align:center;color:black;opacity:1;transition:opacity 0.5s linear;padding:5px;border-radius:10px;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,state:{state:"login"},tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",nsec:"&#x1F512;",nsec3:"&#x1F510;",clip:"&#x1F4CE;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var trueOrFalse=/^[01]$/;var validateMeta={"API-RECTIFY":trueOrFalse,"IXFR":trueOrFalse,"NSEC3NARROW":trueOrFalse,"PRESIGNED":trueOrFalse,"PUBLISH-CDNSKEY":trueOrFalse,"SLAVE-RENOTIFY":trueOrFalse,"SOA-EDIT":/^(INCREMENT-WEEKS|INCEPTION-EPOCH|INCEPTION-INCREMENT|INCEPTION)$/i,"SOA-EDIT-API":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,"SOA-EDIT-DNSUPDATE":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];var metaPickLists={"PUBLISH-CDNSKEY":{"Enabled":1,"Disabled":0},"API-RECTIFY":{"Enabled":1,"Disabled":0},"PRESIGNED":{"Enabled":1,"Disabled":0},"NSEC3NARROW":{"Enabled":1,"Disabled":0},"IXFR":{"Enabled":1,"Disabled":0},"eSLAVE-RENOTIFY":{"Enabled":1,"Disabled":0},"SOA-EDIT":["INCREMENT-WEEKS","INCEPTION-EPOCH","INCEPTION-INCREMENT","INCEPTION"],"SOA-EDIT-API":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],"SOA-EDIT-DNSUPDATE":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],};var blockedMeta={"SOA-EDIT":{name:"soa_edit",list:false,delete:false},"SOA-EDIT-API":{name:"soa_edit_api",list:false,delete:true},"NSEC3PARAM":{name:"nsec3param",list:false,delete:true},"TSIG-ALLOW-AXFR":{name:"master_tsig_key_ids",list:true,delete:true},"AXFR-MASTER-TSIG":{name:"slave_tsig_key_ids",list:true,delete:true},};allMetaItems=['ALLOW-AXFR-FROM','ALLOW-DNSUPDATE-FROM','ALSO-NOTIFY','AXFR-MASTER-TSIG','AXFR-SOURCE','FORWARD-DNSUPDATE','GSS-ACCEPTOR-PRINCIPAL','GSS-ALLOW-AXFR-PRINCIPAL','IXFR','LUA-AXFR-SCRIPT','NOTIFY-DNSUPDATE','NSEC3NARROW','NSEC3PARAM','PRESIGNED','PUBLISH-CDNSKEY','PUBLISH-CDS','SOA-EDIT','SOA-EDIT-DNSUPDATE','TSIG-ALLOW-AXFR','TSIG-ALLOW-DNSUPDATE',];function callApi(sfx,callback,inData)
 {if(debugAPI){console.log("API>>>",sfx);console.log("API>>>",inData);}
-gbl.forms.forEach(function(i){i.style.display="none";});if((inData!=null)&&(inData.method=="PUT"))
-msg("Requesting ... "+gbl.timer);else
-msg("Loading ... "+gbl.timer);let p="https";if(!gbl.with_https)p="http";let url=p+"://"+gbl.server+"/api/v1/servers/localhost/"+sfx;let okResp=200;let httpCmd={headers:{'X-API-Key':gbl.apikey},method:'GET',};if(inData!=null){httpCmd.method=inData.method;httpCmd.body=inData.json;if("okResp"in inData)okResp=inData.okResp;}
-fetch(url,httpCmd).then(function(response){if(debugAPI)console.log("API-Resp>>>",response);if(response.status!=okResp){response.text().then(function(data){e=JSON.parse(data);errMsg(e.error);},function(){errMsg("ERROR: "+response.status+" "+response.statusText);});msg("");if((inData!=null)&&("callErr"in inData))return callback(null);return;}
-response.text().then(function(data){if((inData!=null)&&(inData.noData))
+gbl.forms.forEach(i=>i.style.display="none");if((inData!=null)&&(inData.method=="PUT"))
+msg(`Requesting...${gbl.timer}`);else
+msg(`Loading...${gbl.timer}`);let p="https";if(!gbl.with_https)p="http";let url=`${p}:let okResp=200;let httpCmd={headers:{'X-API-Key':gbl.apikey},method:'GET',};if(inData!=null){httpCmd.method=inData.method;httpCmd.body=inData.json;if("okResp"in inData)okResp=inData.okResp;}
+fetch(url,httpCmd).then(response=>{if(debugAPI)console.log("API-Resp>>>",response);if(response.status!=okResp){response.text().then(data=>{e=JSON.parse(data);errMsg(e.error);},()=>errMsg(`ERROR:${response.status}${response.statusText}`));msg("");if((inData!=null)&&("callErr"in inData))return callback(null);return;}
+response.text().then(data=>{if((inData!=null)&&(inData.noData))
 callback(true);else{let param=data;try{param=JSON.parse(data);}
 catch{param=data;}
 callback(param);}});});}
-function downloadFile(text,fileType,fileName){var blob=new Blob([text],{type:fileType});var a=document.createElement('a');a.download=fileName;a.href=URL.createObjectURL(blob);a.dataset.downloadurl=[fileType,a.download,a.href].join(':');a.style.display="none";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(a.href);},1500);msg("");}
+function downloadFile(text,fileType,fileName){var blob=new Blob([text],{type:fileType});var a=document.createElement('a');a.download=fileName;a.href=URL.createObjectURL(blob);a.dataset.downloadurl=[fileType,a.download,a.href].join(':');a.style.display="none";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(a.href),1500);msg("");}
 function doEditMeta(isDel)
-{let f=document.editMeta;let dataIdx=parseInt(f.dataIdx.value);let itemIdx=parseInt(f.itemIdx.value);let metaValue=document.editMeta.metaValue.value;let i=ctx.zoneMeta[dataIdx];if((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))){errMsg("Invalid value for "+i.kind);document.editMeta.metaValue.focus();document.editMeta.metaValue.select();return false;}
+{let f=document.newMetaForm;let dataIdx=parseInt(f.dataIdx.value);let itemIdx=parseInt(f.itemIdx.value);let metaValue=document.newMetaForm.metaValue.value;let i=ctx.zoneMeta[dataIdx];if((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))){errMsg(`Invalid value for ${i.kind}`);document.newMetaForm.metaValue.focus();document.newMetaForm.metaValue.select();return false;}
 if(isDel){metaValue="";i.metadata.splice(itemIdx,1);}
-else{i.metadata[itemIdx]=metaValue;i.metadata.sort(function(a,b){if(a<b)return-1;if(b<a)return 1;return 0;});}
+else{i.metadata[itemIdx]=metaValue;i.metadata.sort((a,b)=>{if(a<b)return-1;if(b<a)return 1;return 0;});}
 if(i.kind in blockedMeta){let json={}
-json[blockedMeta[i.kind].name]=metaValue;if(blockedMeta[i.kind].list)json[blockedMeta[i.kind].name]=i.metadata;callApi("zones/"+ctx.zone,zoneMeta,{method:"PUT",okResp:204,json:JSON.stringify(json)});}
-else{let hdr={method:"PUT",okResp:200,json:JSON.stringify({metadata:i.metadata})};callApi("zones/"+ctx.zone+"/metadata/"+i.kind,zoneMeta,hdr);}
+json[blockedMeta[i.kind].name]=metaValue;if(blockedMeta[i.kind].list)json[blockedMeta[i.kind].name]=i.metadata;callApi(`zones/${ctx.zone}`,zoneMeta,{method:"PUT",okResp:204,json:JSON.stringify(json)});}
+else{let hdr={method:"PUT",okResp:200,json:JSON.stringify({metadata:i.metadata})};callApi(`zones/${ctx.zone}/metadata/${i.kind}`,zoneMeta,hdr);}
 return false;}
 function editMetaItem(dataIdx,itemIdx)
-{let metaItem=ctx.zoneMeta[dataIdx].kind;let metaValue=ctx.zoneMeta[dataIdx].metadata[itemIdx];let x="";x=x+"<form name=editMeta onSubmit='return doEditMeta();'>";x=x+"<input type=hidden name=dataIdx value="+dataIdx+">"
-x=x+"<input type=hidden name=itemIdx value="+itemIdx+">"
-x=x+"<table border=0 width=40% align=center><tr><td class=formPrompt>Metadata Item: </td><td>"+metaItem+"</td></tr>";x=x+"<tr><Td class=formPrompt>Value: </td><td><input size=50 value='"+metaValue+"' name=metaValue></td></tr>";x=x+"<tr><td colspan=2><hr></td></tr>";x=x+'<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>';if((!(metaItem in blockedMeta))||(blockedMeta[metaItem].delete))
-x=x+'<span title="Delete this Metadata Item" class=myBtn onClick="doEditMeta(true);">Delete</span>'
-x=x+'<span title="Change this Metadata Item" class=myBtn onClick="doEditMeta(false);">Change</span></td></tr>'
-x=x+"<input type=hidden name=metaItem value='"+metaItem+"'>";x=x+"<input type=submit style='display: none;'></form></table>";gbl.bot.innerHTML=x;document.editMeta.metaValue.focus();document.editMeta.metaValue.select();}
+{let metaItem=ctx.zoneMeta[dataIdx].kind;let metaValue=ctx.zoneMeta[dataIdx].metadata[itemIdx];clickAddMeta(metaItem.toUpperCase(),metaValue,dataIdx,itemIdx);}
 function formAddMeta()
-{let f=document.newMetaForm;let metaItem=f.metaItem.value;let metaValue=[f.metaValue.value];let hdr={method:"POST",okResp:201,callErr:true};let url="zones/"+ctx.zone+"/metadata";for(let i of ctx.zoneMeta)
-if(i.kind.toUpperCase()==metaItem){metaValue=i.metadata;metaValue.push(f.metaValue.value);hdr.method="PUT";hdr.okResp=200;url=url+"/"+metaItem;break;}
-let nxtFn=function(res){if(res==null)clickAddMeta();else zoneMeta();};hdr.json=JSON.stringify({type:"Metadata",kind:metaItem,metadata:metaValue});if(!(metaItem in blockedMeta))callApi(url,nxtFn,hdr);else{let json={}
-json[blockedMeta[metaItem].name]=f.metaValue.value;if(blockedMeta[metaItem].list)json[blockedMeta[metaItem].name]=metaValue;callApi("zones/"+ctx.zone,nxtFn,{method:"PUT",callErr:true,okResp:204,json:JSON.stringify(json)});}
+{let f=document.newMetaForm;let metaItem=f.metaItem.value;let metaValue=[f.metaValue.value];let hdr={method:"POST",okResp:201,callErr:true};let url=`zones/${ctx.zone}/metadata`;for(let i of ctx.zoneMeta)
+if(i.kind.toUpperCase()==metaItem){if(i.metadata.includes(f.metaValue.value))return zoneMeta();metaValue=i.metadata;metaValue.push(f.metaValue.value);hdr.method="PUT";hdr.okResp=200;url=`${url}/${metaItem}`;break;}
+let nxtFn=function(res){if(res==null)clickAddMeta(metaItem.toUpperCase(),metaValue);else zoneMeta();};hdr.json=JSON.stringify({type:"Metadata",kind:metaItem,metadata:metaValue});if(!(metaItem in blockedMeta))callApi(url,nxtFn,hdr);else{let json={}
+json[blockedMeta[metaItem].name]=f.metaValue.value;if(blockedMeta[metaItem].list)json[blockedMeta[metaItem].name]=metaValue;callApi(`zones/${ctx.zone}`,nxtFn,{method:"PUT",callErr:true,okResp:204,json:JSON.stringify(json)});}
 return false;}
-function clickAddMeta()
-{gbl.bot.innerHTML="";gbl.addM.style.display="block";document.newMetaForm.metaValue.value="";document.newMetaForm.metaValue.focus();}
+function showDelete(item,val){if(!(item in blockedMeta))return(val!=null);if(blockedMeta[item].delete)return(val!=null);return false;}
+function clickAddMeta(item,val,dataIdx,itemIdx)
+{x='<form method=post action="/none.cgi" name=newMetaForm onSubmit="return formAddMeta();">'
+if(dataIdx!=null)x+=`<input type=hidden name=dataIdx value=${dataIdx}>`if(itemIdx!=null)x+=`<input type=hidden name=itemIdx value=${itemIdx}>`x+='<table width=40% align=center>'
+x+='<colgroup><col width=35%/><col width=65%/></colgroup>';let addBtn="Change";if(val==null){addBtn="Add Metadata";x+="<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>"
++"<tr><td class=formPrompt>Metadata: </td><td><select onChange='clickAddMeta(this.value.toUpperCase());' name=metaItem>";allMetaItems.forEach(i=>{c="";if(i==item)c="selected";x+=`<option ${c}>${i}`});x+='</select></td></tr>';}
+else{x+=`<tr><td colspan=2 align=center><h2>Edit a Metadata Item</h2></td></tr><tr><td class=formPrompt>Metadata Item:</td><td>${item}</td></tr>`;x+=`<input type=hidden name=metaItem value="${item}">`}
+x+='<tr><Td class=formPrompt>Value: </td><td>';if(item in metaPickLists){x+="<select name=metaValue>";if(Array.isArray(metaPickLists[item]))
+metaPickLists[item].forEach(i=>x+=`<option>${i}`);else
+for(let i in metaPickLists[item])x+=`<option value=${metaPickLists[item][i]}>${i}`;x+="</select>";}
+else
+x+=`<input size=50 name=metaValue></td></tr>`;x+='<tr><td colspan=2><hr></td></tr>'
++'<tr><td align=center colspan=2>'
++'<span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>'
+if(showDelete(item,val))
+x+='<span title="Delete this Metadata Item" class=myBtn onClick="doEditMeta(true);">Delete</span>'
+x+=`<span title="Add this Metadata Record"class=myBtn onClick="formAddMeta();">${addBtn}</span></td></tr>`+'<input type=submit style="display: none;">'
++'</table></form>';gbl.bot.innerHTML=x;if(val!=null)document.newMetaForm.metaValue.value=val;else{if(item in metaPickLists)
+document.newMetaForm.metaValue.selectedIndex=0;else
+document.newMetaForm.metaValue.value="";}
+document.newMetaForm.metaValue.focus();}
 function zoneMeta()
-{ctx.meta=true;topLine();callApi("zones/"+ctx.zone+"/metadata",zoneMetaDetails);return false;}
+{ctx.meta=true;topLine();callApi(`zones/${ctx.zone}/metadata`,zoneMetaDetails);return false;}
 function zoneMetaDetails(data)
-{data.sort(function(a,b){if(a.kind<b.kind)return-1;if(a.kind>b.kind)return 1;return 0;});for(let i of data)
-i.metadata.sort(function(a,b){if(a<b)return-1;if(b<a)return 1;return 0;});let newTitle=gbl.server+": "+ctx.zone+", META Data";gbl.state={state:"meta",server:gbl.server,zone:ctx.zone,meta:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;ctx.zoneMeta=data;delete gbl.param;let x="<table align=center width=60% border=0 cellspacing=1 cellpadding=0>";for(let i in data){for(let y in data[i].metadata){let td="<td onClick=\"editMetaItem("+i+","+y+");\">";x=x+"<tr class=dataRow>"+td+data[i].kind.toUpperCase()+"</td>";x=x+td+data[i].metadata[y]+"</td></tr>"}}
-gbl.bot.innerHTML=x+"</table>";topLine();}
+{data.sort((a,b)=>{if(a.kind<b.kind)return-1;if(a.kind>b.kind)return 1;return 0;});for(let i of data)
+i.metadata.sort((a,b)=>{if(a<b)return-1;if(b<a)return 1;return 0;});let newTitle=`${gbl.server}:${ctx.zone},META Data`;gbl.state={state:"meta",server:gbl.server,zone:ctx.zone,meta:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;ctx.zoneMeta=data;delete gbl.param;let x="<table align=center width=60% border=0 cellspacing=1 cellpadding=0>";for(let i in data){for(let y in data[i].metadata){let td=`<td onClick="editMetaItem(${i},${y});">`;x+=`<tr class=dataRow>${td}${data[i].kind.toUpperCase()}</td>`;x+=`${td}${data[i].metadata[y]}</td></tr>`;}}
+x+="</table>";gbl.bot.innerHTML=x;topLine();}
 function addNewRR()
 {ctx.rec.rrs.records.push({content:"",disabled:false});drawOneRecord();clickData(ctx.rec.rrs.records.length-1);}
 function madeChange(res)
@@ -57,13 +71,12 @@ function patchRRdata()
 {return JSON.stringify({rrsets:[{name:ctx.rec.name,ttl:ctx.rec.rrs.ttl,type:ctx.rec.type,changetype:"REPLACE",records:ctx.rec.rrs.records,}]});}
 function saveRRChanges(withSave)
 {delete ctx.edit;topLine();if(withSave)
-callApi("zones/"+ctx.zone,madeChange,{method:"PATCH",noData:true,okResp:204,json:patchRRdata()});else
+callApi(`zones/${ctx.zone}`,madeChange,{method:"PATCH",noData:true,okResp:204,json:patchRRdata()});else
 getZoneRecord();}
 function changeRR()
 {let newVal=document.rrForm.new.value;if(newVal==""){if(ctx.rec.rrs.records[ctx.edit.dta].content!="")ctx.needSave="saveRRChanges";ctx.rec.rrs.records.splice(ctx.edit.dta,1);drawOneRecord();}
 else{if((ctx.rec.type=="TXT")&&(newVal.substr(0,1)!='"')&&(newVal.substr(newVal.length-1)!='"'))
-newVal='"'+newVal+'"';s=document.getElementById("rrs"+ctx.edit.dta);if(newVal!=ctx.rec.rrs.records[ctx.edit.dta].content){idx="rr"+ctx.rec.type;if((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!="."))
-newVal=newVal+".";if(idx in validations){if(!validations[idx].test(newVal)){errMsg("Invalid value");document.rrForm.new.focus();document.rrForm.new.select();return false;}}
+newVal=`"${newVal}"`;s=document.getElementById(`rrs${ctx.edit.dta}`);if(newVal!=ctx.rec.rrs.records[ctx.edit.dta].content){idx=`rr${ctx.rec.type}`;if((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!="."))newVal+=".";if(idx in validations){if(!validations[idx].test(newVal)){errMsg("Invalid value");document.rrForm.new.focus();document.rrForm.new.select();return false;}}
 ctx.rec.rrs.records[ctx.edit.dta].content=newVal;s.innerHTML=newVal;ctx.needSave="saveRRChanges";}
 else
 s.innerHTML=ctx.rec.rrs.records[ctx.edit.dta].content;}
@@ -74,376 +87,1362 @@ if(newVal!=ctx.rec.rrs.ttl){ctx.needSave="saveRRChanges";ctx.rec.rrs.ttl=newVal;
 delete ctx.edit;topLine();return false;}
 function clickTTL(idx)
 {if("edit"in ctx){if(("ttl"in ctx.edit)&&(ctx.edit.ttl==idx))return;else cancelAllEdits();}
-let s=document.getElementById("ttl"+idx);if(s.innerHTML.indexOf("<form")>=0)return;ctx.edit={ttl:idx,};let x="<form onSubmit='return changeTTL();' name=rrForm>"
-+"<input onkeydown=\"keyEsc(event);\" size=10 name=new value=\""+ctx.rec.rrs.ttl+"\"></form>";s.innerHTML=x;document.rrForm.new.focus();topLine();}
+let s=document.getElementById(`ttl${idx}`);if(s.innerHTML.indexOf("<form")>=0)return;ctx.edit={ttl:idx,};let x="<form onSubmit='return changeTTL();' name=rrForm>"
++`<input onkeydown="keyEsc(event);"size=10 name=new value="${ctx.rec.rrs.ttl}"></form>`;s.innerHTML=x;document.rrForm.new.focus();topLine();}
 function clickData(idx)
 {if("edit"in ctx){if(("dta"in ctx.edit)&&(ctx.edit.dta==idx))return;else cancelAllEdits();}
-let s=document.getElementById("rrs"+idx);if(s.innerHTML.indexOf("<form")>=0)return;let len=50
+let s=document.getElementById(`rrs${idx}`);if(s.innerHTML.indexOf("<form")>=0)return;let len=50
 if((ctx.rec.type=="SOA")||(ctx.rec.type=="TXT"))len=100;let x="<form onSubmit='return changeRR();' name=rrForm>"
-+"<input onkeydown=\"keyEsc(event);\" size="+len+" name=new"
-+" value='"+ctx.rec.rrs.records[idx].content.replace(/'/g,"&apos;")+"'></form>";ctx.edit={dta:idx,};topLine();s.innerHTML=x;document.rrForm.new.focus();}
++`<input onkeydown="keyEsc(event);"size=${len}name=new`+`value='${ctx.rec.rrs.records[idx].content.replace(/'/g,"&apos;")}'></form>`;
+
+	ctx.edit = { dta: idx };
+
+	topLine();
+	s.innerHTML = x;
+	document.rrForm.new.focus();
+}
+
+
+
 function findZoneName(name)
-{let ret="";for(let n of ctx.zoneList){if((name.length>=n.name.length)&&(n.name.length>ret.length)&&((name==n.name)||(name.substr(name.length-n.name.length)==n.name)))
-ret=n.name;}
-return ret;}
+{
+	let ret = "";
+	for(let n of ctx.zoneList) {
+		if (
+			(name.length >= n.name.length) &&
+			(n.name.length > ret.length) &&
+			((name==n.name)||(name.substr(name.length - n.name.length)==n.name))
+			)
+			ret = n.name;
+		}
+	return ret;
+}
+
+
+
 function changeName()
-{let z=null;let name=document.rrForm.new.value;if(name.substr(name.length-1)!="."){let t=findZoneName(name+".");if(t!=null){z=t;name=name+".";}
-else{name=name+"."+ctx.zone;z=ctx.zone;}}
-else
-z=findZoneName(name);if(z!="")ctx.zone=z;else{errMsg("No matching zone");document.rrForm.new.focus();return false;}
-if(ctx.rec.name!=name){ctx.rec.name=name;ctx.rec.rrs.name=name;ctx.needSave="saveRRChanges";}
-delete ctx.edit;topLine();drawOneRecord();return false;}
+{
+	let z = null;
+	let name = document.rrForm.new.value;
+	if (name.substr(name.length-1)!=".") {
+		let t = findZoneName(`${name}.`);
+		if (t != null) {
+			z = t;
+			name += ".";
+			}
+		else {
+			name = `${name}.${ctx.zone}`;
+			z = ctx.zone;
+			}
+		}
+	else
+		z = findZoneName(name);
+
+	if (z != "") ctx.zone = z;
+	else {
+		errMsg("No matching zone");
+		document.rrForm.new.focus();
+		return false;
+		}
+
+	if (ctx.rec.name != name) {
+		ctx.rec.name = name;
+		ctx.rec.rrs.name = name;
+		ctx.needSave = "saveRRChanges";
+		}
+
+	delete ctx.edit;
+	topLine();
+	drawOneRecord();
+
+	return false; // block form submit
+}
+
+
+
 function clickRecName(idx)
-{if("edit"in ctx){if(("nme"in ctx.edit)&&(ctx.edit.nme==idx))return;else cancelAllEdits();}
-let x="<form onSubmit='return changeName();' name=rrForm>"
-+"<input onkeydown=\"keyEsc(event);\" size=50 name=new value='"+ctx.rec.name+"'></form>";ctx.edit={nme:idx,};let s=document.getElementById("nme"+idx);topLine();s.innerHTML=x;document.rrForm.new.focus();}
+{
+	if ("edit" in ctx) { if (("nme" in ctx.edit)&&(ctx.edit.nme == idx)) return; else cancelAllEdits(); }
+
+	let x = "<form onSubmit='return changeName();' name=rrForm>"
+		+ `<input onkeydown="keyEsc(event);" size=50 name=new value='${ctx.rec.name}'></form>`;
+
+	ctx.edit = { nme: idx, };
+
+	let s = document.getElementById(`nme${idx}`);
+	topLine();
+	s.innerHTML = x;
+	document.rrForm.new.focus();
+}
+
+
+
 function cancelAllEdits()
-{if(!("edit"in ctx))return;if("nme"in ctx.edit){let s=document.getElementById("nme"+ctx.edit.nme);s.innerHTML=ctx.rec.name;}
-if("ttl"in ctx.edit){let s=document.getElementById("ttl"+ctx.edit.ttl);s.innerHTML=ctx.rec.rrs.ttl;}
-if("dta"in ctx.edit){if(ctx.rec.rrs.records[ctx.edit.dta].content==""){ctx.rec.rrs.records.pop();if((ctx.rec.loadedRows==0)&&(ctx.rec.rrs.records.length==0))
-return loadThisZone();drawOneRecord();}
-else{let s=document.getElementById("rrs"+ctx.edit.dta);s.innerHTML=ctx.rec.rrs.records[ctx.edit.dta].content;}}
-delete ctx.edit;topLine();}
+{
+	if (!("edit" in ctx)) return;
+
+	if ("nme" in ctx.edit) {
+		let s = document.getElementById(`nme${ctx.edit.nme}`);
+		s.innerHTML = ctx.rec.name;
+		}
+
+	if ("ttl" in ctx.edit) {
+		let s = document.getElementById(`ttl${ctx.edit.ttl}`);
+		s.innerHTML = ctx.rec.rrs.ttl;
+		}
+
+	if ("dta" in ctx.edit) {
+		if (ctx.rec.rrs.records[ctx.edit.dta].content == "") {
+			ctx.rec.rrs.records.pop();
+
+			if ((ctx.rec.loadedRows==0)&&(ctx.rec.rrs.records.length==0))
+				return loadThisZone();
+
+			drawOneRecord();
+			}
+		else {
+			let s = document.getElementById(`rrs${ctx.edit.dta}`);
+			s.innerHTML = ctx.rec.rrs.records[ctx.edit.dta].content;
+			}
+		}
+
+	delete ctx.edit;
+	topLine();
+}
+
+
+
 function deleteRRitem(idx)
-{if("edit"in ctx)return cancelAllEdits();ctx.rec.rrs.records.splice(idx,1);ctx.needSave="saveRRChanges";topLine();drawOneRecord();}
+{
+	if ("edit" in ctx) return cancelAllEdits();
+
+	ctx.rec.rrs.records.splice(idx,1);
+	ctx.needSave = "saveRRChanges";
+	topLine();
+	drawOneRecord();
+}
+
+
+
+
 function findRec(rrsets,rec)
-{for(let tag of rrsets)
-if((tag.name==rec.name)&&(tag.type==rec.type))return tag;return null;}
+{
+	for(let tag of rrsets)
+		if ((tag.name == rec.name)&&(tag.type == rec.type)) return tag;
+
+	return null;
+}
+
+
+
 function oneRecord(data)
-{if(data.id!=ctx.zone)
-return showError("ERROR: Zone does not match loaded data");let rrs=findRec(data.rrsets,ctx.rec);if(rrs==null){if("rrs"in ctx.rec){while((ctx.rec.rrs.records.length>0)&&(ctx.rec.rrs.records[ctx.rec.rrs.records.length-1].content==""))
-ctx.rec.rrs.records.pop();}
-return showError("No matching data for "+ctx.rec.name+"/"+ctx.rec.type);}
-rrs.records.sort(function(a,b){if(a.content<b.content)return-1;if(a.content>b.content)return 1;return 0;})
-ctx.rec.rrs=rrs;ctx.rec.loadedRows=rrs.records.length;drawOneRecord();}
+{
+	if (data.id != ctx.zone)
+		return errMsg("ERROR: Zone does not match loaded data");
+
+	let rrs = findRec(data.rrsets,ctx.rec);
+
+	if (rrs == null) {
+		if ("rrs" in ctx.rec) {
+			while ((ctx.rec.rrs.records.length > 0)&&(ctx.rec.rrs.records[ctx.rec.rrs.records.length-1].content == ""))
+				ctx.rec.rrs.records.pop();
+			}
+		return errMsg(`No matching data for ${ctx.rec.name}/${ctx.rec.type}`);
+		}
+
+	rrs.records.sort((a,b) => {
+		if (a.content < b.content) return -1;
+		if (a.content > b.content) return 1;
+		return 0;
+		})
+
+	ctx.rec.rrs = rrs;
+	ctx.rec.loadedRows = rrs.records.length;
+
+	drawOneRecord();
+}
+
+
+
 function drawOneRecord(rrs)
-{delete ctx.edit;let x=gbl.server+": "+ctx.zone+": ";if("showName"in ctx.rec)
-x=x+ctx.rec.showName;else
-x=x+ctx.rec.name;x=x+"/"+ctx.rec.type;gbl.state={state:"record",server:gbl.server,zone:ctx.zone,name:ctx.rec.name,type:ctx.rec.type};if(!("param"in gbl))window.history.pushState(gbl.state,x,"/");document.title=x;delete gbl.param;x="<table width=100% border=0 cellspacing=1 cellpadding=0>";x=x+'<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="50%" /></colgroup>'
-for(let idx in ctx.rec.rrs.records){let i=ctx.rec.rrs.records[idx];x=x+"<tr class=dataRow>"
-+"<td onClick='deleteRRitem("+idx+");' align=center>"+gbl.bin+"</td>"
-+"<td onClick='clickRecName("+idx+");'><span id=nme"+idx+">"+ctx.rec.name+"</span></td>"
-+"<td align=right onClick='clickTTL("+idx+");'><span id=ttl"+idx+">"+ctx.rec.rrs.ttl+"</span></td>"
-+"<td>"+ctx.rec.rrs.type+"</td>"
-+"<td onClick='clickData("+idx+");'><span id=rrs"+idx+">"+i.content+"</span></td></tr>";}
-gbl.bot.innerHTML=x+"</table>";topLine();}
+{
+	delete ctx.edit;
+
+	let x = `${gbl.server}: ${ctx.zone}: `;
+	if ("showName" in ctx.rec)
+		x += ctx.rec.showName;
+	else
+		x += ctx.rec.name;
+
+	x += `/${ctx.rec.type}`;
+	gbl.state = { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
+	if (!("param" in gbl)) window.history.pushState(gbl.state,x,"/");
+	document.title = x;
+	delete gbl.param;
+
+
+	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
+	x += '<colgroup><col width="10%"/><col width="25%"/><col width="99px"/><col/><col width="50%"/></colgroup>'
+	for(let idx in ctx.rec.rrs.records) {
+		let i = ctx.rec.rrs.records[idx];
+		x += "<tr class=dataRow>"
+			+ `<td onClick='deleteRRitem(${idx});' align=center>${gbl.bin}</td>`
+			+ `<td onClick='clickRecName(${idx});'><span id=nme${idx}>${ctx.rec.name}</span></td>`
+			+ `<td align=right onClick='clickTTL(${idx});'><span id=ttl${idx}>${ctx.rec.rrs.ttl}</span></td>`
+			+ `<td>${ctx.rec.rrs.type}</td>`
+			+ `<td onClick='clickData(${idx});'><span id=rrs${idx}>${i.content}</span></td></tr>`;
+		}
+	gbl.bot.innerHTML = `${x}</table>`;
+	topLine();
+}
+
+
+
 function clickZoneRecord(name,type)
-{if(ctx.zoneDetails.kind=="Slave"){popMsg("Slave zone, editing is disabled");delete gbl.param;return;}
-ctx.rec={name:name,type:type,};getZoneRecord();}
+{
+	if (ctx.zoneDetails.kind == "Slave") {
+		popMsg("Slave zone, editing is disabled");
+		delete gbl.param; return; }
+
+	ctx.rec = {
+		name: name,
+		type: type,
+		};
+
+	getZoneRecord();
+}
+
+
+
 function getZoneRecord()
-{delete ctx.edit;delete ctx.needSave;topLine();callApi("zones/"+ctx.zone,oneRecord);}
+{
+	delete ctx.edit;
+	delete ctx.needSave;
+
+	topLine();
+	callApi(`zones/${ctx.zone}`,oneRecord);
+}
+
+
+//=============================================================================================
+// DNSSEC Stuff
+//=============================================================================================
+
 function showHideBits(formName)
-{let f=document.forms[formName];let k=document.getElementById("key2Lens");let c=document.getElementById("key1Lens");let s="table-row-group";if((f.keyAlg.value=="ecdsa256")||(f.keyAlg.value=="ecdsa384")){k.style.display="none";c.style.display="none";}
-else{if(formName=="addKeyForm")c.style.display="table-row-group";else{if(f.keyPolicy.value=="CSK"){c.style.display="table-row-group";k.style.display="none";}
-else{k.style.display="table-row-group";c.style.display="none";}}}}
+{
+	let f = document.forms[formName];
+	let k = document.getElementById("key2Lens");
+	let c = document.getElementById("key1Lens");
+
+	let s = "table-row-group";
+	if ((f.keyAlg.value=="ecdsa256")||(f.keyAlg.value=="ecdsa384")) {
+		k.style.display = "none";
+		c.style.display = "none";
+		}
+	else {
+		if (formName == "addKeyForm") c.style.display = "table-row-group";
+		else {
+			if (f.keyPolicy.value == "CSK") {
+				c.style.display = "table-row-group";
+				k.style.display = "none";
+				}
+			else {
+				k.style.display = "table-row-group";
+				c.style.display = "none";
+				}
+			}
+	}
+}
+
+
+
 function addAlg(formName)
-{let keyAlg=["ecdsa256","ecdsa384","rsasha1","rsasha1-nsec3-sha1","rsasha256","rsasha512","dh","dsa","dsa-nsec3-sha1","ecc-gost","ed25519","ed448","gost","indirect","rsamd5"]
-let keyLens=["1024","2048","4096"];let x="<tr><Td class=formPrompt>Key Algrythm :</td><td><select onChange='showHideBits(\""+formName+"\");' name=keyAlg>";keyAlg.forEach(function(i){x=x+"<option value="+i+">"+i.toUpperCase()});x=x+"</select></td></tr>";let txt="CSK";if(formName=="addKeyForm")txt="Key";x=x+"<tbody style='display:none;' id='key1Lens'>"
-x=x+"<tr><Td class=formPrompt>"+txt+" Length (bits) :</td><td><select name=cskBits>";keyLens.forEach(function(i){x=x+"<option>"+i;});x=x+"</select></td></tr></tbody>";x=x+"<tbody style='display:none;' id='key2Lens'>"
-x=x+"<tr><Td class=formPrompt>KSK Length (bits) :</td><td><select name=kskBits>";keyLens.forEach(function(i){x=x+"<option>"+i;});x=x+"</select></td></tr>";x=x+"<tr><Td class=formPrompt>ZSK Length (bits) :</td><td><select name=zskBits>";keyLens.forEach(function(i){x=x+"<option>"+i;});x=x+"</select></td></tr></tbody>";return x;}
+{
+	let keyAlg = [
+		"ecdsa256","ecdsa384","rsasha1","rsasha1-nsec3-sha1","rsasha256","rsasha512","dh","dsa",
+		"dsa-nsec3-sha1","ecc-gost","ed25519","ed448","gost","indirect","rsamd5"
+	]
+	let keyLens = ["1024","2048","4096"];
+
+	let x = `<tr><Td class=formPrompt>Key Algrythm :</td><td><select onChange='showHideBits("${formName}");' name=keyAlg>`;
+	keyAlg.forEach(i => { x += `<option value=${i}>${i.toUpperCase()}` } );
+	x += "</select></td></tr>";
+
+	let txt = "CSK"; 
+	if (formName=="addKeyForm") txt = "Key";
+	x += "<tbody style='display:none;' id='key1Lens'>"
+		+ `<tr><Td class=formPrompt>${txt} Length (bits) :</td><td><select name=cskBits>`;
+	keyLens.forEach(i => { x += `<option>${i}`; });
+	x += "</select></td></tr></tbody>";
+
+	x += "<tbody style='display:none;' id='key2Lens'>"
+	x += "<tr><Td class=formPrompt>KSK Length (bits) :</td><td><select name=kskBits>";
+	keyLens.forEach(i => { x += `<option>${i}`; });
+	x += "</select></td></tr>";
+
+	x += "<tr><Td class=formPrompt>ZSK Length (bits) :</td><td><select name=zskBits>";
+	keyLens.forEach(i => { x += `<option>${i}`; });
+	x += "</select></td></tr></tbody>";
+
+	return x;
+}
+
+
+
 function setNSEC3(delnsec3)
-{let nsec3="1 0 5 ";let nxtFn=function(){gbl.params={state:"keys",server:gbl.server,zone:ctx.zone,keys:true};gbl.state=gbl.params;loadThisZone();}
-if(delnsec3==null){let old="0000000000";let sfx="";if(ctx.zoneDetails.nsec3param!=""){i=ctx.zoneDetails.nsec3param.split(" ");nsec3=i[0]+" "+i[1]+" "+i[2]
-old=i[3];}
-while(sfx.length<old.length)
-sfx=sfx+Math.floor(Math.random()*256).toString(16)
-nsec3=nsec3+" "+sfx;nxtFn=function(){ctx.zoneDetails.nsec3param=nsec3;callApi("zones/"+ctx.zone+"/rectify",zoneKeys,{method:"PUT"});}}
-else nsec3="";callApi("zones/"+ctx.zone,nxtFn,{method:"PUT",okResp:204,json:JSON.stringify({nsec3param:nsec3})});}
+{
+	let nsec3 = "1 0 5 ";
+	let nxtFn = function() { 
+		gbl.params = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
+		gbl.state = gbl.params;
+		loadThisZone(); 
+		}
+
+	if (delnsec3 == null) {
+		let old = "0000000000";
+		let sfx="";
+
+		if (ctx.zoneDetails.nsec3param != "") {
+			i = ctx.zoneDetails.nsec3param.split(" ");
+			nsec3 = `${i[0]} ${i[1]} ${i[2]}`
+			old = i[3];
+			}
+
+		while(sfx.length < old.length)
+			sfx = sfx + Math.floor(Math.random() * 256).toString(16)
+
+		nsec3 = `${nsec3} ${sfx}`;
+
+		nxtFn = function() {
+				ctx.zoneDetails.nsec3param = nsec3;
+				callApi(`zones/${ctx.zone}/rectify`, zoneKeys, { method: "PUT" });
+				}
+		}
+	else nsec3 = "";
+
+	callApi(`zones/${ctx.zone}`, nxtFn,
+		{ method: "PUT", okResp: 204, json: JSON.stringify({ nsec3param: nsec3 }) } );
+}
+
+
+
 function doSignZone()
-{let nextFn=zoneKeys;let keyAlg=document.signZoneForm.keyAlg.value;let kskBits=parseInt(document.signZoneForm.kskBits.value);let zskBits=parseInt(document.signZoneForm.zskBits.value);let cskBits=parseInt(document.signZoneForm.cskBits.value);let keyPolicy=document.signZoneForm.keyPolicy.value;let keyDNSSEC=document.signZoneForm.keyDNSSEC.value;if(keyAlg=="ecdsa256"){kskBits=256;zskBits=256;cskBits=256;}
-else if(keyAlg=="ecdsa384"){kskBits=384;zskBits=384;cskBits=384;}
-if(keyDNSSEC=="NSEC3"){nextFn=function(){setNSEC3(null);};};if(keyPolicy=="CSK"){let json={"keytype":"csk","active":true,"algorithm":keyAlg,"bits":cskBits,};callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,{method:"POST",okResp:201,json:JSON.stringify(json)});}
-else{let json_ksk={"keytype":"ksk","active":true,"algorithm":keyAlg,"bits":kskBits,}
-callApi("zones/"+ctx.zone+"/cryptokeys",function(){let json_zsk={"keytype":"zsk","active":true,"algorithm":keyAlg,"bits":zskBits,}
-callApi("zones/"+ctx.zone+"/cryptokeys",nextFn,{method:"POST",okResp:201,json:JSON.stringify(json_zsk)});},{method:"POST",okResp:201,json:JSON.stringify(json_ksk)});}
-return false;}
+{
+	let nextFn = zoneKeys;
+	let keyAlg = document.signZoneForm.keyAlg.value;
+	let kskBits = parseInt(document.signZoneForm.kskBits.value);
+	let zskBits = parseInt(document.signZoneForm.zskBits.value);
+	let cskBits = parseInt(document.signZoneForm.cskBits.value);
+	let keyPolicy = document.signZoneForm.keyPolicy.value;
+	let keyDNSSEC = document.signZoneForm.keyDNSSEC.value;
+
+	if (keyAlg == "ecdsa256") {
+		kskBits = 256;
+		zskBits = 256;
+		cskBits = 256;
+		}
+	else if (keyAlg == "ecdsa384") {
+		kskBits = 384;
+		zskBits = 384;
+		cskBits = 384;
+		}
+
+	if (keyDNSSEC == "NSEC3") { nextFn = function() { setNSEC3(null); }; };
+
+	if (keyPolicy == "CSK") {
+
+		let json = { "keytype": "csk", "active": true, "algorithm": keyAlg, "bits": cskBits, };
+
+		callApi(`zones/${ctx.zone}/cryptokeys`,nextFn,
+			{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
+		}
+	else {
+		let json_ksk = { "keytype": "ksk", "active": true, "algorithm": keyAlg, "bits": kskBits, }
+
+		callApi(`zones/${ctx.zone}/cryptokeys`, () => {
+
+				let json_zsk = { "keytype": "zsk", "active": true, "algorithm": keyAlg, "bits": zskBits, }
+
+				callApi(`zones/${ctx.zone}/cryptokeys`,nextFn,
+					{ method: "POST", okResp: 201, json: JSON.stringify(json_zsk) } );
+				},
+
+			{ method: "POST", okResp: 201, json: JSON.stringify(json_ksk) } );
+		}
+
+	return false; // prevent submit
+}
+
+
+
 function signZone()
-{let x="<form onSubmit='return doSignZone();' name=signZoneForm><table align=center>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
-+"<tr><th colspan=2>DNSSEC Sign: "+ctx.zone+"</th></tr>";x=x+"<tr><td class=formPrompt>Key Policy: </td><td><select onChange=\"showHideBits('signZoneForm');\" name=keyPolicy>";["KSK+ZSK","CSK"].forEach(function(i){x=x+"<option>"+i});x=x+"</select></td></tr>"+addAlg("signZoneForm");x=x+"<tr><td class=formPrompt>DNSSEC Policy: </td><td><select name=keyDNSSEC>";["NSEC3","NSEC"].forEach(function(i){x=x+"<option>"+i});x=x+"</select></td></tr>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
-+"<tr><td align=center colspan=2>"
-+btn("loadThisZone()","Cancel","Do not sign "+ctx.zone)
-+btn("doSignZone()","Sign Zone","DNSSEC Sign "+ctx.zone)
-+"</td></tr><tr><td><div style='height: 15px;'></div></td></tr>"
-+"<input type=submit style='display: none;'></form>";x=x+"</table>";x=x+"<P style='height: 25px;'>&nbsp;</p><table border=0 cellspacing=20 align=center>"
-x=x+"<tr><Td colspan=2>Your friendly paper-clip helper buddy says ....</td></tr>"
-x=x+"<tr><td><span style='font-size: 65pt'>"+gbl.clip+"</span></td><td>"
-x=x+"<P>Unless you have a really good reason, you should probably sign your zone using <b>ECDSA256</b><P>"
-x=x+"<b>NSEC</b> is more space & bandwidth efficient than <b>NSEC3</b>.<br><b>NSEC3</b> will enlarge your zone by typically twice as much as <b>NSEC</b>, but <b>NSEC</b> exposes all your DNS names in a linked list.<P>"
-x=x+"<b>CSK</b> uses one key instead of two, but means your zone will double in size during key rollover.<br>With <b>KSK+ZSK</b> you have two keys to roll-over, but you can keep the same zone size during the process."
-x=x+"</td></tr></table>"
-gbl.bot.innerHTML=x;}
+{
+	let x = "<form onSubmit='return doSignZone();' name=signZoneForm><table align=center>";
+
+	x += "<tr><td><div style='height:15px;'></div></td></tr>"
+		+ `<tr><th colspan=2>DNSSEC Sign: ${ctx.zone}</th></tr>`;
+
+	x += `<tr><td class=formPrompt>Key Policy: </td><td><select onChange="showHideBits('signZoneForm');" name=keyPolicy>`;
+	["KSK+ZSK", "CSK"].forEach(i => { x += `<option>${i}` } );
+	x += `</select></td></tr>${addAlg("signZoneForm")}`;
+
+
+	x += "<tr><td class=formPrompt>DNSSEC Policy: </td><td><select name=keyDNSSEC>";
+	["NSEC3","NSEC"].forEach(i => { x += `<option>${i}` } );
+	x += "</select></td></tr>";
+
+	x += "<tr><td><div style='height:15px;'></div></td></tr>"
+		+ "<tr><td align=center colspan=2>"
+		+ btn("loadThisZone()","Cancel",`Do not sign ${ctx.zone}`)
+		+ btn("doSignZone()","Sign Zone",`DNSSEC Sign ${ctx.zone}`)
+		+ "</td></tr><tr><td><div style='height:15px;'></div></td></tr>"
+		+ "<input type=submit style='display:none;'></form>";
+
+	x += "</table>";
+
+	x += "<P style='height:25px;'>&nbsp;</p><table border=0 cellspacing=20 align=center>"
+		+ "<tr><Td colspan=2>Your friendly paper-clip helper buddy says ....</td></tr>"
+		+ `<tr><td><span style='font-size:65pt'>${gbl.clip}</span></td><td>`
+		+ "<P>Unless you have a really good reason, you should probably sign your zone using <b>ECDSA256</b><P>"
+		+ "<b>NSEC</b> is more space & bandwidth efficient than <b>NSEC3</b>.<br><b>NSEC3</b> will enlarge your zone by typically twice as much as <b>NSEC</b>, but <b>NSEC</b> exposes all your DNS names in a linked list.<P>"
+		+ "<b>CSK</b> uses one key instead of two, but means your zone will double in size during key rollover.<br>With <b>KSK+ZSK</b> you have two keys to roll-over, but you can keep the same zone size during the process."
+		+ "</td></tr></table>"
+
+	gbl.bot.innerHTML = x;
+}
+
+
+
 function clickDS(txt)
-{let x=txt.split(" ");if(x.length<4){errMsg("Copy to clipboard failed");return false;}
-navigator.clipboard.writeText(x[x.length-1]).then(function(){popMsg("Digest copied to clipboard");},function(){errMsg("Copy to clipboard failed");});return false;}
+{
+	let x = txt.split(" ");
+	if (x.length < 4) {
+		errMsg("Copy to clipboard failed");
+		return false;
+		}
+
+	navigator.clipboard.writeText(x[x.length-1]).then(
+		() => popMsg("Digest copied to clipboard"),
+		() => errMsg("Copy to clipboard failed")
+		);
+
+	return false;
+}
+
+
+
 function doAddKey()
-{let json={"keytype":document.addKeyForm.keyKind.value,"active":(document.addKeyForm.keyActive.value=="true"),"algorithm":document.addKeyForm.keyAlg.value,"bits":parseInt(document.addKeyForm.cskBits.value),};if(json.algorithm=="ecdsa256")json.bits=256;else if(json.algorithm=="ecdsa384")json.bits=384;callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});return false}
+{
+	let json = {
+		"keytype": document.addKeyForm.keyKind.value,
+		"active": (document.addKeyForm.keyActive.value=="true"),
+		"algorithm": document.addKeyForm.keyAlg.value,
+		"bits": parseInt(document.addKeyForm.cskBits.value),
+		};
+
+    if (json.algorithm == "ecdsa256") json.bits = 256;
+	else if (json.algorithm == "ecdsa384") json.bits = 384;
+
+	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
+		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
+
+	return false // prevent submit
+}
+
+
+
 function clickAddKey()
-{let x="<form onSubmit='return doAddKey();' name=addKeyForm><table align=center>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
-x=x+"<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
-x=x+"<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";["ksk","zsk","csk"].forEach(function(i){x=x+"<option value="+i+">"+i.toUpperCase()});x=x+"</select></td></tr>"+addAlg("addKeyForm");x=x+"<tr><Td class=formPrompt>Key Active :</td><td><select name=keyActive>";["true","false"].forEach(function(i){x=x+"<option>"+i;});x=x+"</select></td></tr>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
-x=x+"<tr><td align=center colspan=2>"
-+btn("cancelAddKey()","Cancel","Do not add a key to the zone "+ctx.zone)
-+btn("doAddKey()","Add a Key","Add a key to the zone "+ctx.zone)
-+"</td></tr>";x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"
-x=x+"<input type=submit style='display: none;'></form>";ctx.dnssec.t.style.display="none";ctx.dnssec.b.innerHTML=x;}
+{
+	let x = "<form onSubmit='return doAddKey();' name=addKeyForm><table align=center>"
+		+ "<tr><td><div style='height:15px;'></div></td></tr>"
+		+ "<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
+		+ "<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";
+
+	["ksk","zsk","csk"].forEach(i => { x += `<option value=${i}>${i.toUpperCase()}` } );
+
+	x += `</select></td></tr>${addAlg("addKeyForm")}`;
+
+	x += "<tr><Td class=formPrompt>Key Active :</td><td><select name=keyActive>";
+	["true","false"].forEach(i => { x += `<option>${i}`; });
+	x += "</select></td></tr>";
+
+	x += "<tr><td><div style='height:15px;'></div></td></tr>"
+		+ "<tr><td align=center colspan=2>"
+		+ btn("cancelAddKey()","Cancel",`Do not add a key to the zone ${ctx.zone}`)
+		+ btn("doAddKey()","Add a Key",`Add a key to the zone ${ctx.zone}`)
+		+ "</td></tr><tr><td><div style='height:15px;'></div></td></tr>"
+		+ "<input type=submit style='display:none;'></form>";
+
+	ctx.dnssec.t.style.display = "none";
+	ctx.dnssec.b.innerHTML = x;
+}
+
+
+
 function cancelAddKey()
-{ctx.dnssec.b.innerHTML="";ctx.dnssec.t.style.display="block";}
+{
+	ctx.dnssec.b.innerHTML = "";
+	ctx.dnssec.t.style.display = "block";
+}
+
+
+
 function activateZSK(a,b)
-{callApi("zones/"+ctx.zone+"/cryptokeys/"+ctx.zoneKeys[a].id,function(){callApi("zones/"+ctx.zone+"/cryptokeys/"+ctx.zoneKeys[b].id,zoneKeys,{method:"PUT",okResp:204,json:'{ "active": true }'});},{method:"PUT",okResp:204,json:'{ "active": false }'});}
+{
+	callApi(`zones/${ctx.zone}/cryptokeys/${ctx.zoneKeys[a].id}`,
+		() => {
+			callApi(`zones/${ctx.zone}/cryptokeys/${ctx.zoneKeys[b].id}`,zoneKeys,
+				{
+				method: "PUT",
+				okResp: 204,
+				json: '{"active":true}'
+				} );
+		}, {
+			method: "PUT",
+			okResp: 204,
+			json: '{"active":false}'
+			}
+		);
+}
+
+
+
 function startZSK(template)
-{let k=ctx.zoneKeys[template];let json={"keytype":"zsk","active":false,"algorithm":k.algorithm,"bits":k.bits,};callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});}
+{
+	let k = ctx.zoneKeys[template];
+	let json = {
+		"keytype": "zsk",
+		"active": false,
+		"algorithm": k.algorithm,
+		"bits": k.bits,
+		};
+
+	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
+		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
+}
+
+
+
 function startCSK(template)
-{let k=ctx.zoneKeys[template];let json={"keytype":"csk","active":true,"algorithm":k.algorithm,"bits":k.bits,}
-callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});}
+{
+	let k = ctx.zoneKeys[template];
+	let json = {
+		"keytype": "csk",
+		"active": true,
+		"algorithm": k.algorithm,
+		"bits": k.bits,
+		}
+
+	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
+		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
+}
+
+
+
 function startKSK(template)
-{let k=ctx.zoneKeys[template];let json={"keytype":"ksk","active":true,"algorithm":k.algorithm,"bits":k.bits,}
-callApi("zones/"+ctx.zone+"/cryptokeys",zoneKeys,{method:"POST",okResp:201,json:JSON.stringify(json)});}
+{
+	let k = ctx.zoneKeys[template];
+	let json = {
+		"keytype": "ksk",
+		"active": true,
+		"algorithm": k.algorithm,
+		"bits": k.bits,
+		}
+
+	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
+		{ method: "POST", okResp: 201, json: JSON.stringify(json) } );
+}
+
+
+
 function toggleKey(id,act)
-{let p={"active":(!(act))};callApi("zones/"+ctx.zone+"/cryptokeys/"+id,zoneKeys,{method:"PUT",okResp:204,json:JSON.stringify(p)});}
+{
+	let p = { "active": (!(act)) };
+	callApi(`zones/${ctx.zone}/cryptokeys/${id}`,zoneKeys,
+		{ method: "PUT", okResp: 204, json: JSON.stringify(p) } );
+}
+
+
+
 function deleteAllKeys()
-{let nxtFn=deleteAllKeys;let kId=ctx.zoneKeys[ctx.zoneKeys.length-1].id;ctx.zoneKeys.pop();if(ctx.zoneKeys.length==0){if(("nsec3param"in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param!=""))
-nxtFn=function(){setNSEC3(true);};else
-nxtFn=zoneKeys;}
-callApi("zones/"+ctx.zone+"/cryptokeys/"+kId,nxtFn,{method:"DELETE",okResp:204});}
+{
+	let nxtFn = deleteAllKeys;
+	let kId = ctx.zoneKeys[ctx.zoneKeys.length-1].id;
+
+	ctx.zoneKeys.pop();
+
+	if (ctx.zoneKeys.length == 0) {
+		if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != ""))
+			nxtFn = function() { setNSEC3(true); };
+		else
+			nxtFn = zoneKeys;
+		}
+
+	callApi(`zones/${ctx.zone}/cryptokeys/${kId}`,nxtFn, { method: "DELETE", okResp: 204 } );
+}
+
+
+
 function deleteKey(idx)
-{let k=ctx.zoneKeys[idx];callApi("zones/"+ctx.zone+"/cryptokeys/"+k.id,zoneKeys,{method:"DELETE",okResp:204});}
+{
+	let k = ctx.zoneKeys[idx];
+	callApi(`zones/${ctx.zone}/cryptokeys/${k.id}`,zoneKeys, { method: "DELETE", okResp: 204 } );
+}
+
+
+
 function cancelKeyAction()
-{ctx.dnssec.b.innerHTML="";ctx.dnssec.t.style.display="block";delete ctx.dnssec.clickKey;}
+{
+	ctx.dnssec.b.innerHTML = "";
+	ctx.dnssec.t.style.display = "block";
+	delete ctx.dnssec.clickKey;
+}
+
+
+
 function clickDnssecKey(idx)
-{if(("clickKey"in ctx.dnssec)&&(ctx.dnssec.clickKey==idx)){ctx.dnssec.b.innerHTML="";ctx.dnssec.t.style.display="block";delete ctx.dnssec.clickKey;return;}
-ctx.dnssec.clickKey=idx;let sz=150;let k=ctx.zoneKeys[idx];let x="<table align=center>";let txt="Activate Key-"+k.id;if(k.active)txt="Deactivate Key-"+k.id;x=x+"<tr><td>"+btn('toggleKey('+k.id+","+k.active+')',txt,txt,sz);x=x+"<tr><td>"+btn('deleteKey('+idx+')',"Delete Key-"+k.id,"Delete Key "+k.id,sz);x=x+"<tr><td>"+btn('cancelKeyAction()',"Cancel Action","Cancel an action on this key",sz);x=x+"</table>";ctx.dnssec.t.style.display="none";ctx.dnssec.b.innerHTML=x}
+{
+	if (("clickKey" in ctx.dnssec)&&(ctx.dnssec.clickKey == idx)) {
+		ctx.dnssec.b.innerHTML = "";
+		ctx.dnssec.t.style.display = "block";
+		delete ctx.dnssec.clickKey;
+		return;
+		}
+
+	ctx.dnssec.clickKey = idx;
+
+	let sz = 150;
+	let k = ctx.zoneKeys[idx];
+	let x = "<table align=center>";
+	let txt = `Activate Key-${k.id}`;
+	if (k.active) txt = `Deactivate Key-${k.id}`;
+
+	x += "<tr><td>" + btn(`toggleKey(${k.id},${k.active})`,txt,txt,sz) + "</td></tr>"
+		+ "<tr><td>" + btn(`deleteKey(${idx})`,`Delete Key-${k.id}`,`Delete Key ${k.id}`,sz) + "</td></tr>"
+		+ "<tr><td>" + btn('cancelKeyAction()',"Cancel Action","Cancel an action on this key",sz) + "</td></tr>"
+		+ "</table>";
+
+	ctx.dnssec.t.style.display = "none";
+	ctx.dnssec.b.innerHTML = x
+}
+
+
+
 function showKeys(data)
-{data.sort(function(a,b){if(a.keytype<b.keytype)return-1;if(a.keytype>b.keytype)return 1;if(a.active!=b.active){if(a.active)return-1;if(b.active)return 1;}
-if(a.id>b.id)return-1;if(a.id<b.id)return 1;return 0;})
-ctx.zoneKeys=data;let newTitle=gbl.server+": "+ctx.zone+", DNSSEC Keys"
-gbl.state={state:"keys",server:gbl.server,zone:ctx.zone,keys:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0>";x=x+'<colgroup>';for(let i=0;i<5;i++)x=x+'<col width="50px">';x=x+"</colgroup><tr>";for(let i of["Active","Id","Type/Flags","Bits","Algrythm",""])
-x=x+"<th>"+i+"</th>";x=x+"</tr>";let keyTypes={num:0};if(("nsec3param"in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param!="")){x=x+"<tr class=dataRow><td align=center>"+gbl.tick
-+"</td><td colspan=3></td><td>NSEC3PARAM</td><td>"+ctx.zoneDetails.nsec3param.toUpperCase()+"</td></tr>"}
-for(let idx in data){i=data[idx];x=x+"<tr onClick='clickDnssecKey("+idx+");' class=dataRow><td align=center>"
-let aflag=0;if(i.active){aflag=1;x=x+gbl.tick;}else x=x+gbl.cross;x=x+"</td>";x=x+"<td align=center>"+i.id+"</td>";if(i.keytype in keyTypes){let k=keyTypes[i.keytype];k.num++;k.active+=aflag;k.ids.push({idx:parseInt(idx),id:i.id,act:i.active});}
-else{keyTypes[i.keytype]={ids:[],active:aflag,num:1,}
-keyTypes[i.keytype].ids.push({idx:parseInt(idx),id:i.id,act:i.active});keyTypes.num++;}
-x=x+"<td align=center>"+i.keytype.toUpperCase()+"/"+i.flags+"</td>";x=x+"<td align=center>"+i.bits+"</td>";x=x+"<td align=left>"+i.algorithm;x=x+"</td><td class=dnskey>"+i.dnskey.substr(1,50)+"...</td></tr>";if("ds"in i){for(let ds of i.ds){let dscol=ds.split(" ");x=x+"<tr onClick=\"clickDS('"+ds+"');\" class=dataRow><td></td><td><li>DS"
-+"</td><td>"+dsAlg[parseInt(dscol[2])]+"</td><td colspan=3>"+ds+"</td></tr>";}}
-x=x+"<tr><td><div style='height: 15px;'></div></td></tr>"}
-let sp="<div style='height: 7px;'></div>";let sz=100;x=x+"</table></td><td>"
-x=x+btn('clickAddKey()',"Add Key","Add a DNSSEC Key to "+ctx.zone,sz)+sp;x=x+btn('deleteAllKeys()',"Unsign","Remove all DNSSEC on "+ctx.zone,sz)+sp;if(("nsec3param"in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param!="")){x=x+btn("setNSEC3(true)","Del NSEC3","Switch "+ctx.zone+" from NSEC3 to NSEC",sz)+sp;x=x+btn("setNSEC3()","Roll NSEC3","Change the NSEC3PARAM for "+ctx.zone,sz)+sp;}
-else
-x=x+btn("setNSEC3()","Add NSEC3","Switch this zone to NSEC3 "+ctx.zone,sz)+sp;x=x+"</td></tr></table>"
-sz=200
-x=x+"<div id='dnssecTop'><table align=center cellspacing=10 cellpadding=0 border=0>"
-let notes="If your zone is currently validating, after <b>every</b> Key Rollover step you must leave a few days<br>"
-+"for the internet to take-up your change. Probably a minimum of around 3 to 4 days";let key_txt=null;let zkey_txt="";if((keyTypes.num==1)&&("csk"in keyTypes)){if(([1,2].indexOf(keyTypes.csk.num)>=0)&&(keyTypes.csk.num==keyTypes.csk.active)){let cid0=keyTypes.csk.ids[0].idx;let cid1=keyTypes.csk.ids[keyTypes.csk.ids.length-1].idx;let csk_rollover=["<tr><td>Step 1 of 2: </td><Td>"+btn("startCSK("+cid0+")","Start CSK Rollover","Start a CSK Rollover",sz)+"</td></tr>","<tr><td>Step 2 of 2: </td><Td>"+btn("deleteKey("+cid1+")","Complete CSK Rollover","Complete a CSK Rollover",sz)+"</td></tr>",]
-if(keyTypes.csk.num==1)key_txt=csk_rollover[0];else if(keyTypes.csk.num==2)key_txt=csk_rollover[1];}}
-else if((keyTypes.num==2)&&("ksk"in keyTypes)&&("zsk"in keyTypes)){if(([1,2].indexOf(keyTypes.ksk.num)>=0)&&([1,2].indexOf(keyTypes.zsk.num)>=0)&&(keyTypes.ksk.active==keyTypes.ksk.num)&&(keyTypes.zsk.active==1)){let ksk_link="<a target=_blank href='https://doc.powerdns.com/authoritative/guides/kskroll.html'>";let zsk_link="<a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>";let kid0=keyTypes.ksk.ids[0].idx;let kid1=keyTypes.ksk.ids[keyTypes.ksk.ids.length-1].idx;let zid0=keyTypes.zsk.ids[0].idx;let zid1=keyTypes.zsk.ids[keyTypes.zsk.ids.length-1].idx;let ksk_rollover=["<tr><td>"+ksk_link+"Step 1 of 2</a>: </td><Td>"
-+btn("startKSK("+kid0+")","Start KSK Rollover","Start a KSK Rollover",sz)+"</td></tr>","<tr><td>"+ksk_link+"Step 2 of 2</a>: </td><Td>"
-+btn("deleteKey("+kid1+")","Complete KSK Rollover","Complete the KSK Rollover",sz)+"</td></tr>",];let zsk_rollover=["<tr><td>"+zsk_link+"Step 1 of 3</a>: </td><Td>"
-+btn("startZSK("+zid0+")","Start ZSK Rollover","Start a ZSK Rollover",sz)+"</td></tr>","<tr><td>"+zsk_link+"Step 2 of 3</a>: </td><Td>"
-+btn("activateZSK("+zid0+","+zid1+")","Activate ZSK Rollover","Activate the ZSK Rollover",sz)+"</td></tr>","<tr><td>"+zsk_link+"Step 3 of 3</a>: </td><Td>"
-+btn("deleteKey("+zid1+")","Complete ZSK Rollover","Complete the ZSK Rollover",sz)+"</td></tr>",];if(keyTypes.ksk.num==1)
+{
+	data.sort((a,b) => {
+		if (a.keytype < b.keytype) return -1;
+		if (a.keytype > b.keytype) return 1;
+		if (a.active != b.active) {
+			if (a.active) return -1;
+			if (b.active) return 1;
+			}
+		if (a.id > b.id) return -1;
+		if (a.id < b.id) return 1;
+		return 0;
+		})
+
+	ctx.zoneKeys = data;
+
+	let newTitle = `${gbl.server}: ${ctx.zone}, DNSSEC Keys`;
+	gbl.state = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
+	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
+	document.title = newTitle;
+
+	delete gbl.param;
+
+	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
+	x += "<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0><colgroup>";
+	for(let i=0;i<5;i++) x += '<col width="50px">';
+	x += "</colgroup><tr>";
+
+	for (let i of ["Active","Id","Type/Flags","Bits","Algrythm",""])
+		x += `<th>${i}</th>`;
+	x += "</tr>";
+
+	let keyTypes = { num: 0 };
+
+	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
+		x += `<tr class=dataRow><td align=center>${gbl.tick}`
+			+ `</td><td colspan=3></td><td>NSEC3PARAM</td><td>${ctx.zoneDetails.nsec3param.toUpperCase()}</td></tr>`
+		}
+
+	for(let idx in data) {
+		i = data[idx];
+		x += `<tr onClick='clickDnssecKey(${idx});' class=dataRow><td align=center>`
+		let aflag = 0;
+		if (i.active) { aflag=1; x += gbl.tick; } else x = x + gbl.cross;
+		x += "</td>";
+		x += `<td align=center>${i.id}</td>`;
+
+		if (i.keytype in keyTypes) {
+			let k = keyTypes[i.keytype];
+			k.num++; k.active += aflag;
+			k.ids.push({ idx: parseInt(idx), id: i.id, act: i.active });
+			}
+		else {
+			keyTypes[i.keytype] = { ids: [], active: aflag, num: 1, }
+			keyTypes[i.keytype].ids.push({ idx: parseInt(idx), id: i.id, act: i.active });
+			keyTypes.num++;
+			}
+
+		x += `<td align=center>${i.keytype.toUpperCase()}/${i.flags}</td>`
+			+ `<td align=center>${i.bits}</td>`
+			+ `<td align=left>${i.algorithm}`
+			+ `</td><td class=dnskey>${i.dnskey.substr(1,50)}...</td></tr>`;
+
+		if ("ds" in i) {
+			for (let ds of i.ds) {
+				let dscol = ds.split(" ");
+				x += `<tr onClick="clickDS('${ds}');" class=dataRow><td></td><td><li>DS`
+					+ `</td><td>${dsAlg[parseInt(dscol[2])]}</td><td colspan=3>${ds}</td></tr>`;
+				}
+			}
+		x += "<tr><td><div style='height:15px;'></div></td></tr>";
+		}
+
+	let sp = "<div style='height:7px;'></div>";
+	let sz = 100;
+
+	x += "</table></td><td>"
+		+ btn('clickAddKey()',"Add Key",`Add a DNSSEC Key to ${ctx.zone}`,sz) + sp;
+		+ btn('deleteAllKeys()',"Unsign",`Remove all DNSSEC on ${ctx.zone}`,sz) + sp;
+
+	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
+		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + sp;
+			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone,sz}`) + sp;
+		}
+	else
+		x += btn("setNSEC3()","Add NSEC3",`Switch this zone to NSEC3 ${ctx.zone}`,sz) + sp;
+
+	x += "</td></tr></table>";
+
+	sz = 200
+	x += "<div id='dnssecTop'><table align=center cellspacing=10 cellpadding=0 border=0>"
+
+	let notes = "If your zone is currently validating, after <b>every</b> Key Rollover step you must leave a few days<br>"
+		+ "for the internet to take-up your change. Probably a minimum of around 3 to 4 days";
+
+
+	let key_txt = null;
+	let zkey_txt = "";
+
+	if ((keyTypes.num==1)&&("csk" in keyTypes)) {
+		if (
+			([1,2].indexOf(keyTypes.csk.num) >= 0)&&
+			(keyTypes.csk.num == keyTypes.csk.active)
+			) {
+			let cid0 = keyTypes.csk.ids[0].idx;
+			let cid1 = keyTypes.csk.ids[keyTypes.csk.ids.length-1].idx;
+
+			let csk_rollover = [
+				`<tr><td>Step 1 of 2: </td><Td>${btn(`startCSK(${cid0})`,"Start CSK Rollover","Start a CSK Rollover",sz)}</td></tr>`,
+				`<tr><td>Step 2 of 2: </td><Td>${btn(`deleteKey(${cid1})`,"Complete CSK Rollover","Complete a CSK Rollover",sz)}</td></tr>`,
+				]
+
+			if (keyTypes.csk.num == 1) key_txt = csk_rollover[0];
+			else if (keyTypes.csk.num == 2) key_txt = csk_rollover[1];
+			}
+		}
+
+	else if ((keyTypes.num==2)&&("ksk" in keyTypes)&&("zsk" in keyTypes)) {
+
+		if (
+			([1,2].indexOf(keyTypes.ksk.num) >= 0)&&
+			([1,2].indexOf(keyTypes.zsk.num) >= 0)&&
+			(keyTypes.ksk.active == keyTypes.ksk.num)&&
+			(keyTypes.zsk.active == 1)
+			) {
+			let ksk_link = "<a target=_blank href='https:let zsk_link="<a target=_blank href='https://doc.powerdns.com/authoritative/guides/zskroll.html'>";let kid0=keyTypes.ksk.ids[0].idx;let kid1=keyTypes.ksk.ids[keyTypes.ksk.ids.length-1].idx;let zid0=keyTypes.zsk.ids[0].idx;let zid1=keyTypes.zsk.ids[keyTypes.zsk.ids.length-1].idx;let ksk_rollover=[`<tr><td>${ksk_link}Step 1 of 2</a>:</td><Td>`+btn(`startKSK(${kid0})`,"Start KSK Rollover","Start a KSK Rollover",sz)+"</td></tr>",`<tr><td>${ksk_link}Step 2 of 2</a>:</td><Td>`+btn(`deleteKey(${kid1})`,"Complete KSK Rollover","Complete the KSK Rollover",sz)+"</td></tr>",];let zsk_rollover=[`<tr><td>${zsk_link}Step 1 of 3</a>:</td><Td>`+btn(`startZSK(${zid0})`,"Start ZSK Rollover","Start a ZSK Rollover",sz)+"</td></tr>",`<tr><td>${zsk_link}Step 2 of 3</a>:</td><Td>`+btn(`activateZSK(${zid0},${zid1})`,"Activate ZSK Rollover","Activate the ZSK Rollover",sz)+"</td></tr>",`<tr><td>${zsk_link}Step 3 of 3</a>:</td><Td>`+btn(`deleteKey(${zid1})`,"Complete ZSK Rollover","Complete the ZSK Rollover",sz)+"</td></tr>",];if(keyTypes.ksk.num==1)
 key_txt=ksk_rollover[0];else if(keyTypes.ksk.num==2){key_txt=ksk_rollover[1];notes="<u>If you have only just created a new KSK, wait a few days before changing your DS records</u>"
 +"<P>Once you have changed your DS reocrds, wait a few more days before completing the KSK rollover."
-+"<P>The DS records for Key-Id: "+keyTypes.ksk.ids[0].id+", should be the only ones present<br>"
-+"in the parent zone, for a few days, before completing the KSK rollover.";}
++`<P>The DS records for Key-Id:${keyTypes.ksk.ids[0].id},should be the only ones present<br>`+"in the parent zone, for a few days, before completing the KSK rollover.";}
 if(keyTypes.zsk.num==1)
 zkey_txt=zsk_rollover[0];else if(keyTypes.zsk.num==2){if(keyTypes.zsk.ids[0].id<keyTypes.zsk.ids[1].id)
 zkey_txt=zsk_rollover[1];else
 zkey_txt=zsk_rollover[2];}
 if(key_txt==null)zkey_txt="";}}
-x=x+"<tr><td colspan=2><hr></td></tr>"
+x+="<tr><td colspan=2><hr></td></tr>"
 if(key_txt==null)
-x=x+"<tr><td><h3>DNSSEC Key Rollover State could not be detected</h3></td></tr>"
+x+="<tr><td><h3>DNSSEC Key Rollover State could not be detected</h3></td></tr>"
 else
-x=x+key_txt+zkey_txt;x=x+"<tr><td colspan=2><hr></td></tr>"
-x=x+"</table>";if(notes!=null)x=x+"<center>"+notes+"</center>";x=x+"</div><div id='dnssecBot'></div>"
+x+=key_txt+zkey_txt;x+="<tr><td colspan=2><hr></td></tr>"
+x+="</table>";if(notes!=null)x+=`<center>${notes}</center>`;x+="</div><div id='dnssecBot'></div>"
 gbl.bot.innerHTML=x;topLine();ctx.dnssec={t:document.getElementById("dnssecTop"),b:document.getElementById("dnssecBot"),}}
 function zoneKeys()
-{callApi("zones/"+ctx.zone+"/cryptokeys",showKeys);}
+{callApi(`zones/${ctx.zone}/cryptokeys`,showKeys);}
 function zoneKindChange(sel)
 {m=document.getElementById("asMaster");s=document.getElementById("asSlave");if(sel.value=="Master"){m.style.display="table-row-group";s.style.display="none";}
 else{m.style.display="none";s.style.display="table-row-group";}}
 function zoneNotify()
-{callApi("zones/"+ctx.zone+"/notify",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone notified");else errMsg("Notify failed");},{method:"PUT",callErr:true});}
+{callApi(`zones/${ctx.zone}/notify`,ret=>{if(ret!=null)popMsg(`${gbl.tick}Zone notified`);else errMsg("Notify failed");},{method:"PUT",callErr:true});}
 function zoneRectify()
-{callApi("zones/"+ctx.zone+"/rectify",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone rectified");else errMsg("Rectify failed");},{method:"PUT",callErr:true});}
+{callApi(`zones/${ctx.zone}/rectify`,ret=>{if(ret!=null)popMsg(`${gbl.tick}Zone rectified`);else errMsg("Rectify failed");},{method:"PUT",callErr:true});}
 function zoneRetrieve()
-{callApi("zones/"+ctx.zone+"/axfr-retrieve",function(ret){if(ret!=null)popMsg(gbl.tick+" Zone retrieval requested");else errMsg("Zone retrieval failed");},{method:"PUT",callErr:true});}
+{callApi(`zones/${ctx.zone}/axfr-retrieve`,ret=>{if(ret!=null)popMsg(`${gbl.tick}Zone retrieval requested`);else errMsg("Zone retrieval failed");},{method:"PUT",callErr:true});}
 function clickAddZone(isFresh)
 {ctx.addZone=true;topLine();gbl.bot.innerHTML="";gbl.addZ.style.display="block";if(isFresh){let f=document.newZoneForm;f.zoneName.value="";f.zoneName.focus();}}
 function dropZone()
 {let x="<table align=center><tr><td align=center><h3>Are you sure you want to delete"
-+"<br>the zone '"+ctx.zone+"' and all its records ?</h3></td></tr>"
-+"<tr><td align=center>"
-+btn("loadThisZone();","Cancel","Do not delete the zone "+ctx.zone)
++`<br>the zone'${ctx.zone}'and all its records?</h3></td></tr>`+"<tr><td align=center>"
++btn("loadThisZone();","Cancel",`Do not delete the zone ${ctx.zone}`)
 +"&nbsp;"
-+btn("doDropZone()","Drop '"+ctx.zone+"'","Delete the zone "+ctx.zone+" and ALL its records");gbl.bot.innerHTML=x;}
++btn("doDropZone()",`Drop'${ctx.zone}'`,`Delete the zone ${ctx.zone}and ALL its records`);gbl.bot.innerHTML=x;}
 function doDropZone()
-{callApi("zones/"+ctx.zone,zoneList,{method:"DELETE",noData:true,okResp:204});}
+{callApi(`zones/${ctx.zone}`,zoneList,{method:"DELETE",noData:true,okResp:204});}
 function doNewName()
 {let f=document.newNameForm;if(!validInt(f.rrTTL.value)){errMsg("Invalid TTL");f.rrTTL.focus();f.rrTTL.select();return;}
 gbl.addH.style.display="none";if(f.rrName.value=="")
 name=ctx.zone;else
-name=f.rrName.value+"."+ctx.zone;if(!fqdnCheck.test(name)){errMsg("Invalid host name");f.rrName.focus();f.rrName.select();return false;}
+name=`${f.rrName.value}.${ctx.zone}`;if(!fqdnCheck.test(name)){errMsg("Invalid host name");f.rrName.focus();f.rrName.select();return false;}
 if(findRec(ctx.zoneDetails.rrsets,{name:name,type:f.rrType.value})!=null)
 return clickZoneRecord(name,f.rrType.value);ctx.rec={name:name,type:f.rrType.value,rrs:{name:name,type:f.rrType.value,ttl:f.rrTTL.value,records:[],},};ctx.rec.loadedRows=0;ctx.needSave="saveRRChanges";addNewRR();return false;}
 function zoneAddHost()
 {topLine();gbl.bot.innerHTML="";gbl.addH.style.display="block";let f=document.newNameForm;f.rrName.value="";f.rrTTL.value=gbl.default_ttl;f.rrName.focus();}
 function zoneDetails(data)
-{data.rrsets.sort(function(a,b){if((a.name==data.id)&&(b.name==data.id)){for(tag of["SOA","NS","MX"]){if(a.type==tag)return-1;if(b.type==tag)return 1;}}
+{data.rrsets.sort((a,b)=>{if((a.name==data.id)&&(b.name==data.id)){for(tag of["SOA","NS","MX"]){if(a.type==tag)return-1;if(b.type==tag)return 1;}}
 else{if(a.name==data.id)return-1;if(b.name==data.id)return 1;if(a.name<b.name)return-1;if(a.name>b.name)return 1;}
 if(a.type<b.type)return-1;if(a.type>b.type)return 1;return 0;})
 ctx.zoneDetails=data;if(("param"in gbl)&&("zone"in gbl.param)){if("meta"in gbl.param)return zoneMeta();if("keys"in gbl.param)return zoneKeys();if((data.kind!="Slave")&&("name"in gbl.param)&&("type"in gbl.param)){return clickZoneRecord(gbl.param.name,gbl.param.type);}}
-let newTitle=gbl.server+": "+ctx.zone
-gbl.state={state:"zone",server:gbl.server,zone:ctx.zone};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";x=x+"<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data.rrsets){x=x+"<tr onClick=\"clickZoneRecord('"+i.name+"','"+i.type+"');\" class=dataRow>"
-+"<td valign=top>"+i.name.substr(0,i.name.length-ctx.zone.length-1)+"</td>"
-+"<td valign=top align=right>"+i.ttl+"</td>"
-+"<td valign=top>"+i.type+"</td><td valign=top>";if(i.type=="SOA"){ctx.soaSplit=i.records[0].content.split(" ");x=x+formatSOA(ctx.soaSplit);}
-else{i.records.sort(function(a,b){if(a.content<b.content)return-1;if(a.content>b.content)return 1;return 0;})
+let newTitle=`${gbl.server}:${ctx.zone}`;gbl.state={state:"zone",server:gbl.server,zone:ctx.zone};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>"
++"<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data.rrsets){x+=`<tr onClick="clickZoneRecord('${i.name}','${i.type}');"class=dataRow>`+`<td valign=top>${i.name.substr(0,i.name.length-ctx.zone.length-1)}</td>`+`<td valign=top align=right>${i.ttl}</td>`+`<td valign=top>${i.type}</td><td valign=top>`;if(i.type=="SOA"){ctx.soaSplit=i.records[0].content.split(" ");x+=formatSOA(ctx.soaSplit);}
+else{i.records.sort((a,b)=>{if(a.content<b.content)return-1;if(a.content>b.content)return 1;return 0;})
 for(let rrs of i.records)
-x=x+""+rrs.content+"<br>";}
-x=x+"</td></tr>";}
-let sp="<div style='height: 7px;'></div>";let sz=100;x=x+"</table></td><td align=center>";if(ctx.zoneDetails.kind!="Slave")
-x=x+btn("zoneAddHost()","Add Host","Add a host to the zone "+ctx.zone,sz)+sp;x=x+btn("zoneAxfr()","Download","Download "+ctx.zone+" in RFC/AXFR format",sz)+sp
-+btn('zoneMeta()',"Metadata","Load the META data for "+ctx.zone,sz)+sp
-+btn('zoneNotify()',"Notify Zone","Notify the slaves of "+ctx.zone,sz)+sp;if(ctx.zoneDetails.dnssec)
-x=x+btn('zoneRectify()',"Rectify Zone","Rectify the data for "+ctx.zone,sz)+sp;if(ctx.zoneDetails.kind=="Slave")
-x=x+btn('zoneRetrieve()',"Retrieve Zone","Retrieve "+ctx.zone+" from masters",sz)+sp;x=x+btn('dropZone()',"Drop Zone","Delete "+ctx.zone+" and ALL its records",sz);x=x+"<hr>";if(ctx.zoneDetails.dnssec){x=x+btn('zoneKeys()',"DNSSEC Keys","View DNSSEC keys for "+ctx.zone,sz)+sp;}
+x+=`${rrs.content}<br>`;}
+x+="</td></tr>";}
+let sp="<div style='height: 7px;'></div>";let sz=100;x+="</table></td><td align=center>";if(ctx.zoneDetails.kind!="Slave")
+x+=btn("zoneAddHost()","Add Host",`Add a host to the zone ${ctx.zone}`,sz)+sp;x+=btn("zoneAxfr()","Download",`Download ${ctx.zone}in RFC/AXFR format`,sz)+sp
++btn('zoneMeta()',"Metadata",`Load the META data for ${ctx.zone}`,sz)+sp
++btn('zoneNotify()',"Notify Zone",`Notify the slaves of ${ctx.zone}`,sz)+sp;if(ctx.zoneDetails.dnssec)
+x+=btn('zoneRectify()',"Rectify Zone",`Rectify the data for ${ctx.zone}`,sz)+sp;if(ctx.zoneDetails.kind=="Slave")
+x+=btn('zoneRetrieve()',"Retrieve Zone",`Retrieve ${ctx.zone}from its master(s)`,sz)+sp;x+=btn('dropZone()',"Drop Zone",`Delete ${ctx.zone}and ALL its records`,sz);x+="<hr>";if(ctx.zoneDetails.dnssec){x+=btn('zoneKeys()',"DNSSEC Keys",`View DNSSEC keys for ${ctx.zone}`,sz)+sp;}
 else
-x=x+btn('signZone()',"Sign Zone","DNSSEC sign "+ctx.zone,sz)+sp;gbl.bot.innerHTML=x+"</td></tr></table>";topLine();}
+x+=btn('signZone()',"Sign Zone",`DNSSEC sign ${ctx.zone}`,sz)+sp;x+="</td></tr></table>";gbl.bot.innerHTML=x;topLine();}
 function loadThisZone()
 {return zoneDetailsLoad(ctx.zone);}
 function zoneDetailsLoad(zone)
-{document.body.scrollTop=0;ctx={zone:zone,zoneList:ctx.zoneList,};callApi("zones/"+ctx.zone,zoneDetails);}
+{document.body.scrollTop=0;ctx={zone:zone,zoneList:ctx.zoneList,};callApi(`zones/${ctx.zone}`,zoneDetails);}
 function searchLoadRecord(zone,name,type)
-{gbl.param={state:"record",server:gbl.server,zone:ctx.zone,name:ctx.rec.name,type:ctx.rec.type};gbl.state=gbl.param;title=gbl.server+", Search results - "+name+":"+type
-window.history.pushState(gbl.param,title,"/");zoneDetailsLoad(zone);}
+{gbl.param={state:"record",server:gbl.server,zone:ctx.zone,name:ctx.rec.name,type:ctx.rec.type};gbl.state=gbl.param;title=`${gbl.server},Search results-${name}:${type}`window.history.pushState(gbl.param,title,"/");zoneDetailsLoad(zone);}
 function searchResults(data)
 {if(data.length<=0){popMsg("No search results");return;}
-let newTitle=gbl.server+": Search Results"
-gbl.state={state:"search",server:gbl.server,search:ctx.searchTerm};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle
-delete gbl.param;ctx={searchTerm:ctx.searchTerm};topLine();ctx={};let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){x=x+"<tr class=dataRow";if(i.object_type!="zone"){x=x+" onClick='ctx = { zone: \""+i.zone+"\" }; "
-+" searchLoadRecord(\""+i.zone+"\",\""+i.name+"\",\""+i.type+"\");'"
-+"><td valign=top>"+i.name+"</td>"
-+"<td valign=top align=right>"+i.ttl+"</td>"
-+"<td valign=top>"+i.type+"</td>";if(i.type=="SOA")
-x=x+"<td valign=top>"+formatSOA(i.content.split(" "))+"</td>";else
-x=x+"<td valign=top>"+i.content+"</td>";}
-else{x=x+" onClick='return zoneDetailsLoad(\""+i.name+"\");'>";x=x+"<td>"+i.name+"</td><td colspan=3>[Zone Apex]</td>";}
-x=x+"</tr>";}
-gbl.bot.innerHTML=x+"</table>";}
+let newTitle=`${gbl.server}:Search Results`;gbl.state={state:"search",server:gbl.server,search:ctx.searchTerm};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle
+delete gbl.param;ctx={searchTerm:ctx.searchTerm};topLine();ctx={};let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){x+="<tr class=dataRow";if(i.object_type!="zone"){x+=`onClick='ctx = { zone: "${i.zone}" }; `
+				+ ` searchLoadRecord("${i.zone}","${i.name}","${i.type}");'`+`><td valign=top>${i.name}</td>`+`<td valign=top align=right>${i.ttl}</td>`+`<td valign=top>${i.type}</td>`;if(i.type=="SOA")
+x+=`<td valign=top>${formatSOA(i.content.split(" "))}</td>`;else
+x+=`<td valign=top>${i.content}</td>`;}
+else{x+=`onClick='return zoneDetailsLoad("${i.name}");'>`+`<td>${i.name}</td><td colspan=3>[Zone Apex]</td>`;}
+x+="</tr>";}
+x+="</table>";gbl.bot.innerHTML=x;}
 function searchFormSubmit()
-{let s=document.searchForm.searchTerm.value;ctx.searchTerm=s;document.searchForm.searchTerm.value="";callApi("search-data?q="+s,searchResults);return false;}
+{let s=document.searchForm.searchTerm.value;ctx.searchTerm=s;document.searchForm.searchTerm.value="";callApi(`search-data?q=${s}`,searchResults);return false;}
 function loadTsigList()
 {callApi("tsigkeys",showTsigList);}
 function clickTSIG(txt,name)
-{navigator.clipboard.writeText(txt).then(function(){popMsg(name+" copied to clipboard");},function(){errMsg("Copy to clipboard failed");});}
+{navigator.clipboard.writeText(txt).then(()=>popMsg(`${name}copied to clipboard`),()=>errMsg("Copy to clipboard failed"));}
 function deleteTSIG(id)
-{callApi("tsigkeys/"+id,loadTsigList,{method:"DELETE",okResp:204});}
+{callApi(`tsigkeys/${id}`,loadTsigList,{method:"DELETE",okResp:204});}
 function formAddTsig()
 {let f=document.newTsigForm;let json={name:f.tsigName.value,algorithm:f.tsigAlg.value,key:f.tsigKey.value,};if(json.name.substr(json.name.length-1)!=".")
-json.name=json.name+".";if(!fqdnCheck.test(json.name)){errMsg("Invalid TSIG Name");document.newTsigForm.tsigName.focus();document.newTsigForm.tsigName.select();return false;}
-callApi("tsigkeys",function(data){if(data==null)addTSIG(false);else showTSIG(data.id);},{method:"POST",callErr:true,okResp:201,json:JSON.stringify(json)});return false;}
+json.name+=".";if(!fqdnCheck.test(json.name)){errMsg("Invalid TSIG Name");document.newTsigForm.tsigName.focus();document.newTsigForm.tsigName.select();return false;}
+callApi("tsigkeys",data=>{if(data==null)addTSIG(false);else showTSIG(data.id);},{method:"POST",callErr:true,okResp:201,json:JSON.stringify(json)});return false;}
 function regenTSIG(id,alg)
-{callApi("tsigkeys/"+id,function(){callApi("tsigkeys",function(){showTSIG(id);},{method:"POST",okResp:201,json:JSON.stringify({name:id,algorithm:alg})});},{method:"DELETE",okResp:204});}
+{callApi(`tsigkeys/${id}`,()=>{callApi("tsigkeys",()=>showTSIG(id),{method:"POST",okResp:201,json:JSON.stringify({name:id,algorithm:alg})});},{method:"DELETE",okResp:204});}
 function addTSIG(withClr)
 {gbl.bot.innerHTML="";gbl.addT.style.display="block";let t=document.newTsigForm.tsigName;let k=document.newTsigForm.tsigKey;if(withClr){t.value="";k.value="";}
 t.focus();}
 function showTSIG(tsig)
-{callApi("tsigkeys/"+tsig,function(data){let newTitle=gbl.server+": TSIG "+data.id;gbl.state={state:"tsigdata",server:gbl.server,tsig:data.id};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;ctx={};topLine();let x="<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
-+"<tr class=dataRow onClick=\"clickTSIG('"+data.id+"','Name');\"><td class=formPrompt>TSIG Name :</td><td>"+data.id+"</td></tr>"
-+"<tr><td class=formPrompt>TSIG Algorithm :</td><td>"+data.algorithm.toUpperCase()+"</td></tr>"
-+"<tr onClick=\"clickTSIG('"+data.key+"','Key');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>"+data.key+"</td></tr>"
-+"<tr><td align=center colspan=2><hr></td></tr>"
-+"<tr><td align=center colspan=2>"
-+btn("loadTsigList()","Back","Go back to the list of TSIGs")
-+btn("regenTSIG('"+data.id+"','"+data.algorithm+"')","Rollover","Replace this TSIG Key, keeping the name")
-+btn("deleteTSIG('"+data.id+"')","Delete","Delete this TSIG Key")
-+"</td></tr></table>";gbl.bot.innerHTML=x;topLine();});}
+{callApi(`tsigkeys/${tsig}`,data=>{let newTitle=`${gbl.server}:TSIG ${data.id}`;gbl.state={state:"tsigdata",server:gbl.server,tsig:data.id};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;ctx={};topLine();let x="<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
++`<tr class=dataRow onClick=\"clickTSIG('${data.id}','Name');\"><td class=formPrompt>TSIG Name :</td><td>${data.id}</td></tr>`
+			+ `<tr><td class=formPrompt>TSIG Algorithm :</td><td>${data.algorithm.toUpperCase()}</td></tr>`
+			+ `<tr onClick=\"clickTSIG('${data.key}','Key');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>${data.key}</td></tr>`
+			+ "<tr><td align=center colspan=2><hr></td></tr>"
+			+ "<tr><td align=center colspan=2>"
+			+ btn("loadTsigList()","Back","Go back to the list of TSIGs")
+			+ btn(`regenTSIG('${data.id}','${data.algorithm}')`,"Rollover","Replace this TSIG Key,keeping the name")
+			+ btn(`deleteTSIG('${data.id}')`,"Delete","Delete this TSIG Key")
+			+ "</td></tr></table>";
+
+		gbl.bot.innerHTML = x;
+		topLine();
+		});
+}
+
+
+
 function showTsigList(data)
-{if(data.length<=0){popMsg("No TSIGs found");return;}
-data.sort(function(a,b){if(a.id<b.id)return-1;if(a.id>b.id)return 1;return 0;});if(("param"in gbl)&&("tsig"in gbl.param)&&(typeof(gbl.param.tsig)!="boolean"))
-return showTSIG(gbl.param.tsig);let newTitle=gbl.server+": TSIGs";gbl.state={state:"tsig",server:gbl.server,tsig:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;ctx={};topLine();let x="<table width=100% border=0 cellspacing=0 cellpadding=0>"
-+"<colgroup><col width=100%/><col/></colgroup><tr><Td>"
-+"<table align=center border=0 cellspacing=2 cellpadding=2>"
-+"<tr><th>TSIG Name</td><th>Algorithm</td></tr>";for(let i of data)
-x=x+"<tr class=dataRow onClick=\"showTSIG('"+i.id+"');\"><td>"+i.id+"</td>"
-+"<td>"+i.algorithm.toUpperCase()+"</td></tr>";x=x+"</table></td><td>"+btn("addTSIG(true)","Add TSIG","Add a TSIG Key")+"</td></tr></table>";gbl.bot.innerHTML=x;}
+{
+	if (data.length <= 0) {
+		popMsg("No TSIGs found");
+		return;
+		}
+
+	data.sort((a,b) => {
+		if (a.id < b.id) return -1;
+		if (a.id > b.id) return 1;
+		return 0;
+		});
+
+	if (("param" in gbl)&&("tsig" in gbl.param)&&(typeof(gbl.param.tsig) != "boolean"))
+		return showTSIG(gbl.param.tsig);
+
+	let newTitle = `${gbl.server}: TSIGs`;
+	gbl.state = { state: "tsig", server: gbl.server, tsig: true };
+	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
+	document.title = newTitle;
+
+	delete gbl.param; ctx = {}; topLine();
+
+	let x = "<table width=100%border=0 cellspacing=0 cellpadding=0>"
+		+ "<colgroup><col width=100%/><col/></colgroup><tr><Td>"
+		+ "<table align=center border=0 cellspacing=2 cellpadding=2>"
+		+ "<tr><th>TSIG Name</td><th>Algorithm</td></tr>";
+
+	for(let i of data)
+		x += `<tr class=dataRow onClick="showTSIG('${i.id}');"><td>${i.id}</td>`
+			+ `<td>${i.algorithm.toUpperCase()}</td></tr>`;
+
+	x += "</table></td><td>" + btn("addTSIG(true)","Add TSIG","Add a TSIG Key") + "</td></tr></table>";
+
+	gbl.bot.innerHTML = x;
+}
+
+
+//=============================================================================================
+// Code to handle the list of zones
+//=============================================================================================
+
+
 function doMakeZone(data)
-{if(data!=null)
-zoneDetailsLoad(data.name);else{clickAddZone(false);errMsg("Adding zone failed");}}
+{
+	if (data != null)
+		zoneDetailsLoad(data.name);
+	else {
+		clickAddZone(false);
+		errMsg("Adding zone failed");
+		}
+}
+
+
+
 function doNewZone()
-{let name=document.newZoneForm.zoneName.value;if(name.substr(name.length-1)!=".")name=name+".";if(!fqdnCheck.test(name)){errMsg("Invalid domain name");document.newZoneForm.zoneName.focus();document.newZoneForm.zoneName.select();return false;}
-let kind=document.newZoneForm.zoneKind.value;let ns=[];let ip=[];for(let i=0;i<4;i++){let x=document.newZoneForm["ns"+i];let v=x.value;if(v!=""){if(v.substr(v.length-1)!=".")v=v+"."
-if(!fqdnCheck.test(v)){errMsg("Invalid Host Name: "+v);x.focus();x.select();return false;}
-ns.push(v);}
-x=document.newZoneForm["ip"+i];if(x.value!=""){if((validations["rrA"].test(x.value))||(validations["rrA"].test(x.value)))
-ip.push(x.value);else{errMsg("Invalid IP Address: "+x.value);x.focus();x.select();return false;}}}
-let data={name:name,kind:kind,masters:ip,nameservers:ns,};callApi("zones",doMakeZone,{method:"POST",callErr:true,okResp:201,json:JSON.stringify(data)});return false;}
+{
+	let name = document.newZoneForm.zoneName.value;
+	if (name.substr(name.length-1)!=".") name += ".";
+	if (!fqdnCheck.test(name)) {
+		errMsg("Invalid domain name");
+		document.newZoneForm.zoneName.focus();
+		document.newZoneForm.zoneName.select();
+		return false;
+		}
+
+	let kind = document.newZoneForm.zoneKind.value;
+
+	let ns = [];
+	let ip = [];
+	for(let i=0;i<4;i++) {
+		let x = document.newZoneForm[`ns${i}`];
+		let v = x.value;
+
+		if (v != "") {
+			if (v.substr(v.length-1)!=".") v += ".";
+
+			if (!fqdnCheck.test(v)) {
+				errMsg(`Invalid Host Name: ${v}`);
+				x.focus(); x.select();
+				return false;
+				}
+
+			ns.push(v);
+			}
+
+		x = document.newZoneForm[`ip${i}`];
+		if (x.value != "") {
+			if ((validations["rrA"].test(x.value))||(validations["rrA"].test(x.value)))
+				ip.push(x.value);
+			else {
+				errMsg(`Invalid IP Address: ${x.value}`);
+				x.focus(); x.select();
+				return false;
+				}
+			}
+		}
+
+	let data = {
+		name: name,
+		kind: kind,
+		masters: ip,
+		nameservers: ns,
+		};
+
+	callApi("zones",doMakeZone, { method: "POST", callErr: true, okResp: 201, json: JSON.stringify(data) } );
+
+	return false; // block form submit
+}
+
+
+
 function zoneListDetails(data)
-{data.sort(function(a,b){if(a.id<b.id)return-1;if(a.id>b.id)return 1;return 0;});ctx.zoneList=data;if("param"in gbl){if("tsig"in gbl.param)return loadTsigList();if("search"in gbl.param){ctx.searchTerm=gbl.param.search;return callApi("search-data?q="+ctx.searchTerm,searchResults);}
-if("zone"in gbl.param)return zoneDetailsLoad(gbl.param.zone);}
-let newTitle=gbl.server+": Zone List";gbl.state={state:"zonelist",server:gbl.server};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
-x=x+"<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){let name=i.id;x=x+"<tr class=dataRow onClick='zoneDetailsLoad(\""+name+"\")'>"
-+"<td>"+name+"</td><td>"+i.kind+"</td>";t="";hlp="Zone is NOT dnssec signed";if(i.dnssec){t=gbl.nsec;hlp="Zone is DNSSEC signed";}
-x=x+"<td title='"+hlp+"'>"+t+"</td><td>"+i.serial+"</td>";t="";hlp="";if(i.notified_serial!=i.serial){t=gbl.timer;hlp="Zone has unnotified changes";}
-x=x+"<td title='"+hlp+"'>"+t+"</td></tr>";}
-x=x+"</table></td><td>";let sp="<div style='height: 7px;'></div>";let sz=100;x=x+btn("clickAddZone(true)","Add Zone","Add a new zone to the database",sz)+sp;x=x+"</td></tr></table>";topLine();gbl.bot.innerHTML=x;}
+{
+	data.sort((a,b) => {
+		if (a.id < b.id) return -1;
+		if (a.id > b.id) return 1;
+		return 0;
+		});
+
+	ctx.zoneList = data;
+
+	if ("param" in gbl) {
+		if ("tsig" in gbl.param) return loadTsigList();
+		if ("search" in gbl.param) {
+			ctx.searchTerm = gbl.param.search;
+			return callApi(`search-data?q=${ctx.searchTerm}`,searchResults);
+			}
+		if ("zone" in gbl.param) return zoneDetailsLoad(gbl.param.zone);
+		}
+
+	let newTitle = `${gbl.server}: Zone List`;
+	gbl.state = { state: "zonelist", server: gbl.server };
+	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
+	document.title = newTitle;
+	delete gbl.param;
+
+	let x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
+	x += "<tr><td><table width=100%border=0 cellspacing=0 cellpadding=0>";
+	for(let i of data) {
+		let name = i.id;
+		x += `<tr class=dataRow onClick='zoneDetailsLoad("${name}")'>`
+			+ `<td>${name}</td><td>${i.kind}</td>`;
+
+		t = "";
+		hlp = "Zone is NOT dnssec signed";
+		if (i.dnssec) {
+			t = gbl.nsec;
+			hlp = "Zone is DNSSEC signed";
+			}
+		x += `<td title='${hlp}'>${t}</td><td>${i.serial}</td>`;
+
+		t = ""; hlp = "";
+		if (i.notified_serial != i.serial) {
+			t = gbl.timer;
+			hlp = "Zone has unnotified changes";
+			}
+		x += `<td title='${hlp}'>${t}</td></tr>`;
+		}
+	x += "</table></td><td>";
+
+	let sp = "<div style='height: 7px;'></div>";
+	let sz = 100;
+
+	x += btn("clickAddZone(true)","Add Zone","Add a new zone to the database",sz)+sp;
+
+	x += "</td></tr></table>";
+
+	topLine();
+	gbl.bot.innerHTML = x;
+}
+
+
+
 function zoneList()
-{document.body.scrollTop=0;ctx={};topLine();callApi("zones",zoneListDetails);return false;}
+{
+	document.body.scrollTop = 0;
+	ctx = { }; topLine();
+	callApi("zones",zoneListDetails);
+	return false;
+}
+
+
+//=============================================================================================
+// Zone AXFR
+//=============================================================================================
+
+
 function zoneAxfrData(data)
-{let name=ctx.zone.replace(/\./g,"_");name=name.substr(0,name.length-1)+".txt";downloadFile(data,"text/plain",name);}
+{
+	let name = ctx.zone.replace(/\./g,"_");
+	name = `${name.substr(0,name.length-1)}.txt`;
+	downloadFile(data,"text/plain",name);
+}
+
+
+
+
 function zoneAxfr()
-{callApi("zones/"+ctx.zone+"/export",zoneAxfrData);}
-function validInt(x){return((x!="")&&(x!=null)&&(!(isNaN(x))));}
-function btn(call,txt,hlp,sz){let ex=""
-if(sz!=null)ex="style='width: "+sz+"px;'"
-return"<span "+ex+" title=\""+hlp+"\" class=myBtn onClick=\""+call+"; return false;\">"+txt+"</span>";}
+{
+	callApi(`zones/${ctx.zone}/export`,zoneAxfrData);
+}
+
+
+//=============================================================================================
+// Common functions
+//=============================================================================================
+
+
+function validInt(x) {
+	return ((x != "") && (x != null) && (!(isNaN(x))));
+}
+
+
+function btn(call,txt,hlp,sz) {
+	let ex=""
+	if (sz != null) ex = `style='width: ${sz}px;'`
+	return `<span ${ex} title="${hlp}" class=myBtn onClick="${call};return false;">${txt}</span>`;
+}
+
+
 function goLogin()
-{document.location="/";}
+{
+	document.location = "/";
+}
+
+
 function topLine()
-{gbl.forms.forEach(function(i){i.style.display="none";});let y="<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
-+"<font size=+1><a title='Open this page in a new window' target=_blank href='"+window.origin+"?";let x="'>"+gbl.page+"</a></font></td><td>"
-+btn("goLogin()",gbl.server,"Change server")
-+btn("zoneList()","Zones","Reload the list of zones at "+gbl.server);if((gbl.state.state=="tsig")||(gbl.state.state=="tsigdata"))
-x=x+btn("loadTsigList()","TSIGs","Show the list of TSIGs");if("searchTerm"in ctx)delete ctx.searchTerm;if("zone"in ctx){x=x+btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),"Reload all records in "+ctx.zone);if("rec"in ctx){let name="@";if(ctx.rec.name!=ctx.zone)
-name=ctx.rec.name.substr(0,ctx.rec.name.length-ctx.zone.length-1);ctx.rec.showName=name;x=x+btn('getZoneRecord()',name+'/'+ctx.rec.type,"Reload the "+ctx.rec.type+" recods for "+name);}
-else if(gbl.state.state=="meta"){x=x+btn('zoneMeta()',"META","Reload the META data for "+ctx.zone);}
-else if("zoneKeys"in ctx){x=x+btn('zoneKeys()',"DNSSEC","Reload the DNSSEC Keys for "+ctx.zone);}}
-x=x+"</td><td width=100% align=center><span class='fullvis' id='showMsg'></span></td><td>";if("zone"in ctx){if("edit"in ctx){if("needCancel"in ctx.edit)
-x=x+btn(ctx.edit.needCancel+"(false)","Cancel","Cancel this edit");else
-x=x+btn("cancelAllEdits()","Cancel","Cancel this edit");}
-else{if("rec"in ctx)
-x=x+btn("addNewRR()","Add RR","Add another "+ctx.rec.type+" record to "+ctx.rec.name);if("needSave"in ctx)
-x=x+btn(ctx.needSave+"(false)","Cancel","Abandom all changes")
-+btn(ctx.needSave+"(true)","Save","Save your changes to the zone file");if(gbl.state.state=="meta")
-x=x+btn('clickAddMeta()',"Add Meta","Add a META data record to "+ctx.zone);}}
-if(gbl.state.state=="zonelist")
-x=x+btn("loadTsigList()","TSIGs","Show the list of TSIGs");x=x+"</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
-+"<input placeholder='Search' size=30 name=searchTerm></form></td>"
-+"</tr><table><hr>";gbl.top.innerHTML=y+btoa(JSON.stringify(gbl.state))+x;}
+{
+	gbl.forms.forEach(i => i.style.display = "none");
+
+	let y = "<table style='margin-top:10px;'border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
+		+ `<font size=+1><a title='Open this page in a new window' target=_blank href='${window.origin}?`;
+
+	let x = `'>${gbl.page}</a></font></td><td>`
+		+ btn("goLogin()",gbl.server,"Change server")
+		+ btn("zoneList()","Zones",`Reload the list of zones at ${gbl.server}`);
+
+	if ((gbl.state.state == "tsig")||(gbl.state.state == "tsigdata"))
+		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs");
+
+	if ("searchTerm" in ctx) delete ctx.searchTerm;
+
+	if ("zone" in ctx) {
+		x += btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),`Reload all records in ${ctx.zone}`);
+
+		if ("rec" in ctx) {
+			let name = "@";
+			if (ctx.rec.name != ctx.zone)
+				name = ctx.rec.name.substr(0,ctx.rec.name.length - ctx.zone.length - 1);
+
+			ctx.rec.showName = name;
+			x += btn('getZoneRecord()',`${name}/${ctx.rec.type}`,`Reload the ${ctx.rec.type} recods for ${name}`);
+			}
+		else if (gbl.state.state == "meta") {
+				x += btn('zoneMeta()',"META",`Reload the META data for ${ctx.zone}`);
+				}
+		else if ("zoneKeys" in ctx) {
+			x += btn('zoneKeys()',"DNSSEC",`Reload the DNSSEC Keys for ${ctx.zone}`);
+			}
+		}
+
+	x += "</td><td width=100%align=center><span class='fullvis'id='showMsg'></span></td><td>";
+
+	if ("zone" in ctx) {
+		if ("edit" in ctx) {
+			if ("needCancel" in ctx.edit)
+				x += btn(`${ctx.edit.needCancel}(false)`,"Cancel","Cancel this edit");
+			else
+				x += btn("cancelAllEdits()","Cancel","Cancel this edit");
+			}
+		else {
+			if ("rec" in ctx)
+				x += btn("addNewRR()","Add RR",`Add another ${ctx.rec.type} record to ${ctx.rec.name}`);
+
+			if ("needSave" in ctx)
+				x += btn(`${ctx.needSave}(false)`,"Cancel","Abandom all changes")
+					+ btn(`${ctx.needSave}(true)`,"Save","Save your changes to the zone file");
+
+			if (gbl.state.state == "meta")
+				x += btn('clickAddMeta()',"Add Meta",`Add a META data record to ${ctx.zone}`);
+			}
+
+		}
+
+	if (gbl.state.state == "zonelist")
+		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs");
+
+	x += "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
+		+ "<input placeholder='Search'size=30 name=searchTerm></form></td>"
+		+ "</tr><table><hr>";
+
+	gbl.top.innerHTML = y + btoa(JSON.stringify(gbl.state)) + x;
+}
+
+
+
 function startUp()
-{window.addEventListener('popstate',function(e){if(e.state==null)goLogin();gbl.param=e.state;if("server"in gbl.param){gbl.server=gbl.param.server;zoneList();return true;}
-delete gbl.param;document.location="/"
-return true;});gbl.top=document.getElementById("topSpan");gbl.bot=document.getElementById("lowerSpan");gbl.addH=document.getElementById("addName");gbl.addZ=document.getElementById("addZone");gbl.addM=document.getElementById("addMeta");gbl.addT=document.getElementById("addTsig");gbl.optM=document.getElementById("metaOpt");gbl.forms=[gbl.addH,gbl.addZ,gbl.addM,gbl.addT];if(window.location.search!=""){gbl.param=JSON.parse(atob(window.location.search.substr(1)));if("server"in gbl.param){gbl.state=gbl.param;gbl.server=gbl.param.server;zoneList();}}}
+{
+	window.addEventListener('popstate', e => {
+		if (e.state == null) goLogin();
+
+		gbl.param = e.state;
+		if ("server" in gbl.param) {
+			gbl.server = gbl.param.server;
+			zoneList();
+			return true;
+			}
+		delete gbl.param;
+		document.location = "/"
+		return true;
+		});
+
+	gbl.top = document.getElementById("topSpan");
+	gbl.bot = document.getElementById("lowerSpan");
+
+	gbl.addH = document.getElementById("addName");
+	gbl.addZ = document.getElementById("addZone");
+	gbl.addT = document.getElementById("addTsig");
+	gbl.optM = document.getElementById("metaOpt");
+
+	gbl.forms = [ gbl.addH, gbl.addZ, gbl.addT ];
+
+	if (window.location.search != "") {
+		gbl.param = JSON.parse(atob(window.location.search.substr(1)));
+		if ("server" in gbl.param) {
+			gbl.state = gbl.param;
+			gbl.server = gbl.param.server;
+			zoneList();
+			}
+		}
+
+	let f = document.loginForm;
+	if (f.server.value == "") f.server.value = window.location.hostname;
+}
+
+
+
 function initialLogin()
-{let f=document.loginForm;gbl.server=f.server.value;gbl.apikey=f.apikey.value;gbl.with_https=f.with_https.checked;zoneList();return false;}
+{
+	let f = document.loginForm;
+	gbl.server = f.server.value;
+	gbl.apikey = f.apikey.value;
+	gbl.with_https = f.with_https.checked;
+	zoneList();
+
+	return false; // block form submit
+}
+
+
+
 function formatSOA(i)
-{let soa=i[0]+" "+i[1]+"<br>";let idx=2;for(let tag of["serial","refresh","retry","expire","minimum"]){soa=soa+"<span style='display: inline-block; width:50px'></span>";soa=soa+"<span style='display: inline-block; width:100px'>"+i[idx++]+"</span>;"+tag+"<br>";}
-return soa;}
-function showError(err)
-{gbl.bot.innerHTML="<h1>"+err+"</h1>";}
+{
+	let soa = `${i[0]} ${i[1]}<br>`;
+	let idx = 2;
+	for(let tag of ["serial","refresh","retry","expire","minimum"]) {
+		soa += `<span style='display: inline-block; width:50px'></span>`;
+		soa += `<span style='display: inline-block; width:100px'>${i[idx++]}</span>;${tag}<br>`;
+		}
+	return soa;
+}
+
+
+
+
 function unerrMsg()
-{let m=document.getElementById("myMsgPop");let t1=m.innerHTML;let t2=gbl.lastErrMsg;if(t2==null)t2="";if(t1==t2)m.className="msgPopNo";delete gbl.lastErrMsg;}
+{
+	let m = document.getElementById("myMsgPop");
+	let t1 = m.innerHTML;
+	let t2 = gbl.lastErrMsg;
+	if (t2 == null) t2 = "";
+	if (t1 == t2) m.className = "msgPopNo";
+	delete gbl.lastErrMsg;
+}
+
+
+
 function errMsg(txt)
-{let m=document.getElementById("myMsgPop");m.className='msgPopYes';m.innerHTML=gbl.warn+" "+txt;gbl.lastErrMsg=m.innerHTML;setTimeout(unerrMsg,2500);}
+{
+	let m = document.getElementById("myMsgPop");
+	m.className = 'msgPopYes';
+	m.innerHTML = `${gbl.warn} ${txt}`;
+	gbl.lastErrMsg = m.innerHTML;
+	setTimeout(unerrMsg,2500);
+}
+
+
+
 function unpopMsg()
-{let m=document.getElementById("showMsg");let t1=m.innerHTML;let t2=gbl.lastMsg;if(t2==null)t2="";if(t1==t2)m.className="fadeout";delete gbl.lastMsg;}
+{
+	let m = document.getElementById("showMsg");
+	let t1 = m.innerHTML;
+	let t2 = gbl.lastMsg;
+	if (t2 == null) t2 = "";
+	if (t1 == t2) m.className = "fadeout";
+	delete gbl.lastMsg;
+}
+
 function popMsg(txt)
-{msg(txt,"fadein");gbl.lastMsg=document.getElementById("showMsg").innerHTML;setTimeout(unpopMsg,2500);}
+{
+	msg(txt,"fadein");
+	gbl.lastMsg = document.getElementById("showMsg").innerHTML;
+	setTimeout(unpopMsg,2500);
+}
+
+
+
 function msg(myMsg,newClass)
-{if(newClass==null)newClass="fullvis";let m=document.getElementById("showMsg");m.className=newClass;m.innerHTML=myMsg;delete gbl.lastMsg;}
-function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();if("addRR"in ctx)return loadThisZone();if("addZone"in ctx)return zoneList();}}
-</script><head><title>PowerDNS WebUI-Login</title></head><body onLoad="startUp();"><div id="topSpan"><table border=0 cellspacing=0 cellpadding=0 width=100%><tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr></table></div><div id="lowerSpan"><table align=center><form action="/"onSubmit="return initialLogin()"name=loginForm><tr><td class=formPrompt>Server:</td><td><input name=server value="pdnsdev.jrcs.net"></td></tr><tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr><tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr><tr><td align=center colspan=2><span title="Load zone list"class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr></tr><input type=submit style="display: none;"></form></table></div><div id=addZone style="display: none;"><table width=40%align=center><tbody id="startBody"><colgroup><col width=35%/><col width=65%/></colgroup><tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr><form method=post action="/"name=newZoneForm onSubmit="return doNewZone();"><tr><td class=formPrompt>Name:</td><td><input onkeydown="keyEsc(event);"name=zoneName></td></tr><tr><td class=formPrompt>Type:</td><td><select onChange="zoneKindChange(this);"name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr></tbody><tbody id="asMaster"><tr><td class=formPrompt>Name Servers:</td><td><input size=40 name=ns0><br><input size=40 name=ns1><br><input size=40 name=ns2><br><input size=40 name=ns3><br></td></tr></tbody><tbody id="asSlave"style="display: none;"><tr><td class=formPrompt>Master's IPs :</td><td>
+{
+	if (newClass == null) newClass = "fullvis";
+	let m = document.getElementById("showMsg");
+	m.className = newClass;
+	m.innerHTML = myMsg;
+	delete gbl.lastMsg;
+}
+
+
+
+function keyEsc(e) {
+	if (e.key == "Escape") {
+		if ("edit" in ctx) return cancelAllEdits();
+		if ("addRR" in ctx) return loadThisZone();
+		if ("addZone" in ctx) return zoneList();
+		}
+}
+
+
+//=============================================================================================
+</script>
+
+
+
+<head>
+	<title>PowerDNS WebUI - Login</title>
+</head>
+<body onLoad="startUp();">
+
+<div id="topSpan">
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+<tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr>
+</table>
+</div>
+
+<div id="lowerSpan">
+	<table align=center>
+	<form action="/" onSubmit="return initialLogin()" name=loginForm>
+		<tr><td class=formPrompt>Server:</td><td><input name=server value=""></td></tr>
+		<tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr>
+		<tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr>
+		<tr><td align=center colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
+		</tr>
+	<input type=submit style="display:none;">
+	</form>
+	</table>
+</div>
+
+
+
+<div id=addZone style="display:none;">
+	<table width=40% align=center><tbody id="startBody">
+	<colgroup><col width=35%/><col width=65%/></colgroup>
+	<tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr>
+	<form method=post action="/" name=newZoneForm onSubmit="return doNewZone();">
+		<tr><td class=formPrompt>Name :</td><td><input onkeydown="keyEsc(event);" name=zoneName></td></tr>
+		<tr><td class=formPrompt>Type :</td><td><select onChange="zoneKindChange(this);" name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr>
+		</tbody><tbody id="asMaster">
+			<tr><td class=formPrompt>Name Servers :</td><td>
+				<input size=40 name=ns0><br>
+				<input size=40 name=ns1><br>
+				<input size=40 name=ns2><br>
+				<input size=40 name=ns3><br></td></tr>
+		</tbody><tbody id="asSlave" style="display:none;">
+			<tr><td class=formPrompt>Master's IPs :</td><td>
 				<input size=40 name=ip0><br>
 				<input size=40 name=ip1><br>
 				<input size=40 name=ip2><br>
@@ -452,14 +1451,14 @@ function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();i
 		<tr><td colspan=2><hr></td></tr>
 		<tr><td align=center colspan=2><span title="Cancel adding zone" class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone" class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
 		</tr>
-	<input type=submit style="display: none;">
+	<input type=submit style="display:none;">
 	</form>
 	</table>
 </div>
 
 
 
-<div id=addName style="display: none;">
+<div id=addName style="display:none;">
 	<table width=40% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
 	<tr><td colspan=2 align=center><h2>Add a New Host</h2></td></tr>
@@ -484,34 +1483,13 @@ function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();i
 		<tr><td colspan=2><hr></td></tr>
 		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR" onClick="loadThisZone();">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 		</tr>
-	<input type=submit style="display: none;">
-	</form>
-	</table>
-</div>
-
-<div id=addMeta style="display: none;">
-	<table width=40% align=center>
-	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>
-	<form method=post action="/" name=newMetaForm onSubmit="return formAddMeta();">
-		<tr><td class=formPrompt>Metadata: </td><td><select name=metaItem>
-			<option>ALLOW-AXFR-FROM<option>ALLOW-DNSUPDATE-FROM<option>ALSO-NOTIFY<option>AXFR-MASTER-TSIG
-			<option>AXFR-SOURCE<option>FORWARD-DNSUPDATE<option>GSS-ACCEPTOR-PRINCIPAL
-			<option>GSS-ALLOW-AXFR-PRINCIPAL<option>IXFR<option>LUA-AXFR-SCRIPT<option>NOTIFY-DNSUPDATE
-			<option>NSEC3NARROW<option>NSEC3PARAM<option>PRESIGNED<option>PUBLISH-CDNSKEY<option>PUBLISH-CDS
-			<option>SOA-EDIT<option>SOA-EDIT-DNSUPDATE<option>TSIG-ALLOW-AXFR<option>TSIG-ALLOW-DNSUPDATE
-		</select></td></tr>
-		<tr><Td class=formPrompt>Value: </td><td><span id="metaOpt"><input size=50 name=metaValue></span></td></tr>
-		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span><span title="Add this Metadata Record" class=myBtn onClick="formAddMeta();">Add Metadata</span></td></tr>
-	<input type=submit style="display: none;">
+	<input type=submit style="display:none;">
 	</form>
 	</table>
 </div>
 
 
-
-<div id=addTsig style="display: none;">
+<div id=addTsig style="display:none;">
 	<table width=40% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
 	<tr><td colspan=2 align=center><h2>Add a New TSIG Key</h2></td></tr>
@@ -521,4 +1499,7 @@ function keyEsc(e){if(e.key=="Escape"){if("edit"in ctx)return cancelAllEdits();i
 			<option value="hmac-sha512">HMAC-SHA512<option value="hmac-sha384">HMAC-SHA384<option value="hmac-sha256">HMAC-SHA256
 			<option value="hmac-sha224">HMAC-SHA224<option value="hmac-sha1">HMAC-SHA1<option value="hmac-md5">HMAC-MD5
 		</select></td></tr>
-		<tr><Td class=formPrompt>TSIG Key: </td><td><input placeholder='Leave blank,for auto-generated key'
+		<tr><Td class=formPrompt>TSIG Key: </td><td><input placeholder='Leave blank, for auto-generated key' size=100 name=tsigKey></td></tr>
+		<tr><td colspan=2><hr></td></tr>
+		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding a TSIG Key" onClick="loadTsigList();">Cancel</span><span title="Add this TSIG Key" class=myBtn onClick="formAddTsig();">Add TSIG</span></td></tr>
+	<input type=submit style="display:none;"
