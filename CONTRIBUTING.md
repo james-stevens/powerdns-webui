@@ -1,4 +1,9 @@
 # Branch Protocol #
+
 Please fork from the `dev` branch for sumbitting code changes. 
-The `dev` branch is resgularly merged into the `master` branch.
-The `master` is the current stable version.
+
+The `dev` branch is regularly merged into the `master` branch.
+
+The `master` is the current stable development version. That is, it regularly changes, but if you clone it, it should work OK.
+
+Stable releases are puchlished and tagged - available from the `release` tab.
