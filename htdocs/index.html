@@ -156,36 +156,28 @@ td {
 	}
 
 
-.msgPopNo {
+.msgPop {
 	position: absolute;
 	left: 10px;
 	top: 20px;
-	visibility: hidden;
 	font-family:Verdana,Arial,Helvetica,sans-serif;
-    font-size:16pt;
+	font-size:16pt;
 	width: 95%;
 	background: #ffd0d0;
 	text-align: center;
 	color: black;
-	opacity: 0; transition: visibility 0s 1s, opacity 1s linear; 
 	padding: 5px;
 	border-radius: 10px;
 	}
 
+.msgPopNo {
+	visibility: hidden;
+	opacity: 0; transition: visibility 0s 1s, opacity 1s linear;
+	}
+
 .msgPopYes {
-	position: absolute;
-	left: 10px;
-	top: 20px;
 	visibility: visible;
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-    font-size:16pt;
-	width: 95%;
-	background: #ffd0d0;
-	text-align: center;
-	color: black;
 	opacity: 1; transition: opacity 0.5s linear;
-	padding: 5px;
-	border-radius: 10px;
 	}
 
 </style>
@@ -390,10 +382,95 @@ function downloadFile(text, fileType, fileName) {
 // end of -> danallison/downloadString.js
 
 
+
+function setState(title,state)
+{
+	gbl.state = state;
+	if (!("param" in gbl)) window.history.pushState(state,title,"/");
+	document.title = title;
+	delete gbl.param;
+}
+
+
+//=============================================================================================
+// Stats handling
+//=============================================================================================
+
+function loadStats()
+{
+	callApi("statistics",showStats);
+}
+
+
+function showOneStats(data)
+{
+	let item = null;
+	for(let i of data) if (i.name==this) item = i;
+	if (item == null) {
+		errMsg(`Could not find stats item '${this}'`);
+		return loadStats();
+		}
+
+	ctx.stats = data;
+	setState(`${gbl.server}: Stats: ${item.name}`, { state: "stats", server: gbl.server, stats: item.name });
+
+	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0><tr>";
+	for (let i in item.value[0]) x += `<th>${i}</th>`;
+	x += "</tr>";
+
+	for(r in item.value) {
+		x += "<tr class=dataRow>";
+		for(i in item.value[r])
+			x += `<td>${item.value[r][i]}</td>`;
+		x += "</tr>";
+		}
+
+	x += "</table>";
+	gbl.bot.innerHTML = x;
+	topLine();
+}
+
+
+
+function oneStat(item)
+{
+	callApi('statistics',showOneStats.bind(item));
+}
+
+
+
+function showStats(data)
+{
+	data.sort((a,b) => {
+		if (a.name < b.name) return -1;
+		if (a.name > b.name) return 1;
+		return 0;
+		});
+
+	ctx.stats = data;
+
+	setState(`${gbl.server}: Stats`, { state: "stats", server: gbl.server });
+
+	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
+	data.forEach(i => {
+		let clk=`onClick="oneStat('${i.name}');"`;
+		if (typeof(i.value) != "object") clk="";
+		x += `<tr ${clk} class=dataRow><td>${i.name}</td><td>${i.type}</td>`;
+		if (typeof(i.value) != "object") x += `<td>${i.value}</td></tr>`;
+		else {
+			if (i.value.length > 0) x += "<td>[Click to view]</td>";
+			else x += "<td></td>";
+			}
+		});
+	x += "</table>";
+	gbl.bot.innerHTML = x;
+	topLine()
+}
+
+
 //=============================================================================================
 // Zone META data handling
 //=============================================================================================
-
 
 
 function doEditMeta(isDel)
@@ -585,13 +662,9 @@ function zoneMetaDetails(data)
 			return 0;
 			});
 
-	let newTitle = `${gbl.server}: ${ctx.zone}, META Data`;
-	gbl.state = { state: "meta", server: gbl.server, zone: ctx.zone, meta:true };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-
+	setState(`${gbl.server}: ${ctx.zone}, META Data`,
+		{ state: "meta", server: gbl.server, zone: ctx.zone, meta:true });
 	ctx.zoneMeta = data;
-	delete gbl.param;
 
 	let x = "<table align=center width=60% border=0 cellspacing=1 cellpadding=0>";
 	for(let i in data) {
@@ -687,7 +760,7 @@ function changeRR()
 		if (newVal != ctx.rec.rrs.records[ctx.edit.dta].content) {
 
 			idx = `rr${ctx.rec.type}`;
-			if ((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!="."))  newVal += ".";
+			if ((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!=".")) newVal += ".";
 
 			if (idx in validations) {
 				if (!validations[idx].test(newVal)) {
@@ -951,12 +1024,7 @@ function drawOneRecord(rrs)
 	else
 		x += ctx.rec.name;
 
-	x += `/${ctx.rec.type}`;
-	gbl.state = { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,x,"/");
-	document.title = x;
-	delete gbl.param;
-
+	setState(`${x}/${ctx.rec.type}`, { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type });
 
 	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 	x += '<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="50%" /></colgroup>'
@@ -1045,7 +1113,7 @@ function addAlg(formName)
 	keyAlg.forEach(i => { x += `<option value=${i}>${i.toUpperCase()}` } );
 	x += "</select></td></tr>";
 
-	let txt = "CSK"; 
+	let txt = "CSK";
 	if (formName=="addKeyForm") txt = "Key";
 	x += "<tbody style='display:none;' id='key1Lens'>"
 		+ `<tr><Td class=formPrompt>${txt} Length (bits) :</td><td><select name=cskBits>`;
@@ -1069,10 +1137,10 @@ function addAlg(formName)
 function setNSEC3(delnsec3)
 {
 	let nsec3 = "1 0 5 ";
-	let nxtFn = function() { 
+	let nxtFn = function() {
 		gbl.params = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
 		gbl.state = gbl.params;
-		loadThisZone(); 
+		loadThisZone();
 		}
 
 	if (delnsec3 == null) {
@@ -1217,7 +1285,7 @@ function doAddKey()
 		"bits": parseInt(document.addKeyForm.cskBits.value),
 		};
 
-    if (json.algorithm == "ecdsa256") json.bits = 256;
+	if (json.algorithm == "ecdsa256") json.bits = 256;
 	else if (json.algorithm == "ecdsa384") json.bits = 384;
 
 	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
@@ -1420,13 +1488,7 @@ function showKeys(data)
 		})
 
 	ctx.zoneKeys = data;
-
-	let newTitle = `${gbl.server}: ${ctx.zone}, DNSSEC Keys`;
-	gbl.state = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-
-	delete gbl.param;
+	setState(`${gbl.server}: ${ctx.zone}, DNSSEC Keys`, { state: "keys", server: gbl.server, zone: ctx.zone, keys:true });
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	x += "<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0><colgroup>";
@@ -1485,8 +1547,8 @@ function showKeys(data)
 		+ btn('deleteAllKeys()',"Unsign",`Remove all DNSSEC on ${ctx.zone}`,sz) + sp;
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
-		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + sp;
-			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone,sz}`) + sp;
+		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + sp
+			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone}`,sz) + sp;
 		}
 	else
 		x += btn("setNSEC3()","Add NSEC3",`Switch this zone to NSEC3 ${ctx.zone}`,sz) + sp;
@@ -1786,12 +1848,7 @@ function zoneDetails(data)
 			}
 		}
 
-	let newTitle = `${gbl.server}: ${ctx.zone}`;
-	gbl.state = { state: "zone", server: gbl.server, zone: ctx.zone };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-
-	delete gbl.param;
+	setState(`${gbl.server}: ${ctx.zone}`, { state: "zone", server: gbl.server, zone: ctx.zone });
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>"
 		+ "<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";
@@ -1897,12 +1954,8 @@ function searchResults(data)
 		return;
 		}
 
-	let newTitle = `${gbl.server}: Search Results`;
-	gbl.state = { state: "search", server: gbl.server, search: ctx.searchTerm };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle
+	setState(`${gbl.server}: Search Results`, { state: "search", server: gbl.server, search: ctx.searchTerm });
 
-	delete gbl.param;
 	ctx = { searchTerm: ctx.searchTerm }; topLine(); ctx = {};
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
@@ -2029,12 +2082,8 @@ function showTSIG(tsig)
 {
 	callApi(`tsigkeys/${tsig}`,data => {
 
-		let newTitle = `${gbl.server}: TSIG ${data.id}`;
-		gbl.state = { state: "tsigdata", server: gbl.server, tsig: data.id };
-		if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-		document.title = newTitle;
-
-		delete gbl.param; ctx = {}; topLine();
+		setState(`${gbl.server}: TSIG ${data.id}`, { state: "tsigdata", server: gbl.server, tsig: data.id });
+		ctx = {}; topLine();
 
 		let x = "<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
 			+ `<tr class=dataRow onClick=\"clickTSIG('${data.id}','Name');\"><td class=formPrompt>TSIG Name :</td><td>${data.id}</td></tr>`
@@ -2070,12 +2119,8 @@ function showTsigList(data)
 	if (("param" in gbl)&&("tsig" in gbl.param)&&(typeof(gbl.param.tsig) != "boolean"))
 		return showTSIG(gbl.param.tsig);
 
-	let newTitle = `${gbl.server}: TSIGs`;
-	gbl.state = { state: "tsig", server: gbl.server, tsig: true };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-
-	delete gbl.param; ctx = {}; topLine();
+	setState(`${gbl.server}: TSIGs`, { state: "tsig", server: gbl.server, tsig: true });
+	ctx = {}; topLine();
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>"
 		+ "<colgroup><col width=100%/><col/></colgroup><tr><Td>"
@@ -2177,6 +2222,10 @@ function zoneListDetails(data)
 	ctx.zoneList = data;
 
 	if ("param" in gbl) {
+		if (gbl.param.state == "stats") {
+			if ("stats" in gbl.param) return oneStat(gbl.param.stats);
+			return loadStats();
+			}
 		if ("tsig" in gbl.param) return loadTsigList();
 		if ("search" in gbl.param) {
 			ctx.searchTerm = gbl.param.search;
@@ -2185,11 +2234,7 @@ function zoneListDetails(data)
 		if ("zone" in gbl.param) return zoneDetailsLoad(gbl.param.zone);
 		}
 
-	let newTitle = `${gbl.server}: Zone List`;
-	gbl.state = { state: "zonelist", server: gbl.server };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-	delete gbl.param;
+	setState(`${gbl.server}: Zone List`, { state: "zonelist", server: gbl.server });
 
 	let x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
 	x += "<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";
@@ -2315,6 +2360,11 @@ function topLine()
 			x += btn('zoneKeys()',"DNSSEC",`Reload the DNSSEC Keys for ${ctx.zone}`);
 			}
 		}
+	else if (("state" in gbl)&&(gbl.state.state == "stats")) {
+		x += btn("loadStats()","Stats","View the server stats");
+		if ("stats" in gbl.state)
+			x += btn(`oneStat('${gbl.state.stats}')`,gbl.state.stats,`View the server stat - ${gbl.state.stats}`);
+		}
 
 	x += "</td><td width=100% align=center><span class='fullvis' id='showMsg'></span></td><td>";
 
@@ -2339,8 +2389,11 @@ function topLine()
 
 		}
 
-	if (gbl.state.state == "zonelist")
-		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs");
+	if (gbl.state.state == "zonelist") {
+		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs")
+		if (!("stats" in ctx))
+			x += btn("loadStats()","Stats","View the server stats");
+		}
 
 	x += "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=30 name=searchTerm></form></td>"
@@ -2425,7 +2478,7 @@ function unerrMsg()
 	let t1 = m.innerHTML;
 	let t2 = gbl.lastErrMsg;
 	if (t2 == null) t2 = "";
-	if (t1 == t2) m.className = "msgPopNo";
+	if (t1 == t2) m.className = "msgPop msgPopNo";
 	delete gbl.lastErrMsg;
 }
 
@@ -2434,7 +2487,7 @@ function unerrMsg()
 function errMsg(txt)
 {
 	let m = document.getElementById("myMsgPop");
-	m.className = 'msgPopYes';
+	m.className = 'msgPop msgPopYes';
 	m.innerHTML = `${gbl.warn} ${txt}`;
 	gbl.lastErrMsg = m.innerHTML;
 	setTimeout(unerrMsg,2500);
@@ -2591,5 +2644,5 @@ function keyEsc(e) {
 	</table>
 </div>
 
-<div id=myMsgPop class=msgPopNo></div>
+<div id=myMsgPop class='msgPop msgPopNo'></div>
 </body></html>
