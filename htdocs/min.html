@@ -7,7 +7,7 @@ body{color:white;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;m
 a{color:#b0b0ff;text-decoration:none;}
 a:hover{text-decoration:underline;}
 form{margin:0px;}.myBtn{text-align:center;display:inline-block;background-color:#d0d0ff;color:black;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;font-weight:bold;border-radius:25px;padding:5px;padding-left:10px;padding-right:10px;cursor:pointer;margin-top:0px;margin-left:10px;margin-bottom:2px;margin-right:2px;}.myBtn:hover{box-shadow:3px 3px#222244;text-shadow:1px 1px#ffffff;}.myBtn:active{position:relative;box-shadow:none;text-shadow:none;top:1px;left:1px;}.dnskey{color:#383855;}
-td{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}.msgPopNo{position:absolute;left:10px;top:20px;visibility:hidden;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:16pt;width:95%;background:#ffd0d0;text-align:center;color:black;opacity:0;transition:visibility 0s 1s,opacity 1s linear;padding:5px;border-radius:10px;}.msgPopYes{position:absolute;left:10px;top:20px;visibility:visible;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:16pt;width:95%;background:#ffd0d0;text-align:center;color:black;opacity:1;transition:opacity 0.5s linear;padding:5px;border-radius:10px;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,state:{state:"login"},tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",nsec:"&#x1F512;",nsec3:"&#x1F510;",clip:"&#x1F4CE;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var trueOrFalse=/^[01]$/;var validateMeta={"API-RECTIFY":trueOrFalse,"IXFR":trueOrFalse,"NSEC3NARROW":trueOrFalse,"PRESIGNED":trueOrFalse,"PUBLISH-CDNSKEY":trueOrFalse,"SLAVE-RENOTIFY":trueOrFalse,"SOA-EDIT":/^(INCREMENT-WEEKS|INCEPTION-EPOCH|INCEPTION-INCREMENT|INCEPTION)$/i,"SOA-EDIT-API":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,"SOA-EDIT-DNSUPDATE":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];var metaPickLists={"PUBLISH-CDNSKEY":{"Enabled":1,"Disabled":0},"API-RECTIFY":{"Enabled":1,"Disabled":0},"PRESIGNED":{"Enabled":1,"Disabled":0},"NSEC3NARROW":{"Enabled":1,"Disabled":0},"IXFR":{"Enabled":1,"Disabled":0},"eSLAVE-RENOTIFY":{"Enabled":1,"Disabled":0},"SOA-EDIT":["INCREMENT-WEEKS","INCEPTION-EPOCH","INCEPTION-INCREMENT","INCEPTION"],"SOA-EDIT-API":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],"SOA-EDIT-DNSUPDATE":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],};var blockedMeta={"SOA-EDIT":{name:"soa_edit",list:false,delete:false},"SOA-EDIT-API":{name:"soa_edit_api",list:false,delete:true},"NSEC3PARAM":{name:"nsec3param",list:false,delete:true},"TSIG-ALLOW-AXFR":{name:"master_tsig_key_ids",list:true,delete:true},"AXFR-MASTER-TSIG":{name:"slave_tsig_key_ids",list:true,delete:true},};allMetaItems=['ALLOW-AXFR-FROM','ALLOW-DNSUPDATE-FROM','ALSO-NOTIFY','AXFR-MASTER-TSIG','AXFR-SOURCE','FORWARD-DNSUPDATE','GSS-ACCEPTOR-PRINCIPAL','GSS-ALLOW-AXFR-PRINCIPAL','IXFR','LUA-AXFR-SCRIPT','NOTIFY-DNSUPDATE','NSEC3NARROW','NSEC3PARAM','PRESIGNED','PUBLISH-CDNSKEY','PUBLISH-CDS','SOA-EDIT','SOA-EDIT-DNSUPDATE','TSIG-ALLOW-AXFR','TSIG-ALLOW-DNSUPDATE',];function callApi(sfx,callback,inData)
+td{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;vertical-align:top;padding-left:7px;padding-right:7px;white-space:nowrap;}.dataRow{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;cursor:pointer;color:white;background-color:#666688;}.dataRow:hover{background-color:#444466;}.formPrompt{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10pt;color:white;text-align:right;}.msgPop{position:absolute;left:10px;top:20px;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:16pt;width:95%;background:#ffd0d0;text-align:center;color:black;padding:5px;border-radius:10px;}.msgPopNo{visibility:hidden;opacity:0;transition:visibility 0s 1s,opacity 1s linear;}.msgPopYes{visibility:visible;opacity:1;transition:opacity 0.5s linear;}</style><script language="Javascript">console.clear();var gbl={server:null,apikey:null,with_https:true,default_ttl:86400,state:{state:"login"},tick:"&#x2611;",cross:"&#x2612;",timer:"&#x23f3;",bin:"&#x2702;",warn:"&#x26a0;",page:"&#x1F5CE;",nsec:"&#x1F512;",nsec3:"&#x1F510;",clip:"&#x1F4CE;",};var ctx={};var autoAddDot={rrMX:true,rrNS:true,rrCNAME:true,};var fqdnCheck=/^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;var validations={rrAAAA:/^(([0-9A-F]{1,4}:){7,7}[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,7}:|([0-9A-F]{1,4}:){1,6}:[0-9A-F]{1,4}|([0-9A-F]{1,4}:){1,5}(:[0-9A-F]{1,4}){1,2}|([0-9A-F]{1,4}:){1,4}(:[0-9A-F]{1,4}){1,3}|([0-9A-F]{1,4}:){1,3}(:[0-9A-F]{1,4}){1,4}|([0-9A-F]{1,4}:){1,2}(:[0-9A-F]{1,4}){1,5}|[0-9A-F]{1,4}:((:[0-9A-F]{1,4}){1,6})|:((:[0-9A-F]{1,4}){1,7}|:)|fe80:(:[0-9A-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9A-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/i,rrA:/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,rrMX:/^[1-9][0-9]{0,5} (([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/,rrNS:fqdnCheck,rrCNAME:fqdnCheck,rrDS:/^(([123456]?[0-9]{1,4}|[0-9]1,4) ([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) [1234] [0-9A-F ]{40,100})$/i,};var trueOrFalse=/^[01]$/;var validateMeta={"API-RECTIFY":trueOrFalse,"IXFR":trueOrFalse,"NSEC3NARROW":trueOrFalse,"PRESIGNED":trueOrFalse,"PUBLISH-CDNSKEY":trueOrFalse,"SLAVE-RENOTIFY":trueOrFalse,"SOA-EDIT":/^(INCREMENT-WEEKS|INCEPTION-EPOCH|INCEPTION-INCREMENT|INCEPTION)$/i,"SOA-EDIT-API":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,"SOA-EDIT-DNSUPDATE":/^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,};var dsAlg=["Reserved","SHA1","SHA256","GOST","SHA384"];var metaPickLists={"PUBLISH-CDNSKEY":{"Enabled":1,"Disabled":0},"API-RECTIFY":{"Enabled":1,"Disabled":0},"PRESIGNED":{"Enabled":1,"Disabled":0},"NSEC3NARROW":{"Enabled":1,"Disabled":0},"IXFR":{"Enabled":1,"Disabled":0},"eSLAVE-RENOTIFY":{"Enabled":1,"Disabled":0},"SOA-EDIT":["INCREMENT-WEEKS","INCEPTION-EPOCH","INCEPTION-INCREMENT","INCEPTION"],"SOA-EDIT-API":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],"SOA-EDIT-DNSUPDATE":["DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE"],};var blockedMeta={"SOA-EDIT":{name:"soa_edit",list:false,delete:false},"SOA-EDIT-API":{name:"soa_edit_api",list:false,delete:true},"NSEC3PARAM":{name:"nsec3param",list:false,delete:true},"TSIG-ALLOW-AXFR":{name:"master_tsig_key_ids",list:true,delete:true},"AXFR-MASTER-TSIG":{name:"slave_tsig_key_ids",list:true,delete:true},};allMetaItems=['ALLOW-AXFR-FROM','ALLOW-DNSUPDATE-FROM','ALSO-NOTIFY','AXFR-MASTER-TSIG','AXFR-SOURCE','FORWARD-DNSUPDATE','GSS-ACCEPTOR-PRINCIPAL','GSS-ALLOW-AXFR-PRINCIPAL','IXFR','LUA-AXFR-SCRIPT','NOTIFY-DNSUPDATE','NSEC3NARROW','NSEC3PARAM','PRESIGNED','PUBLISH-CDNSKEY','PUBLISH-CDS','SOA-EDIT','SOA-EDIT-DNSUPDATE','TSIG-ALLOW-AXFR','TSIG-ALLOW-DNSUPDATE',];function callApi(sfx,callback,inData)
 {if(debugAPI){console.log("API>>>",sfx);console.log("API>>>",inData);}
 gbl.forms.forEach(i=>i.style.display="none");if((inData!=null)&&(inData.method=="PUT"))
 msg(`Requesting...${gbl.timer}`);else
@@ -24,7 +24,7 @@ function loadStats()
 {callApi("statistics",showStats);}
 function showOneStats(data)
 {let item=null;for(let i of data)if(i.name==this)item=i;if(item==null){errMsg(`Could not find stats item'${this}'`);return loadStats();}
-ctx.stats=data;setState(`${gbl.server}:Stats:${item.name}`,{state:"stats",server:gbl.server,stats:item.name});let x="<table width=100% border=0 cellspacing=1 cellpadding=0><tr>";for(let i in item.value[0])x+=`<th>${i}</th>`;x+="</tr>";for(r in item.value){x+="<tr>";for(i in item.value[r])
+ctx.stats=data;setState(`${gbl.server}:Stats:${item.name}`,{state:"stats",server:gbl.server,stats:item.name});let x="<table width=100% border=0 cellspacing=1 cellpadding=0><tr>";for(let i in item.value[0])x+=`<th>${i}</th>`;x+="</tr>";for(r in item.value){x+="<tr class=dataRow>";for(i in item.value[r])
 x+=`<td>${item.value[r][i]}</td>`;x+="</tr>";}
 x+="</table>";gbl.bot.innerHTML=x;topLine();}
 function oneStat(item)
@@ -376,7 +376,7 @@ function addAlg(formName)
 	keyAlg.forEach(i => { x += `<option value=${i}>${i.toUpperCase()}` } );
 	x += "</select></td></tr>";
 
-	let txt = "CSK"; 
+	let txt = "CSK";
 	if (formName=="addKeyForm") txt = "Key";
 	x += "<tbody style='display:none;' id='key1Lens'>"
 		+ `<tr><Td class=formPrompt>${txt} Length (bits) :</td><td><select name=cskBits>`;
@@ -400,10 +400,10 @@ function addAlg(formName)
 function setNSEC3(delnsec3)
 {
 	let nsec3 = "1 0 5 ";
-	let nxtFn = function() { 
+	let nxtFn = function() {
 		gbl.params = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
 		gbl.state = gbl.params;
-		loadThisZone(); 
+		loadThisZone();
 		}
 
 	if (delnsec3 == null) {
@@ -1345,7 +1345,7 @@ function unerrMsg()
 	let t1 = m.innerHTML;
 	let t2 = gbl.lastErrMsg;
 	if (t2 == null) t2 = "";
-	if (t1 == t2) m.className = "msgPopNo";
+	if (t1 == t2) m.className = "msgPop msgPopNo";
 	delete gbl.lastErrMsg;
 }
 
@@ -1354,7 +1354,7 @@ function unerrMsg()
 function errMsg(txt)
 {
 	let m = document.getElementById("myMsgPop");
-	m.className = 'msgPopYes';
+	m.className = 'msgPop msgPopYes';
 	m.innerHTML = `${gbl.warn} ${txt}`;
 	gbl.lastErrMsg = m.innerHTML;
 	setTimeout(unerrMsg,2500);
