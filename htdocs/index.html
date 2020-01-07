@@ -410,6 +410,42 @@ function loadStats()
 }
 
 
+function showOneStats(data)
+{
+    let item = null;
+    for(let i of data) if (i.name==this) item = i;
+    if (item == null) {
+    	errMsg(`Could not find stats item '${this}'`);
+    	return loadStats();
+    	}
+
+	ctx.stats = data;
+	setState(`${gbl.server}: Stats: ${item.name}`, { state: "stats", server: gbl.server, stats: item.name });
+
+    let x = "<table width=100% border=0 cellspacing=1 cellpadding=0><tr>";
+    for (let i in item.value[0]) x += `<th>${i}</th>`;
+    x += "</tr>";
+
+    for(r in item.value) {
+    	x += "<tr>";
+    	for(i in item.value[r])
+    		x += `<td>${item.value[r][i]}</td>`;
+    	x += "</tr>";
+    	}
+
+    x += "</table>";
+	gbl.bot.innerHTML = x;
+	topLine();
+}
+
+
+
+function oneStat(item)
+{
+	callApi('statistics',showOneStats.bind(item));
+}
+
+
 
 function showStats(data)
 {
@@ -420,11 +456,14 @@ function showStats(data)
 		});
 
 	ctx.stats = data;
+
 	setState(`${gbl.server}: Stats`, { state: "stats", server: gbl.server });
 
 	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 	data.forEach(i => {
-		x += `<tr class=dataRow><td>${i.name}</td><td>${i.type}</td>`;
+		let clk=`onClick="oneStat('${i.name}');"`;
+		if (typeof(i.value) != "object") clk="";
+		x += `<tr ${clk} class=dataRow><td>${i.name}</td><td>${i.type}</td>`;
 		if (typeof(i.value) != "object") x += `<td>${i.value}</td></tr>`;
 		else {
 			if (i.value.length > 0) x += "<td>[Click to view]</td>";
@@ -2191,7 +2230,10 @@ function zoneListDetails(data)
 	ctx.zoneList = data;
 
 	if ("param" in gbl) {
-		if (gbl.param.state == "stats") return loadStats();
+		if (gbl.param.state == "stats") {
+			if ("stats" in gbl.param) return oneStat(gbl.param.stats);
+			return loadStats();
+			}
 		if ("tsig" in gbl.param) return loadTsigList();
 		if ("search" in gbl.param) {
 			ctx.searchTerm = gbl.param.search;
@@ -2326,8 +2368,10 @@ function topLine()
 			x += btn('zoneKeys()',"DNSSEC",`Reload the DNSSEC Keys for ${ctx.zone}`);
 			}
 		}
-	else if ("stats" in ctx) {
+	else if (("state" in gbl)&&(gbl.state.state == "stats")) {
 		x += btn("loadStats()","Stats","View the server stats");
+		if ("stats" in gbl.state)
+			x += btn(`oneStat('${gbl.state.stats}')`,gbl.state.stats,`View the server stat - ${gbl.state.stats}`);
 		}
 
 	x += "</td><td width=100% align=center><span class='fullvis' id='showMsg'></span></td><td>";
