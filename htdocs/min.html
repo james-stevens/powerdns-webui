@@ -18,6 +18,19 @@ callback(true);else{let param=data;try{param=JSON.parse(data);}
 catch{param=data;}
 callback(param);}});});}
 function downloadFile(text,fileType,fileName){var blob=new Blob([text],{type:fileType});var a=document.createElement('a');a.download=fileName;a.href=URL.createObjectURL(blob);a.dataset.downloadurl=[fileType,a.download,a.href].join(':');a.style.display="none";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(a.href),1500);msg("");}
+function setState(title,state)
+{gbl.state=state;if(!("param"in gbl))window.history.pushState(state,title,"/");document.title=title;delete gbl.param;}
+function loadStats()
+{callApi("statistics",showStats);}
+function showOneStats(data)
+{let item=null;for(let i of data)if(i.name==this)item=i;if(item==null){errMsg(`Could not find stats item'${this}'`);return loadStats();}
+ctx.stats=data;setState(`${gbl.server}:Stats:${item.name}`,{state:"stats",server:gbl.server,stats:item.name});let x="<table width=100% border=0 cellspacing=1 cellpadding=0><tr>";for(let i in item.value[0])x+=`<th>${i}</th>`;x+="</tr>";for(r in item.value){x+="<tr>";for(i in item.value[r])
+x+=`<td>${item.value[r][i]}</td>`;x+="</tr>";}
+x+="</table>";gbl.bot.innerHTML=x;topLine();}
+function oneStat(item)
+{callApi('statistics',showOneStats.bind(item));}
+function showStats(data)
+{data.sort((a,b)=>{if(a.name<b.name)return-1;if(a.name>b.name)return 1;return 0;});ctx.stats=data;setState(`${gbl.server}:Stats`,{state:"stats",server:gbl.server});let x="<table width=100% border=0 cellspacing=1 cellpadding=0>";data.forEach(i=>{let clk=`onClick="oneStat('${i.name}');"`;if(typeof(i.value)!="object")clk="";x+=`<tr ${clk}class=dataRow><td>${i.name}</td><td>${i.type}</td>`;if(typeof(i.value)!="object")x+=`<td>${i.value}</td></tr>`;else{if(i.value.length>0)x+="<td>[Click to view]</td>";else x+="<td></td>";}});x+="</table>";gbl.bot.innerHTML=x;topLine()}
 function doEditMeta(isDel)
 {let f=document.newMetaForm;let dataIdx=parseInt(f.dataIdx.value);let itemIdx=parseInt(f.itemIdx.value);let metaValue=document.newMetaForm.metaValue.value;let i=ctx.zoneMeta[dataIdx];if((i.kind in validateMeta)&&(!(validateMeta[i.kind].test(metaValue)))){errMsg(`Invalid value for ${i.kind}`);document.newMetaForm.metaValue.focus();document.newMetaForm.metaValue.select();return false;}
 if(isDel){metaValue="";i.metadata.splice(itemIdx,1);}
@@ -59,7 +72,7 @@ function zoneMeta()
 {ctx.meta=true;topLine();callApi(`zones/${ctx.zone}/metadata`,zoneMetaDetails);return false;}
 function zoneMetaDetails(data)
 {data.sort((a,b)=>{if(a.kind<b.kind)return-1;if(a.kind>b.kind)return 1;return 0;});for(let i of data)
-i.metadata.sort((a,b)=>{if(a<b)return-1;if(b<a)return 1;return 0;});let newTitle=`${gbl.server}:${ctx.zone},META Data`;gbl.state={state:"meta",server:gbl.server,zone:ctx.zone,meta:true};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;ctx.zoneMeta=data;delete gbl.param;let x="<table align=center width=60% border=0 cellspacing=1 cellpadding=0>";for(let i in data){for(let y in data[i].metadata){let td=`<td onClick="editMetaItem(${i},${y});">`;x+=`<tr class=dataRow>${td}${data[i].kind.toUpperCase()}</td>`;x+=`${td}${data[i].metadata[y]}</td></tr>`;}}
+i.metadata.sort((a,b)=>{if(a<b)return-1;if(b<a)return 1;return 0;});setState(`${gbl.server}:${ctx.zone},META Data`,{state:"meta",server:gbl.server,zone:ctx.zone,meta:true});ctx.zoneMeta=data;let x="<table align=center width=60% border=0 cellspacing=1 cellpadding=0>";for(let i in data){for(let y in data[i].metadata){let td=`<td onClick="editMetaItem(${i},${y});">`;x+=`<tr class=dataRow>${td}${data[i].kind.toUpperCase()}</td>`;x+=`${td}${data[i].metadata[y]}</td></tr>`;}}
 x+="</table>";gbl.bot.innerHTML=x;topLine();}
 function addNewRR()
 {ctx.rec.rrs.records.push({content:"",disabled:false});drawOneRecord();clickData(ctx.rec.rrs.records.length-1);}
@@ -274,12 +287,7 @@ function drawOneRecord(rrs)
 	else
 		x += ctx.rec.name;
 
-	x += `/${ctx.rec.type}`;
-	gbl.state = { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,x,"/");
-	document.title = x;
-	delete gbl.param;
-
+	setState(`${x}/${ctx.rec.type}`, { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type });
 
 	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 	x += '<colgroup><col width="10%"/><col width="25%"/><col width="99px"/><col/><col width="50%"/></colgroup>'
@@ -540,7 +548,7 @@ function doAddKey()
 		"bits": parseInt(document.addKeyForm.cskBits.value),
 		};
 
-    if (json.algorithm == "ecdsa256") json.bits = 256;
+	if (json.algorithm == "ecdsa256") json.bits = 256;
 	else if (json.algorithm == "ecdsa384") json.bits = 384;
 
 	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
@@ -743,13 +751,7 @@ function showKeys(data)
 		})
 
 	ctx.zoneKeys = data;
-
-	let newTitle = `${gbl.server}: ${ctx.zone}, DNSSEC Keys`;
-	gbl.state = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-
-	delete gbl.param;
+	setState(`${gbl.server}: ${ctx.zone}, DNSSEC Keys`, { state: "keys", server: gbl.server, zone: ctx.zone, keys:true });
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	x += "<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0><colgroup>";
@@ -771,9 +773,8 @@ function showKeys(data)
 		i = data[idx];
 		x += `<tr onClick='clickDnssecKey(${idx});' class=dataRow><td align=center>`
 		let aflag = 0;
-		if (i.active) { aflag=1; x += gbl.tick; } else x = x + gbl.cross;
-		x += "</td>";
-		x += `<td align=center>${i.id}</td>`;
+		if (i.active) { aflag=1; x += gbl.tick; } else x += gbl.cross;
+		x += `</td><td align=center>${i.id}</td>`;
 
 		if (i.keytype in keyTypes) {
 			let k = keyTypes[i.keytype];
@@ -809,8 +810,8 @@ function showKeys(data)
 		+ btn('deleteAllKeys()',"Unsign",`Remove all DNSSEC on ${ctx.zone}`,sz) + sp;
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
-		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + sp;
-			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone,sz}`) + sp;
+		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + sp
+			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone}`,sz) + sp;
 		}
 	else
 		x += btn("setNSEC3()","Add NSEC3",`Switch this zone to NSEC3 ${ctx.zone}`,sz) + sp;
@@ -904,7 +905,7 @@ function zoneDetails(data)
 else{if(a.name==data.id)return-1;if(b.name==data.id)return 1;if(a.name<b.name)return-1;if(a.name>b.name)return 1;}
 if(a.type<b.type)return-1;if(a.type>b.type)return 1;return 0;})
 ctx.zoneDetails=data;if(("param"in gbl)&&("zone"in gbl.param)){if("meta"in gbl.param)return zoneMeta();if("keys"in gbl.param)return zoneKeys();if((data.kind!="Slave")&&("name"in gbl.param)&&("type"in gbl.param)){return clickZoneRecord(gbl.param.name,gbl.param.type);}}
-let newTitle=`${gbl.server}:${ctx.zone}`;gbl.state={state:"zone",server:gbl.server,zone:ctx.zone};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;let x="<table width=100% border=0 cellspacing=0 cellpadding=0>"
+setState(`${gbl.server}:${ctx.zone}`,{state:"zone",server:gbl.server,zone:ctx.zone});let x="<table width=100% border=0 cellspacing=0 cellpadding=0>"
 +"<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data.rrsets){x+=`<tr onClick="clickZoneRecord('${i.name}','${i.type}');"class=dataRow>`+`<td valign=top>${i.name.substr(0,i.name.length-ctx.zone.length-1)}</td>`+`<td valign=top align=right>${i.ttl}</td>`+`<td valign=top>${i.type}</td><td valign=top>`;if(i.type=="SOA"){ctx.soaSplit=i.records[0].content.split(" ");x+=formatSOA(ctx.soaSplit);}
 else{i.records.sort((a,b)=>{if(a.content<b.content)return-1;if(a.content>b.content)return 1;return 0;})
 for(let rrs of i.records)
@@ -926,8 +927,7 @@ function searchLoadRecord(zone,name,type)
 {gbl.param={state:"record",server:gbl.server,zone:ctx.zone,name:ctx.rec.name,type:ctx.rec.type};gbl.state=gbl.param;title=`${gbl.server},Search results-${name}:${type}`window.history.pushState(gbl.param,title,"/");zoneDetailsLoad(zone);}
 function searchResults(data)
 {if(data.length<=0){popMsg("No search results");return;}
-let newTitle=`${gbl.server}:Search Results`;gbl.state={state:"search",server:gbl.server,search:ctx.searchTerm};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle
-delete gbl.param;ctx={searchTerm:ctx.searchTerm};topLine();ctx={};let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){x+="<tr class=dataRow";if(i.object_type!="zone"){x+=`onClick='ctx = { zone: "${i.zone}" }; `
+setState(`${gbl.server}:Search Results`,{state:"search",server:gbl.server,search:ctx.searchTerm});ctx={searchTerm:ctx.searchTerm};topLine();ctx={};let x="<table width=100% border=0 cellspacing=0 cellpadding=0>";for(let i of data){x+="<tr class=dataRow";if(i.object_type!="zone"){x+=`onClick='ctx = { zone: "${i.zone}" }; `
 				+ ` searchLoadRecord("${i.zone}","${i.name}","${i.type}");'`+`><td valign=top>${i.name}</td>`+`<td valign=top align=right>${i.ttl}</td>`+`<td valign=top>${i.type}</td>`;if(i.type=="SOA")
 x+=`<td valign=top>${formatSOA(i.content.split(" "))}</td>`;else
 x+=`<td valign=top>${i.content}</td>`;}
@@ -952,7 +952,7 @@ function addTSIG(withClr)
 {gbl.bot.innerHTML="";gbl.addT.style.display="block";let t=document.newTsigForm.tsigName;let k=document.newTsigForm.tsigKey;if(withClr){t.value="";k.value="";}
 t.focus();}
 function showTSIG(tsig)
-{callApi(`tsigkeys/${tsig}`,data=>{let newTitle=`${gbl.server}:TSIG ${data.id}`;gbl.state={state:"tsigdata",server:gbl.server,tsig:data.id};if(!("param"in gbl))window.history.pushState(gbl.state,newTitle,"/");document.title=newTitle;delete gbl.param;ctx={};topLine();let x="<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
+{callApi(`tsigkeys/${tsig}`,data=>{setState(`${gbl.server}:TSIG ${data.id}`,{state:"tsigdata",server:gbl.server,tsig:data.id});ctx={};topLine();let x="<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
 +`<tr class=dataRow onClick=\"clickTSIG('${data.id}','Name');\"><td class=formPrompt>TSIG Name :</td><td>${data.id}</td></tr>`
 			+ `<tr><td class=formPrompt>TSIG Algorithm :</td><td>${data.algorithm.toUpperCase()}</td></tr>`
 			+ `<tr onClick=\"clickTSIG('${data.key}','Key');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>${data.key}</td></tr>`
@@ -986,12 +986,8 @@ function showTsigList(data)
 	if (("param" in gbl)&&("tsig" in gbl.param)&&(typeof(gbl.param.tsig) != "boolean"))
 		return showTSIG(gbl.param.tsig);
 
-	let newTitle = `${gbl.server}: TSIGs`;
-	gbl.state = { state: "tsig", server: gbl.server, tsig: true };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-
-	delete gbl.param; ctx = {}; topLine();
+	setState(`${gbl.server}: TSIGs`, { state: "tsig", server: gbl.server, tsig: true });
+	ctx = {}; topLine();
 
 	let x = "<table width=100%border=0 cellspacing=0 cellpadding=0>"
 		+ "<colgroup><col width=100%/><col/></colgroup><tr><Td>"
@@ -1093,6 +1089,10 @@ function zoneListDetails(data)
 	ctx.zoneList = data;
 
 	if ("param" in gbl) {
+		if (gbl.param.state == "stats") {
+			if ("stats" in gbl.param) return oneStat(gbl.param.stats);
+			return loadStats();
+			}
 		if ("tsig" in gbl.param) return loadTsigList();
 		if ("search" in gbl.param) {
 			ctx.searchTerm = gbl.param.search;
@@ -1101,11 +1101,7 @@ function zoneListDetails(data)
 		if ("zone" in gbl.param) return zoneDetailsLoad(gbl.param.zone);
 		}
 
-	let newTitle = `${gbl.server}: Zone List`;
-	gbl.state = { state: "zonelist", server: gbl.server };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-	delete gbl.param;
+	setState(`${gbl.server}: Zone List`, { state: "zonelist", server: gbl.server });
 
 	let x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
 	x += "<tr><td><table width=100%border=0 cellspacing=0 cellpadding=0>";
@@ -1231,6 +1227,11 @@ function topLine()
 			x += btn('zoneKeys()',"DNSSEC",`Reload the DNSSEC Keys for ${ctx.zone}`);
 			}
 		}
+	else if (("state" in gbl)&&(gbl.state.state == "stats")) {
+		x += btn("loadStats()","Stats","View the server stats");
+		if ("stats" in gbl.state)
+			x += btn(`oneStat('${gbl.state.stats}')`,gbl.state.stats,`View the server stat - ${gbl.state.stats}`);
+		}
 
 	x += "</td><td width=100%align=center><span class='fullvis'id='showMsg'></span></td><td>";
 
@@ -1255,8 +1256,11 @@ function topLine()
 
 		}
 
-	if (gbl.state.state == "zonelist")
-		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs");
+	if (gbl.state.state == "zonelist") {
+		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs")
+		if (!("stats" in ctx))
+			x += btn("loadStats()","Stats","View the server stats");
+		}
 
 	x += "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search'size=30 name=searchTerm></form></td>"
