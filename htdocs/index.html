@@ -162,7 +162,7 @@ td {
 	top: 20px;
 	visibility: hidden;
 	font-family:Verdana,Arial,Helvetica,sans-serif;
-    font-size:16pt;
+	font-size:16pt;
 	width: 95%;
 	background: #ffd0d0;
 	text-align: center;
@@ -178,7 +178,7 @@ td {
 	top: 20px;
 	visibility: visible;
 	font-family:Verdana,Arial,Helvetica,sans-serif;
-    font-size:16pt;
+	font-size:16pt;
 	width: 95%;
 	background: #ffd0d0;
 	text-align: center;
@@ -390,6 +390,16 @@ function downloadFile(text, fileType, fileName) {
 // end of -> danallison/downloadString.js
 
 
+
+function setState(title,state)
+{
+	gbl.state = state;
+	if (!("param" in gbl)) window.history.pushState(state,title,"/");
+	document.title = title;
+	delete gbl.param;
+}
+
+
 //=============================================================================================
 // Stats handling
 //=============================================================================================
@@ -410,6 +420,7 @@ function showStats(data)
 		});
 
 	ctx.stats = data;
+	setState(`${gbl.server}: Stats`, { state: "stats", server: gbl.server });
 
 	let x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 	data.forEach(i => {
@@ -620,13 +631,9 @@ function zoneMetaDetails(data)
 			return 0;
 			});
 
-	let newTitle = `${gbl.server}: ${ctx.zone}, META Data`;
-	gbl.state = { state: "meta", server: gbl.server, zone: ctx.zone, meta:true };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-
+	setState(`${gbl.server}: ${ctx.zone}, META Data`,
+		{ state: "meta", server: gbl.server, zone: ctx.zone, meta:true });
 	ctx.zoneMeta = data;
-	delete gbl.param;
 
 	let x = "<table align=center width=60% border=0 cellspacing=1 cellpadding=0>";
 	for(let i in data) {
@@ -722,7 +729,7 @@ function changeRR()
 		if (newVal != ctx.rec.rrs.records[ctx.edit.dta].content) {
 
 			idx = `rr${ctx.rec.type}`;
-			if ((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!="."))  newVal += ".";
+			if ((idx in autoAddDot)&&(newVal.substr(newVal.length-1)!=".")) newVal += ".";
 
 			if (idx in validations) {
 				if (!validations[idx].test(newVal)) {
@@ -986,12 +993,7 @@ function drawOneRecord(rrs)
 	else
 		x += ctx.rec.name;
 
-	x += `/${ctx.rec.type}`;
-	gbl.state = { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,x,"/");
-	document.title = x;
-	delete gbl.param;
-
+	setState(`${x}/${ctx.rec.type}`, { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type });
 
 	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
 	x += '<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="50%" /></colgroup>'
@@ -1252,7 +1254,7 @@ function doAddKey()
 		"bits": parseInt(document.addKeyForm.cskBits.value),
 		};
 
-    if (json.algorithm == "ecdsa256") json.bits = 256;
+	if (json.algorithm == "ecdsa256") json.bits = 256;
 	else if (json.algorithm == "ecdsa384") json.bits = 384;
 
 	callApi(`zones/${ctx.zone}/cryptokeys`,zoneKeys,
@@ -1455,13 +1457,7 @@ function showKeys(data)
 		})
 
 	ctx.zoneKeys = data;
-
-	let newTitle = `${gbl.server}: ${ctx.zone}, DNSSEC Keys`;
-	gbl.state = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-
-	delete gbl.param;
+	setState(`${gbl.server}: ${ctx.zone}, DNSSEC Keys`, { state: "keys", server: gbl.server, zone: ctx.zone, keys:true });
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
 	x += "<tr><td width=100%><table width=100% border=0 cellspacing=1 cellpadding=0><colgroup>";
@@ -1821,12 +1817,7 @@ function zoneDetails(data)
 			}
 		}
 
-	let newTitle = `${gbl.server}: ${ctx.zone}`;
-	gbl.state = { state: "zone", server: gbl.server, zone: ctx.zone };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-
-	delete gbl.param;
+	setState(`${gbl.server}: ${ctx.zone}`, { state: "zone", server: gbl.server, zone: ctx.zone });
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>"
 		+ "<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";
@@ -1932,12 +1923,8 @@ function searchResults(data)
 		return;
 		}
 
-	let newTitle = `${gbl.server}: Search Results`;
-	gbl.state = { state: "search", server: gbl.server, search: ctx.searchTerm };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle
+	setState(`${gbl.server}: Search Results`, { state: "search", server: gbl.server, search: ctx.searchTerm });
 
-	delete gbl.param;
 	ctx = { searchTerm: ctx.searchTerm }; topLine(); ctx = {};
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>";
@@ -2064,12 +2051,8 @@ function showTSIG(tsig)
 {
 	callApi(`tsigkeys/${tsig}`,data => {
 
-		let newTitle = `${gbl.server}: TSIG ${data.id}`;
-		gbl.state = { state: "tsigdata", server: gbl.server, tsig: data.id };
-		if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-		document.title = newTitle;
-
-		delete gbl.param; ctx = {}; topLine();
+		setState(`${gbl.server}: TSIG ${data.id}`, { state: "tsigdata", server: gbl.server, tsig: data.id });
+		ctx = {}; topLine();
 
 		let x = "<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
 			+ `<tr class=dataRow onClick=\"clickTSIG('${data.id}','Name');\"><td class=formPrompt>TSIG Name :</td><td>${data.id}</td></tr>`
@@ -2105,12 +2088,8 @@ function showTsigList(data)
 	if (("param" in gbl)&&("tsig" in gbl.param)&&(typeof(gbl.param.tsig) != "boolean"))
 		return showTSIG(gbl.param.tsig);
 
-	let newTitle = `${gbl.server}: TSIGs`;
-	gbl.state = { state: "tsig", server: gbl.server, tsig: true };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-
-	delete gbl.param; ctx = {}; topLine();
+	setState(`${gbl.server}: TSIGs`, { state: "tsig", server: gbl.server, tsig: true });
+	ctx = {}; topLine();
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>"
 		+ "<colgroup><col width=100%/><col/></colgroup><tr><Td>"
@@ -2212,6 +2191,7 @@ function zoneListDetails(data)
 	ctx.zoneList = data;
 
 	if ("param" in gbl) {
+		if (gbl.param.state == "stats") return loadStats();
 		if ("tsig" in gbl.param) return loadTsigList();
 		if ("search" in gbl.param) {
 			ctx.searchTerm = gbl.param.search;
@@ -2220,11 +2200,7 @@ function zoneListDetails(data)
 		if ("zone" in gbl.param) return zoneDetailsLoad(gbl.param.zone);
 		}
 
-	let newTitle = `${gbl.server}: Zone List`;
-	gbl.state = { state: "zonelist", server: gbl.server };
-	if (!("param" in gbl)) window.history.pushState(gbl.state,newTitle,"/");
-	document.title = newTitle;
-	delete gbl.param;
+	setState(`${gbl.server}: Zone List`, { state: "zonelist", server: gbl.server });
 
 	let x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
 	x += "<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";
