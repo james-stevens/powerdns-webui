@@ -16,7 +16,8 @@ It is primarily aimed at those who are using PowerDNS as a DNS Master, as this i
 but it should handle native / slave zones OK.
 If you are using this webapp for slave / native, please let me know if there are features it needs.
 
-`htdocs/min.html` is a minified version of the same file, minified using `python -m jsmin index.html > min.html`
+When minified, using `python -m jsmin index.html > min.html`, the savings are not great (~10%), so I chosen to no longer provide this minified file.
+This is probably largely because I use TAB indents (see CONTRIBUTING.md).
 
 Becuase of the security limitations of the PowerDNS Rest/API, this is intended as a SysAdmin tool only - see the **Security** Section below.
 
