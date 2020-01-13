@@ -6,6 +6,15 @@ This project has no connection whatsoever with [PowerDNS.COM BV](https://www.pow
 It is an independently funded & maintained development effort.
 
 
+# First Issue
+
+I've open a [first issue](https://github.com/james-stevens/powerdns-webui/issues/18) called `Just for Chatting`,
+so if you want to leave any comments or feedback without opening your own issue, you can use this.
+
+If you know of a better way to achieve this fiunctionality, please let me know. I couldn't find any kind of aimless chat feature.
+
+
+
 # PowerDNS WebUI
 
 `htdocs/index.html` is a complete self-contained, single-file, single page HTML, CSS & Javascript webapp
