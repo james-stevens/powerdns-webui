@@ -1812,7 +1812,6 @@ function zoneAddHost()
 	gbl.addH.style.display = "block";
 	let f = document.newNameForm;
 	f.rrName.value = "";
-	f.rrTTL.value = gbl.default_ttl;
 	f.rrName.focus();
 }
 
@@ -2441,6 +2440,9 @@ function startUp()
 
 	let f = document.loginForm;
 	if (f.server.value == "") f.server.value = window.location.hostname;
+	f.with_https.checked = (window.location.protocol == "https:")
+
+	document.newNameForm.rrTTL.value = gbl.default_ttl;
 }
 
 
@@ -2555,7 +2557,7 @@ function keyEsc(e) {
 	<form action="/" onSubmit="return initialLogin()" name=loginForm>
 		<tr><td class=formPrompt>Server:</td><td><input name=server value=""></td></tr>
 		<tr><td class=formPrompt>Key:</td><td><input type=password name=apikey value=""></td></tr>
-		<tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https checked></td></tr>
+		<tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https></td></tr>
 		<tr><td align=center colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
