@@ -2439,7 +2439,7 @@ function startUp()
 		}
 
 	let f = document.loginForm;
-	if (f.server.value == "") f.server.value = window.location.hostname;
+	if (f.server.value == "") f.server.value = window.location.host;
 	f.with_https.checked = (window.location.protocol == "https:")
 
 	document.newNameForm.rrTTL.value = gbl.default_ttl;
