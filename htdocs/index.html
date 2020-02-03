@@ -2406,8 +2406,29 @@ function topLine()
 
 
 
+function loadCookies()
+{
+	let ckobj = {}
+	let cookies = document.cookie.split(";");
+	for(let i in cookies) {
+		ck = cookies[i];
+		while (ck.charAt(0) == ' ') ck = ck.substring(1);
+
+		if ((idx = ck.indexOf("=")) >= 0)
+			ckobj[ck.substr(0,idx)] = atob(ck.substr(idx+1));
+		}
+
+	let f = document.loginForm;
+	if ("server" in ckobj) f.server.value = ckobj["server"];
+	if ("with_https" in ckobj) f.with_https.checked = (ckobj["with_https"] == "true");
+}
+
+
+
 function startUp()
 {
+	loadCookies()
+
 	window.addEventListener('popstate', e => {
 		if (e.state == null) goLogin();
 
@@ -2456,6 +2477,15 @@ function initialLogin()
 	gbl.server = f.server.value;
 	gbl.apikey = f.apikey.value;
 	gbl.with_https = f.with_https.checked;
+
+	let milliDays = 30 * 86400000; // 30 days in milliseconds
+	let d = new Date();
+	d.setTime(d.getTime() + milliDays);
+	let expires = ";expires="+ d.toUTCString();
+
+	document.cookie = "server=" + btoa(gbl.server) + expires;
+	document.cookie = "with_https=" + btoa(gbl.with_https) + expires;
+
 	zoneList();
 
 	return false; // block form submit
