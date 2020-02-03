@@ -2338,6 +2338,8 @@ function goLogin()
 
 function topLine()
 {
+	if (!("zoneList" in ctx)) return;
+
 	gbl.forms.forEach(i => i.style.display = "none");
 
 	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
@@ -2559,11 +2561,13 @@ function popMsg(txt)
 
 function msg(myMsg,newClass)
 {
-	if (newClass == null) newClass = "fullvis";
 	let m = document.getElementById("showMsg");
-	m.className = newClass;
-	m.innerHTML = myMsg;
-	delete gbl.lastMsg;
+	if (m) {
+		if (newClass == null) newClass = "fullvis";
+		m.className = newClass;
+		m.innerHTML = myMsg;
+		delete gbl.lastMsg;
+		}
 }
 
 
