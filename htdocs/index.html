@@ -335,7 +335,15 @@ function callApi(sfx,callback,inData)
 		if (debugAPI) console.log("API-Resp>>>",response);
 		if (response.status != okResp) {
 			response.text().then(
-				data => { e = JSON.parse(data); errMsg(e.error); },
+				data => {
+					try {
+						e = JSON.parse(data);
+						errMsg(e.error);
+						}
+					catch {
+						errMsg(`ERROR: ${response.status} ${response.statusText}`)
+						}
+					},
 				() => errMsg(`ERROR: ${response.status} ${response.statusText}`)
 				);
 			msg("");
