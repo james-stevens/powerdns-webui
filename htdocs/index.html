@@ -352,14 +352,16 @@ function callApi(sfx,callback,inData)
 			}
 
 		response.text().then(data => {
-			if ((inData != null)&&(inData.noData))
+			if ((inData != null)&&(inData.noData)) {
+				msg("");
 				callback(true);
-			else {
+			} else {
 				let param = data;
 				try {
 					param = JSON.parse(data); }
 				catch {
 					param = data; }
+				msg("");
 				callback(param);
 				}
 			});
@@ -394,7 +396,7 @@ function downloadFile(text, fileType, fileName) {
 function setState(title,state)
 {
 	gbl.state = state;
-	if (!("param" in gbl)) window.history.pushState(state,title,"/");
+	if (!("param" in gbl)) window.history.pushState(state,title,gbl.pathname);
 	document.title = title;
 	delete gbl.param;
 }
@@ -1951,7 +1953,7 @@ function searchLoadRecord(zone,name,type)
 	gbl.param = { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
 	gbl.state = gbl.param;
 	title = `${gbl.server}, Search results - ${name}:${type}`
-	window.history.pushState(gbl.param,title,"/");
+	window.history.pushState(gbl.param,title,gbl.pathname);
 	zoneDetailsLoad(zone);
 }
 
@@ -2332,7 +2334,7 @@ function btn(call,txt,hlp,sz) {
 
 function goLogin()
 {
-	document.location = "/";
+	document.location = gbl.pathname;
 }
 
 
@@ -2437,6 +2439,8 @@ function loadCookies()
 
 function startUp()
 {
+	gbl.pathname = window.location.pathname;
+
 	loadCookies()
 
 	window.addEventListener('popstate', e => {
@@ -2449,7 +2453,7 @@ function startUp()
 			return true;
 			}
 		delete gbl.param;
-		document.location = "/"
+		document.location = gbl.pathname;
 		return true;
 		});
 
@@ -2492,6 +2496,9 @@ function initialLogin()
 	let d = new Date();
 	d.setTime(d.getTime() + milliDays);
 	let expires = ";expires="+ d.toUTCString();
+
+	document.cookie = "server= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+	document.cookie = "with_https= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
 
 	document.cookie = "server=" + btoa(gbl.server) + expires;
 	document.cookie = "with_https=" + btoa(gbl.with_https) + expires;
@@ -2550,6 +2557,8 @@ function unpopMsg()
 	delete gbl.lastMsg;
 }
 
+
+
 function popMsg(txt)
 {
 	msg(txt,"fadein");
@@ -2562,12 +2571,12 @@ function popMsg(txt)
 function msg(myMsg,newClass)
 {
 	let m = document.getElementById("showMsg");
-	if (m) {
-		if (newClass == null) newClass = "fullvis";
-		m.className = newClass;
-		m.innerHTML = myMsg;
-		delete gbl.lastMsg;
-		}
+	if (!m) return;
+
+	if (newClass == null) newClass = "fullvis";
+	m.className = newClass;
+	m.innerHTML = myMsg;
+	delete gbl.lastMsg;
 }
 
 
