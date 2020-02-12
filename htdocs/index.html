@@ -2345,7 +2345,7 @@ function topLine()
 	gbl.forms.forEach(i => i.style.display = "none");
 
 	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
-		+ `<font size=+1><a title='Open this page in a new window' target=_blank href='${window.origin}?`;
+		+ `<font size=+1><a title='Open this page in a new window' target=_blank href='${window.origin}${gbl.pathname}?`;
 
 	let x = `'>${gbl.page}</a></font></td><td>`
 		+ btn("goLogin()",gbl.server,"Change server")
