@@ -25,7 +25,7 @@ It is primarily aimed at those who are using PowerDNS as a DNS Master, as this i
 but it should handle native / slave zones OK.
 If you are using this webapp for slave / native, please let me know if there are features it needs.
 
-When minified, using `python -m jsmin index.html > min.html`, the savings are not great (~10%), so I chosen to no longer provide this minified file.
+When minified, using `python -m jsmin index.html > min.html`, the savings are not great (~10%), so I've chosen to no longer provide this minified file.
 This is probably largely because I use TAB indents (see CONTRIBUTING.md).
 
 Becuase of the security limitations of the PowerDNS Rest/API, this is intended as a SysAdmin tool only - see the **Security** Section below.
@@ -44,18 +44,18 @@ This is a summary of the features this WebUI provides to PowerDNS
 
 * **Servers** - contact PowerDNS Servers directly, or indirectly though a web proxy, HTTP or HTTPS (see `Browser Security Restrictions` below)
 * **Zones** - Add, View, Remove, Sign, Unsign, Force NOTIFY, Rectify, Download in RFC format, force update (slave only)
-* **Metadata** - Add, Edit, Remove Metadata items or individual values, with some local validation, including picking drop-downs where specific metadata items have a limited range of values
+* **Metadata** - Add, Edit, Remove Metadata items or individual values, with some clientside validation, including picking drop-downs where specific metadata items have a limited range of values
 * **Hosts/names** - Master or Native only - Add, Edit, Remove RRs / RR-Sets with some clientside validation, Change the TTL of an RR-Set. Copy records, including between zones, by renaming the RR-Set
-* **TSIG Keys** - Add, Regenerate, Remove, click to copy name or digest to clipboard. NOTE: Adding multiple TSIG keys, of different algorythms, does not work in v4.2.0
+* **TSIG Keys** - Add, Regenerate, Remove, click to copy name or digest to clipboard. NOTE: Adding multiple TSIG keys, of different algorythms, does not work in PowerDNS v4.2.0
 * **Search** - quick access to native search facility, with click-through to records / zones
 * **Navigation** - fully functional BACK button, link to open any page in a new tab (or link you can email etc)
 * **DNSSEC**
 	* Sign an unsigned zone - NSEC or NSEC3, KSK+ZSK or CSK, any algorythm & key lengths
-	* Unsign a signed zone - NOTE: removing the NSEC3 param record using the Rest/API does not work in v4.2.0
+	* Unsign a signed zone - NOTE: removing the NSEC3 param record using the Rest/API does not work in PowerDNS v4.2.0
 	* Step-by-Step one-button CSK, KSK or ZSK key roll-over
 	* Add, Remove, Activate / Deactivate individual keys
-	* DS digest, click to copy sigest to clipboard
-	* Convert NSEC to NSEC3 or vice versa. NOTE: removing the NSEC3 param record using the Rest/API does not work in v4.2.0
+	* DS digest, click to copy digest to clipboard
+	* Convert NSEC to NSEC3 or vice versa. NOTE: removing the NSEC3 param record using the Rest/API does not work in PowerDNS v4.2.0
 	* NSEC3PARAM roll-over - Yeah, some people like to do it. What can you say.
 * **Stats** - ability to view all server stats data, including breaking out data presented in lists
 
@@ -74,7 +74,7 @@ This webapp is super simple to use, but does require a little setting up to ensu
 These issues are generic browser security restrictions, and not specifically to do with this code.
 
 * If your browser received the `index.html` (this webapp) over HTTPS, then the RestAPI **must** be accessed over HTTPS - this is where
-using an HTTP/HTTPS proxy is useful, as (as of v4.2.0) PowerDNS does not natively support HTTPS, and sending all your data
+using an HTTP/HTTPS proxy is useful. As of v4.2.0, PowerDNS does not natively support HTTPS, and sending all your data
 (and maybe your API Key) over HTTP is probably not what you want.
 
 * You must be [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) compliant - in this context it means the web server
@@ -85,6 +85,7 @@ So this requires no special extra consideration.
 
 So, for exmaple, you could obtain the `index.html` page from port 80 (HTTP) but, on the same server, still be OK to access the PowerDNS API directly (port 8081, and **not** HTTPS).
 
+But, I strongly recommend you simply use a `HTTPS` proxy.
 
 # The Example Config
 
@@ -94,7 +95,7 @@ Because this webapp accesses the PowerDNS RestAPI directly from your desktop's b
 we would recommend you use a web proxy (e.g. Apache or nginx) and (for exmaple) enforce per-user authentication in the proxy.
 This means you will need to configure the proxy to add the `api-key` to each request (see below).
 
-You can also use the web proxy to provide an HTTP->HTTPS service, transparently making the RestAPI HTTPS.
+You can also use the web proxy to provide an HTTP->HTTPS service, transparently adding `HTTPS` support to the RestAPI.
 
 I used both Apache & nginx. Here's a snip of my setup. It assumes your PowerDNS WebUI is listening on IP Address 127.1.0.1
 and your Apache Server can listen on port 443 (HTTPS). The PowerDNS IP Address will probably work for you.
@@ -128,7 +129,7 @@ but all the SSL & Basic Authentication configuration is included in `example/htt
 
 Becuase I want the webapp to live in the ROOT directory of the website, this overloads the PowerDNS stats page (which also lives at the root),
 so I have put in a rule that makes the stats page available from `https://<server-ip-address>/stats/`. Although, of course, this webapp
-alos gives you access to the stats that are available from the Rest/API.
+also gives you access to the stats that are available from the Rest/API.
 
 You will need to ensure you have loaded the Apache proxy modules, I used this code
 
