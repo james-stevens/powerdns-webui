@@ -216,7 +216,7 @@ const autoAddDot = { rrMX: true, rrNS: true, rrCNAME: true, };
 
 
 // regex for an FQDN hostname
-const fqdnCheck = /^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)+([A-Za-z0-9_]|[A-Za-z0-9_][A-Za-z0-9\-_]*[A-Za-z0-9_])[.]$/;
+const fqdnCheck = /^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)*(xn--|)[A-Za-z0-9\-]+[.]$/;
 
 
 // regex's for RR validation - just add more here and they will work
@@ -292,6 +292,7 @@ const allMetaItems = [
 	'PUBLISH-CDNSKEY',
 	'PUBLISH-CDS',
 	'SOA-EDIT',
+	'SOA-EDIT-API',
 	'SOA-EDIT-DNSUPDATE',
 	'TSIG-ALLOW-AXFR',
 	'TSIG-ALLOW-DNSUPDATE',
