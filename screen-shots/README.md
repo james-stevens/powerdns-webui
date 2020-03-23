@@ -1,8 +1,8 @@
-#List of all zones#
+# List of all zones
 ![One](Selection_2020-03-23_012.png)
 
-#Looking at the records in a zone#
+# Looking at the records in a zone
 ![One](Selection_2020-03-23_013.png)
 
-#DNSSEC Keys and DS records#
+# DNSSEC Keys and DS records
 ![One](Selection_2020-03-23_014.png)
