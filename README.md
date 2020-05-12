@@ -183,7 +183,7 @@ However, it means all your data, and your API key, will be sent in plain text.
 # In Operation #
 
 I've tested this with the latest Chrome & Firefox running on Xubuntu (Ubuntu + XFCE) talking to a 95% idle PowerDNS server
-running v4.2.0 over an 18ms latency link and the response time, for all actions, including viewing a zone with 1000 records
+running v4.2.2 over an 18ms latency link and the response time, for all actions, including viewing a zone with 1000 records
 (500 names, 2 records per name), is virtually instant.
 
 Apart from some minor aesthetic differences, the behaviour in Chrome and Firefox was identical. 
