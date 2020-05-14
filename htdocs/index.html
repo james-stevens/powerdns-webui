@@ -11,7 +11,7 @@
 
 <style type='text/css'>
 
-.fullvis { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; }
+.fullvis { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; text-align: center; }
 .fadein  { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
 .fadeout { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
 
@@ -214,6 +214,8 @@ var ctx = { }; // will store the context of what the user is up to
 // add a trailing '.' for these record types, if the user forgets
 const autoAddDot = { rrMX: true, rrNS: true, rrCNAME: true, };
 
+const pdnsCookies = [ "pdns_with_https","pdns_server" ];
+
 
 // regex for an FQDN hostname
 const fqdnCheck = /^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)*(xn--|)[A-Za-z0-9\-]+[.]$/;
@@ -304,6 +306,8 @@ const allMetaItems = [
 
 function callApi(sfx,callback,inData)
 {
+	document.body.style.cursor="progress";
+
 	if (debugAPI) {
 		console.log("API>>>",sfx);
 		console.log("API>>>",inData);
@@ -367,7 +371,10 @@ function callApi(sfx,callback,inData)
 				}
 			});
 
-		});
+		})
+		.catch(err => errMsg(`ERROR: Failed to connect to PowerDNS`))
+
+	document.body.style.cursor="auto";
 }
 
 
@@ -2427,13 +2434,17 @@ function loadCookies()
 		ck = cookies[i];
 		while (ck.charAt(0) == ' ') ck = ck.substring(1);
 
-		if ((idx = ck.indexOf("=")) >= 0)
-			ckobj[ck.substr(0,idx)] = atob(ck.substr(idx+1));
+		if ((idx = ck.indexOf("=")) >= 0) {
+			let itm = ck.substr(0,idx);
+			if (itm in pdnsCookies) {
+				try { ckobj[itm] = atob(ck.substr(idx+1)); } catch(e) {}
+				}
+			}
 		}
 
 	let f = document.loginForm;
-	if ("server" in ckobj) f.server.value = ckobj["server"];
-	if ("with_https" in ckobj) f.with_https.checked = (ckobj["with_https"] == "true");
+	if ("pdns_server" in ckobj) f.server.value = ckobj["pdns_server"];
+	if ("pdns_with_https" in ckobj) f.with_https.checked = (ckobj["pdns_with_https"] == "true");
 }
 
 
@@ -2496,13 +2507,13 @@ function initialLogin()
 	let milliDays = 30 * 86400000; // 30 days in milliseconds
 	let d = new Date();
 	d.setTime(d.getTime() + milliDays);
-	let expires = ";expires="+ d.toUTCString();
+	let expires = "; samesite=strict; expires="+ d.toUTCString();
 
-	document.cookie = "server= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
-	document.cookie = "with_https= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+	for(let i of pdnsCookies)
+		document.cookie = i + "= ; samesite=strict; expires = Thu, 01 Jan 1970 00:00:00 GMT"
 
-	document.cookie = "server=" + btoa(gbl.server) + expires;
-	document.cookie = "with_https=" + btoa(gbl.with_https) + expires;
+	for(let i of pdnsCookies)
+		document.cookie = i + "=" + btoa(gbl[i]) + expires;
 
 	zoneList();
 
@@ -2543,6 +2554,7 @@ function errMsg(txt)
 	m.className = 'msgPop msgPopYes';
 	m.innerHTML = `${gbl.warn} ${txt}`;
 	gbl.lastErrMsg = m.innerHTML;
+	msg("");
 	setTimeout(unerrMsg,2500);
 }
 
@@ -2572,6 +2584,7 @@ function popMsg(txt)
 function msg(myMsg,newClass)
 {
 	let m = document.getElementById("showMsg");
+	if (!m) m = document.getElementById("lowerMsg");
 	if (!m) return;
 
 	if (newClass == null) newClass = "fullvis";
@@ -2611,13 +2624,15 @@ function keyEsc(e) {
 	<table align=center>
 	<form action="/" onSubmit="return initialLogin()" name=loginForm>
 		<tr><td class=formPrompt>Server:</td><td><input name=server size=40 value=""></td></tr>
-		<tr><td class=formPrompt>Key:</td><td><input type=password size=40 name=apikey value=""></td></tr>
+		<tr><td class=formPrompt>Key:</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
 		<tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https></td></tr>
 		<tr><td align=center colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
 	</table>
+<P>
+<div class='fullvis' id="lowerMsg"></div>
 </div>
 
 
