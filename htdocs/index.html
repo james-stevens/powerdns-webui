@@ -11,7 +11,7 @@
 
 <style type='text/css'>
 
-.fullvis { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; }
+.fullvis { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; text-align: center; }
 .fadein  { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
 .fadeout { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
 
@@ -371,7 +371,9 @@ function callApi(sfx,callback,inData)
 				}
 			});
 
-		});
+		})
+		.catch(err => errMsg(`ERROR: Failed to connect to PowerDNS`))
+
 	document.body.style.cursor="auto";
 }
 
@@ -2552,6 +2554,7 @@ function errMsg(txt)
 	m.className = 'msgPop msgPopYes';
 	m.innerHTML = `${gbl.warn} ${txt}`;
 	gbl.lastErrMsg = m.innerHTML;
+	msg("");
 	setTimeout(unerrMsg,2500);
 }
 
@@ -2581,6 +2584,7 @@ function popMsg(txt)
 function msg(myMsg,newClass)
 {
 	let m = document.getElementById("showMsg");
+	if (!m) m = document.getElementById("lowerMsg");
 	if (!m) return;
 
 	if (newClass == null) newClass = "fullvis";
@@ -2627,6 +2631,8 @@ function keyEsc(e) {
 	<input type=submit style="display: none;">
 	</form>
 	</table>
+<P>
+<div class='fullvis' id="lowerMsg"></div>
 </div>
 
 
