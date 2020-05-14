@@ -214,6 +214,8 @@ var ctx = { }; // will store the context of what the user is up to
 // add a trailing '.' for these record types, if the user forgets
 const autoAddDot = { rrMX: true, rrNS: true, rrCNAME: true, };
 
+const pdnsCookies = [ "pdns_with_https","pdns_server" ];
+
 
 // regex for an FQDN hostname
 const fqdnCheck = /^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)*(xn--|)[A-Za-z0-9\-]+[.]$/;
@@ -2427,13 +2429,17 @@ function loadCookies()
 		ck = cookies[i];
 		while (ck.charAt(0) == ' ') ck = ck.substring(1);
 
-		if ((idx = ck.indexOf("=")) >= 0)
-			ckobj[ck.substr(0,idx)] = atob(ck.substr(idx+1));
+		if ((idx = ck.indexOf("=")) >= 0) {
+			let itm = ck.substr(0,idx);
+			if (itm in pdnsCookies) {
+				try { ckobj[itm] = atob(ck.substr(idx+1)); } catch(e) {}
+				}
+			}
 		}
 
 	let f = document.loginForm;
-	if ("server" in ckobj) f.server.value = ckobj["server"];
-	if ("with_https" in ckobj) f.with_https.checked = (ckobj["with_https"] == "true");
+	if ("pdns_server" in ckobj) f.server.value = ckobj["pdns_server"];
+	if ("pdns_with_https" in ckobj) f.with_https.checked = (ckobj["pdns_with_https"] == "true");
 }
 
 
@@ -2496,13 +2502,13 @@ function initialLogin()
 	let milliDays = 30 * 86400000; // 30 days in milliseconds
 	let d = new Date();
 	d.setTime(d.getTime() + milliDays);
-	let expires = ";expires="+ d.toUTCString();
+	let expires = "; samesite=strict; expires="+ d.toUTCString();
 
-	document.cookie = "server= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
-	document.cookie = "with_https= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+	for(let i of pdnsCookies)
+		document.cookie = i + "= ; samesite=strict; expires = Thu, 01 Jan 1970 00:00:00 GMT"
 
-	document.cookie = "server=" + btoa(gbl.server) + expires;
-	document.cookie = "with_https=" + btoa(gbl.with_https) + expires;
+	for(let i of pdnsCookies)
+		document.cookie = i + "=" + btoa(gbl[i]) + expires;
 
 	zoneList();
 
@@ -2611,7 +2617,7 @@ function keyEsc(e) {
 	<table align=center>
 	<form action="/" onSubmit="return initialLogin()" name=loginForm>
 		<tr><td class=formPrompt>Server:</td><td><input name=server size=40 value=""></td></tr>
-		<tr><td class=formPrompt>Key:</td><td><input type=password size=40 name=apikey value=""></td></tr>
+		<tr><td class=formPrompt>Key:</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
 		<tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https></td></tr>
 		<tr><td align=center colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
