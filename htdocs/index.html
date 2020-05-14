@@ -306,6 +306,8 @@ const allMetaItems = [
 
 function callApi(sfx,callback,inData)
 {
+	document.body.style.cursor="progress";
+
 	if (debugAPI) {
 		console.log("API>>>",sfx);
 		console.log("API>>>",inData);
@@ -370,6 +372,7 @@ function callApi(sfx,callback,inData)
 			});
 
 		});
+	document.body.style.cursor="auto";
 }
 
 
