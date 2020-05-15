@@ -59,6 +59,8 @@ This is a summary of the features this WebUI provides to PowerDNS
 	* NSEC3PARAM roll-over - Yeah, some people like to do it. What can you say.
 * **Stats** - ability to view all server stats data, including breaking out data presented in lists
 
+`Fast Zone Listing` allows you to view the full list of zones considerably faster, at the cost of slightly reduced information. Where you have 1000s of zones, 
+or a server a long way away, this can significantly improve your performance.
 
 Items that probably could be improved (apart from my spelling ... dyslexia sucks)
 * I'd like to be able to automatically maintain a [bind-9.11 catalog zone](https://kb.isc.org/docs/aa-01401), for those who use RFC (not native) slaves.
