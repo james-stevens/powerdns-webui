@@ -190,6 +190,8 @@ var gbl = {
 	server: null,
 	apikey: null,
 	with_https: true,
+	fast_zone_list: false,
+	zone_list: "zones",
 	default_ttl: 86400,
 	state: { state: "login" },
 
@@ -214,7 +216,7 @@ var ctx = { }; // will store the context of what the user is up to
 // add a trailing '.' for these record types, if the user forgets
 const autoAddDot = { rrMX: true, rrNS: true, rrCNAME: true, };
 
-const pdnsCookies = { "pdns_with_https":1,"pdns_server":1 };
+const pdnsCookies = { "pdns_fast_zone_list":1, "pdns_with_https":1,"pdns_server":1 };
 
 
 // regex for an FQDN hostname
@@ -2224,7 +2226,7 @@ function doNewZone()
 		nameservers: ns,
 		};
 
-	callApi("zones",doMakeZone, { method: "POST", callErr: true, okResp: 201, json: JSON.stringify(data) } );
+	callApi(gbl.zone_list,doMakeZone, { method: "POST", callErr: true, okResp: 201, json: JSON.stringify(data) } );
 
 	return false; // block form submit
 }
@@ -2297,7 +2299,7 @@ function zoneList()
 {
 	document.body.scrollTop = 0;
 	ctx = { }; topLine();
-	callApi("zones",zoneListDetails);
+	callApi(gbl.zone_list,zoneListDetails);
 	return false;
 }
 
@@ -2445,6 +2447,7 @@ function loadCookies()
 	let f = document.loginForm;
 	if ("pdns_server" in ckobj) f.server.value = ckobj["pdns_server"];
 	if ("pdns_with_https" in ckobj) f.with_https.checked = (ckobj["pdns_with_https"] == "true");
+	if ("pdns_fast_zone_list" in ckobj) f.fast_zone_list.checked = (ckobj["pdns_fast_zone_list"] == "true");
 }
 
 
@@ -2452,6 +2455,11 @@ function loadCookies()
 function startUp()
 {
 	gbl.pathname = window.location.pathname;
+
+	let f = document.loginForm;
+	if (f.server.value == "") f.server.value = window.location.host;
+	f.with_https.checked = (window.location.protocol == "https:");
+	f.fast_zone_list.checked = gbl.fast_zone_list;
 
 	loadCookies()
 
@@ -2488,10 +2496,6 @@ function startUp()
 			}
 		}
 
-	let f = document.loginForm;
-	if (f.server.value == "") f.server.value = window.location.host;
-	f.with_https.checked = (window.location.protocol == "https:")
-
 	document.newNameForm.rrTTL.value = gbl.default_ttl;
 }
 
@@ -2503,8 +2507,13 @@ function initialLogin()
 	gbl.server = f.server.value;
 	gbl.apikey = f.apikey.value;
 	gbl.with_https = f.with_https.checked;
-	gbl.pdns_server = f.server.value;
-	gbl.pdns_with_https = f.with_https.checked;
+	gbl.fast_zone_list = f.fast_zone_list.checked;
+
+	gbl.pdns_server = gbl.server;
+	gbl.pdns_with_https = gbl.with_https;
+	gbl.pdns_fast_zone_list = gbl.fast_zone_list;
+
+	if (gbl.pdns_fast_zone_list) gbl.zone_list = "zones?dnssec=false"; else gbl.zone_list="zones";
 
 	let milliDays = 30 * 86400000; // 30 days in milliseconds
 	let d = new Date();
@@ -2625,9 +2634,10 @@ function keyEsc(e) {
 <div id="lowerSpan">
 	<table align=center>
 	<form action="/" onSubmit="return initialLogin()" name=loginForm>
-		<tr><td class=formPrompt>Server:</td><td><input name=server size=40 value=""></td></tr>
-		<tr><td class=formPrompt>Key:</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
-		<tr><td class=formPrompt>https:</td><td><input type=checkbox name=with_https></td></tr>
+		<tr><td class=formPrompt>Server:</td><td><input title="PowerDNS RestAPI, can include optional :[port] and sub-directory" name=server size=40 value=""></td></tr>
+		<tr><td class=formPrompt>API-Key:</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
+		<tr><td class=formPrompt>HTTPS (SSL/TLS):</td><td><input title="Connect to API over HTTPS, not HTTP" type=checkbox name=with_https></td></tr>
+		<tr><td class=formPrompt>Fast Zone List:</td><td><input title="Fast load long zone lists by excluding some information" type=checkbox name=fast_zone_list></td></tr>
 		<tr><td align=center colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
