@@ -214,7 +214,7 @@ var ctx = { }; // will store the context of what the user is up to
 // add a trailing '.' for these record types, if the user forgets
 const autoAddDot = { rrMX: true, rrNS: true, rrCNAME: true, };
 
-const pdnsCookies = [ "pdns_with_https","pdns_server" ];
+const pdnsCookies = { "pdns_with_https":1,"pdns_server":1 };
 
 
 // regex for an FQDN hostname
@@ -2503,16 +2503,18 @@ function initialLogin()
 	gbl.server = f.server.value;
 	gbl.apikey = f.apikey.value;
 	gbl.with_https = f.with_https.checked;
+	gbl.pdns_server = f.server.value;
+	gbl.pdns_with_https = f.with_https.checked;
 
 	let milliDays = 30 * 86400000; // 30 days in milliseconds
 	let d = new Date();
 	d.setTime(d.getTime() + milliDays);
 	let expires = "; samesite=strict; expires="+ d.toUTCString();
 
-	for(let i of pdnsCookies)
+	for(let i in pdnsCookies)
 		document.cookie = i + "= ; samesite=strict; expires = Thu, 01 Jan 1970 00:00:00 GMT"
 
-	for(let i of pdnsCookies)
+	for(let i in pdnsCookies)
 		document.cookie = i + "=" + btoa(gbl[i]) + expires;
 
 	zoneList();
