@@ -135,6 +135,16 @@ td {
 	white-space: nowrap;
 	}
 
+.dataCell {
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size:10pt;
+	vertical-align: top;
+	padding-left: 7px;
+	padding-right: 7px;
+	white-space: normal;
+	min-width: 50%;
+	}
+
 .dataRow {
 	font-family: Verdana,Arial,Helvetica,sans-serif;
 	font-size: 10pt;
@@ -1050,7 +1060,7 @@ function drawOneRecord(rrs)
 	setState(`${x}/${ctx.rec.type}`, { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type });
 
 	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
-	x += '<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="50%" /></colgroup>'
+	x += '<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="75%" /></colgroup>'
 	for(let idx in ctx.rec.rrs.records) {
 		let i = ctx.rec.rrs.records[idx];
 		x += "<tr class=dataRow>"
@@ -1058,7 +1068,7 @@ function drawOneRecord(rrs)
 			+ `<td onClick='clickRecName(${idx});'><span id=nme${idx}>${ctx.rec.name}</span></td>`
 			+ `<td align=right onClick='clickTTL(${idx});'><span id=ttl${idx}>${ctx.rec.rrs.ttl}</span></td>`
 			+ `<td>${ctx.rec.rrs.type}</td>`
-			+ `<td onClick='clickData(${idx});'><span id=rrs${idx}>${i.content}</span></td></tr>`;
+			+ `<td class=dataCell onClick='clickData(${idx});'><span id=rrs${idx}>${i.content}</span></td></tr>`;
 		}
 	gbl.bot.innerHTML = `${x}</table>`;
 	topLine();
@@ -1879,7 +1889,7 @@ function zoneDetails(data)
 		x += `<tr onClick="clickZoneRecord('${i.name}','${i.type}');" class=dataRow>`
 			+ `<td valign=top>${i.name.substr(0,i.name.length - ctx.zone.length - 1)}</td>`
 			+ `<td valign=top align=right>${i.ttl}</td>`
-			+ `<td valign=top>${i.type}</td><td valign=top>`;
+			+ `<td valign=top>${i.type}</td><td class=dataCell valign=top>`;
 
 		if (i.type == "SOA") {
 			ctx.soaSplit = i.records[0].content.split(" ");
