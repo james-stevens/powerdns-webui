@@ -4,6 +4,10 @@ This container runs an NGINX proxy on an Alpine platform to provide per-user
 authentication and HTTPS access to your PowerDNS Server via this javascript webapp.
 
 
+NOTE: The container is designed to run read-only, so I'd recommend you run it like that.
+`docker run --read-only ...`
+
+
 ## Tell PowerDNS we need access
 
 You will need to change your PowerDNS settings so the `webserver-allow-from=` option
