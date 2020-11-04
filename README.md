@@ -36,9 +36,7 @@ click button in the navigation bar that will reload the data you are seeing.
 The only exception to this is occasionally when the `NSEC3PARAM` value is displayed on the DNSSEC page.
 
 
-# Status
-
-The main thrust of this development is now complete - I think :)
+# Features
 
 This is a summary of the features this WebUI provides to PowerDNS
 
@@ -180,6 +178,14 @@ to the PowerDNS API on port 8081, by adding `:8081` after the server name / ip a
 
 This should satisfy your browser's security checks. I have tested this in both Chrome and Firefox.  
 However, it means all your data, and your API key, will be sent in plain text.
+
+
+# Don't Worry There's a Docker Container
+
+For those who want the extra security provided by HTTPS and per-user authentication, but are troubled by
+the effort of setting it up yourself, don't worry there's a Docker container.
+
+There are a few caveats, and things you'll probably want to change, so there's also a `README` in the `container` directory.
 
 
 # In Operation #

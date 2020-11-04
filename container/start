@@ -1,0 +1,19 @@
+#! /bin/sh
+
+if test -z "${POWERDNS_KEY}" -o -z "${POWERDNS_SERVER}"
+	then
+		echo "=========================================="
+		echo ""
+		echo "ERROR: You must set ENV:POWERDNS_KEY and ENV:POWERDNS_SERVER"
+		echo ""
+		echo "=========================================="
+		exec sleep 100
+		exit 0
+	fi
+
+
+envsubst < /etc/nginx/pdns-webui.tmpl > /ram/pdns-webui.conf
+
+logger "Starting NGINX"
+
+exec /usr/sbin/nginx -c /etc/nginx/pdns-webui.conf -g "daemon off;"

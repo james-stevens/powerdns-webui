@@ -1,0 +1,3 @@
+#! /bin/sh
+
+docker run --read-only -it --env-file=container-assets/container.env -p 443:443 pdns-webui

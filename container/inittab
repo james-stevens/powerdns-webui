@@ -1,0 +1,2 @@
+::respawn:/sbin/syslogd -n -O -
+::respawn:/opt/start
