@@ -1,0 +1,5 @@
+#! /bin/sh
+# (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
+# Alternative license arrangements are possible, contact me for more information
+
+docker image build -t pdns-webui .
