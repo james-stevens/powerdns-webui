@@ -31,7 +31,7 @@ Repeat the second line to add more users.
 ## Change the SSL Certificate
 
 The HTTPS Certificate & Key were generated using a private certificate authority
- and for the host name `localhost.jrcs.net` (which resolve to `127.0.0.1`). Both are stored in the file `certkey.pem`
+ and for the host name `localhost.jrcs.net` (which resolves to `127.0.0.1`). Both are stored in the file `certkey.pem`
 
 The public key for the private CA is included as `myCA.pem`, so you can authenticate
  the private certificate, but I would recommend you change the `certkey.pem` file to use a public verifiable certificate, for example from LetEncrypt.
