@@ -3,6 +3,8 @@
 This container runs an NGINX proxy on an Alpine platform to provide per-user 
 authentication and HTTPS access to your PowerDNS Server via this javascript webapp.
 
+The container is available on `docker.com` as `jamesstevens/pdns-webui`
+
 
 NOTE: The container is designed to run read-only, so I'd recommend you run it like that.
 `docker run --read-only ...`
