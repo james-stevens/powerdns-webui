@@ -1971,7 +1971,7 @@ function zoneDetailsLoad(zone)
 
 function searchLoadRecord(zone,name,type)
 {
-	gbl.param = { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type };
+	gbl.param = { state: "record", server: gbl.server, zone: zone, name:name, type: type };
 	gbl.state = gbl.param;
 	title = `${gbl.server}, Search results - ${name}:${type}`
 	window.history.pushState(gbl.param,title,gbl.pathname);
