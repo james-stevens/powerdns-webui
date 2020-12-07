@@ -2272,8 +2272,9 @@ function zoneListDetails(data)
 	let x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
 	x += "<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
-		let name = i.id;
-		x += `<tr class=dataRow onClick='zoneDetailsLoad("${name}")'>`
+		let id = i.id;
+		let name = i.name;
+		x += `<tr class=dataRow onClick='zoneDetailsLoad("${id}")'>`
 			+ `<td>${name}</td><td>${i.kind}</td>`;
 
 		t = "";
