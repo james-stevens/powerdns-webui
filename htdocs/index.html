@@ -264,7 +264,7 @@ const validateMeta = {
 const dsAlg = [ "Reserved","SHA1","SHA256","GOST","SHA384"];
 
 
-// drop downs for metadata items - not implemented, yet
+// drop downs for metadata items
 const metaPickLists = {
 	"PUBLISH-CDNSKEY" : { "Enabled":1, "Disabled":0 },
 	"API-RECTIFY" : { "Enabled":1, "Disabled":0 },
@@ -1021,8 +1021,9 @@ function findRec(rrsets,rec)
 
 function oneRecord(data)
 {
-	if (data.id != ctx.zone)
+	if (data.name != ctx.zone) {
 		return errMsg("ERROR: Zone does not match loaded data");
+		}
 
 	let rrs = findRec(data.rrsets,ctx.rec);
 
@@ -1854,15 +1855,15 @@ function zoneAddHost()
 function zoneDetails(data)
 {
 	data.rrsets.sort((a,b) => {
-		if ((a.name == data.id)&&(b.name == data.id)) {
+		if ((a.name == data.name)&&(b.name == data.name)) {
 			for(tag of ["SOA","NS","MX"]) {
 				if (a.type == tag) return -1;
 				if (b.type == tag) return 1;
 				}
 			}
 		else {
-			if (a.name == data.id) return -1;
-			if (b.name == data.id) return 1;
+			if (a.name == data.name) return -1;
+			if (b.name == data.name) return 1;
 			if (a.name < b.name) return -1;
 			if (a.name > b.name) return 1;
 			}
@@ -2272,9 +2273,8 @@ function zoneListDetails(data)
 	let x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
 	x += "<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
-		let name = i.id;
-		x += `<tr class=dataRow onClick='zoneDetailsLoad("${name}")'>`
-			+ `<td>${name}</td><td>${i.kind}</td>`;
+		x += `<tr class=dataRow onClick='zoneDetailsLoad("${i.name}")'>`
+			+ `<td>${i.name}</td><td>${i.kind}</td>`;
 
 		t = "";
 		hlp = "Zone is NOT dnssec signed";
