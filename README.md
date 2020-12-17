@@ -183,7 +183,7 @@ However, it means all your data, and your API key, will be sent in plain text.
 # Don't Worry There's a Docker Container
 
 For those who want the extra security provided by HTTPS and per-user authentication, but are troubled by
-the effort of setting it up yourself, don't worry there's a Docker container.
+the effort of setting it up yourself, don't worry there's a [Docker container](https://hub.docker.com/r/jamesstevens/pdns-webui) called `jamesstevens/pdns-webui`.
 
 There are a few caveats, and things you'll probably want to change, so there's also a `README` in the `container` directory.
 
