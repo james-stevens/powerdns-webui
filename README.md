@@ -222,6 +222,9 @@ This is all that is required to create a remote connection using SSH for encrypt
 
 To close the connection use CTRL + C to terminate SSH in the terminal.
 
+**NOTE:** `ssh` tunnelling will also work on non-Linux desktops, but you will need to use slightly different commands.
+
+
 # In Operation #
 
 I've tested this with the latest Chrome & Firefox running on Xubuntu (Ubuntu + XFCE) talking to a 95% idle PowerDNS server
