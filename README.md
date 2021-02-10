@@ -188,6 +188,40 @@ the effort of setting it up yourself, don't worry there's a [Docker container](h
 There are a few caveats, and things you'll probably want to change, so there's also a `README` in the `container` directory.
 
 
+# SSH Tunnel
+
+Using an SSH tunnel allows encryption and authentication to be handled by SSH. This provides a simple alternative to configuring a web server.
+
+It is vital that the PowerDNS API is **only** available on the local loopback interface and **not** any public network interface. This restricts access only to users who are allowed to log in to the remote machine. They can then use SSH to tunnel the loopback interface to their local machine and use the web interface there.
+
+An example section of a ```pdns.conf``` file would be:
+
+```
+webserver=yes
+webserver-address = ::1
+webserver-port = 8068
+api=yes
+api-key=Dev-Key
+```
+This will make PowerDNS provide the API over the local IPv6 loopback interface, ```[::1]```, and listen on port ```8068```. Port 8068 was chosen because the ASCII for 'P' is 80 and for 'D' it is 68.
+
+PowerDNS WebUI can then be run using three commands in a terminal on a typical Unix box, e.g. Linux, running a desktop:
+
+```
+curl -sS https://raw.githubusercontent.com/james-stevens/powerdns-webui/master/htdocs/index.html --output powerdns-webui.html
+xdg-open powerdns-webui.html
+ssh user@myserver -L 8000:[::1]:8068 -N
+```
+The first and second commands download the user interface file and open it in the desktop's default browser respectively.
+
+The third command creates an SSH tunnel on local port 8000, which connects to the IPv6 loopback interface, ```[::1]```, on port ```8068``` of the remote machine. The ```-N``` switch stops a remote shell being opened for user input.
+
+To connect PowerDNS WebUI use ```[::1]:8000``` for the server address and then enter the relevant API-Key.
+
+This is all that is required to create a remote connection using SSH for encryption and authentication.
+
+To close the connection use CTRL + C to terminate SSH in the terminal.
+
 # In Operation #
 
 I've tested this with the latest Chrome & Firefox running on Xubuntu (Ubuntu + XFCE) talking to a 95% idle PowerDNS server
