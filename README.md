@@ -56,12 +56,10 @@ This is a summary of the features this WebUI provides to PowerDNS
 	* Convert NSEC to NSEC3 or vice versa. NOTE: removing the NSEC3 param record using the Rest/API does not work in PowerDNS v4.2.0
 	* NSEC3PARAM roll-over - Yeah, some people like to do it. What can you say.
 * **Stats** - ability to view all server stats data, including breaking out data presented in lists
+* Ability to maintain a [bind-9.11 catalog zone](https://kb.isc.org/docs/aa-01401), for RFC/XFR (not native) slaves.
 
-`Fast Zone Listing` allows you to view the full list of zones considerably faster, at the cost of slightly reduced information. Where you have 1000s of zones, 
-or a server a long way away, this can significantly improve your performance.
-
-Items that probably could be improved (apart from my spelling ... dyslexia sucks)
-* I'd like to be able to automatically maintain a [bind-9.11 catalog zone](https://kb.isc.org/docs/aa-01401), for those who use RFC (not native) slaves.
+`Fast Zone Listing` allows you to view the full list of zones considerably faster, at the cost of slightly reduced information.
+Where you have 1000s of zones, or a server a long way away, this can significantly reduce time to load the zone list.
 
 
 When reporting an issue, please also include any messages in your browser console (in Chrome press F12, in FireFox Ctrl-Shift-J).
