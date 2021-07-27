@@ -61,4 +61,4 @@ it with the script `dkdebug` and it will forward port `1443` into the container.
 
 ## Makeing your own container
 
-You can make your own container, with your certificate & logins using the file `exmaple_Dockerfile.txt` as your own `Dockerfile`
+You can make your own container, with your certificate & logins using the file [`exmaple_Dockerfile.txt`](exmaple_Dockerfile.txt) as your own `Dockerfile`
