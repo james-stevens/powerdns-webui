@@ -57,3 +57,8 @@ If you're running from the command line, add the option `--env-file=data.env`. A
 The script `dkmk` will remake the container and the script `dkrun` will run it.
 If you already have something listening on port 443 (HTTPS), then you can run
 it with the script `dkdebug` and it will forward port `1443` into the container.
+
+
+## Makeing your own container
+
+You can make your own container, with your certificate & logins using the file `exmaple_Dockerfile.txt` as your own `Dockerfile`
