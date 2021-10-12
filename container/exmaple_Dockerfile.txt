@@ -1,0 +1,13 @@
+#
+# Example for your own PowerDNS WebuUI container
+#
+
+# based on my container
+FROM jamesstevens/pdns-webui
+
+# copy in your logins file (will need creating)
+COPY my_htpasswd /etc/nginx/htpasswd
+
+# copy in your TLS certficate & key
+COPY my_certkey.pem /etc/nginx/certkey.pem
+
