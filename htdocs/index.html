@@ -233,6 +233,9 @@ const pdnsCookies = { "pdns_fast_zone_list":1, "pdns_with_https":1,"pdns_server"
 // regex for an FQDN hostname
 const fqdnCheck = /^(([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])\.)*(xn--|)[A-Za-z0-9\-]+[.]$/;
 
+// regex for adding a host name
+const hostnameCheck = /^([a-zA-Z0-9_*]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_])(\.([a-zA-Z0-9_]|[a-zA-Z0-9_][a-zA-Z0-9\-_]*[a-zA-Z0-9_]))*$/
+
 
 // regex's for RR validation - just add more here and they will work
 const validations = {
@@ -1935,17 +1938,17 @@ function doNewName()
 		return;
 		}
 
-	gbl.addH.style.display = "none";
-
 	if (f.rrName.value == "") name = ctx.zone;
 	else name = `${f.rrName.value}.${ctx.zone}`;
 
-	if (!fqdnCheck.test(name)) {
+	if (!hostnameCheck.test(f.rrName.value)) {
 		errMsg("Invalid host name");
 		f.rrName.focus();
 		f.rrName.select();
 		return false;
 		}
+
+	gbl.addH.style.display = "none";
 
 	if (rrType=="CATALOG") {
 		name = f.rrName.value + ".";
