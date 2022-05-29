@@ -1938,14 +1938,17 @@ function doNewName()
 		return;
 		}
 
-	if (f.rrName.value == "") name = ctx.zone;
-	else name = `${f.rrName.value}.${ctx.zone}`;
+	if ((f.rrName.value == "")||(f.rrName.value == "@"))
+		name = ctx.zone;
+	else {
+		name = `${f.rrName.value}.${ctx.zone}`;
 
-	if (!hostnameCheck.test(f.rrName.value)) {
-		errMsg("Invalid host name");
-		f.rrName.focus();
-		f.rrName.select();
-		return false;
+		if (!hostnameCheck.test(f.rrName.value)) {
+			errMsg("Invalid host name");
+			f.rrName.focus();
+			f.rrName.select();
+			return false;
+			}
 		}
 
 	gbl.addH.style.display = "none";
