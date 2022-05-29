@@ -1938,7 +1938,7 @@ function doNewName()
 		return;
 		}
 
-	if (f.rrName.value == "")||(f.rrName.value == "@")
+	if ((f.rrName.value == "")||(f.rrName.value == "@"))
 		name = ctx.zone;
 	else {
 		name = `${f.rrName.value}.${ctx.zone}`;
