@@ -5,6 +5,8 @@ This project has no connection whatsoever with [PowerDNS.COM BV](https://www.pow
 
 It is an independently funded & maintained development effort.
 
+If this doesn't meet your needs, you might want to try [some of these](https://github.com/PowerDNS/pdns/wiki/WebFrontends).
+
 
 # Discussions
 
