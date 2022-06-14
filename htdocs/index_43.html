@@ -261,7 +261,6 @@ const validateMeta = {
 	"SOA-EDIT": /^(INCREMENT-WEEKS|INCEPTION-EPOCH|INCEPTION-INCREMENT|INCEPTION)$/i,
 	"SOA-EDIT-API": /^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,
 	"SOA-EDIT-DNSUPDATE": /^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,
-	"KIND": /^(Master|Slave|Native)$/i,
 	};
 
 
@@ -276,17 +275,16 @@ const metaPickLists = {
 	"PRESIGNED" : { "Enabled":1, "Disabled":0 },
 	"NSEC3NARROW" : { "Enabled":1, "Disabled":0 },
 	"IXFR" : { "Enabled":1, "Disabled":0 },
-	"SLAVE-RENOTIFY" : { "Enabled":1, "Disabled":0 },
+	"eSLAVE-RENOTIFY" : { "Enabled":1, "Disabled":0 },
 	"SOA-EDIT" : [ "INCREMENT-WEEKS","INCEPTION-EPOCH","INCEPTION-INCREMENT","INCEPTION" ],
 	"SOA-EDIT-API": [ "DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE" ],
 	"SOA-EDIT-DNSUPDATE": [ "DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE" ],
-	"KIND": [ "Master", "Slave", "Native" ],
 	};
 
 
 // these appear as metadata items but are handled as zone properties - lol
 const blockedMeta = {
-	"KIND": { name: "kind", list: false, delete: false },
+	"SOA-EDIT": { name: "soa_edit", list: false, delete: false },
 	"SOA-EDIT-API": { name: "soa_edit_api", list: false, delete: true },
 	"NSEC3PARAM": { name: "nsec3param", list: false, delete: true },
 	"TSIG-ALLOW-AXFR": { name: "master_tsig_key_ids", list: true, delete: true },
@@ -305,7 +303,6 @@ const allMetaItems = [
 	'GSS-ACCEPTOR-PRINCIPAL',
 	'GSS-ALLOW-AXFR-PRINCIPAL',
 	'IXFR',
-	'KIND',
 	'LUA-AXFR-SCRIPT',
 	'NOTIFY-DNSUPDATE',
 	'NSEC3NARROW',
@@ -820,8 +817,6 @@ function zoneMeta()
 
 function zoneMetaDetails(data)
 {
-	data.push({"kind":"KIND","metadata":[ctx.zoneDetails.kind],"type":"metadata"});
-
 	data.sort((a,b) => {
 		if (a.kind < b.kind) return -1;
 		if (a.kind > b.kind) return 1;
