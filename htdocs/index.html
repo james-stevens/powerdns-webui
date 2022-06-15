@@ -675,7 +675,17 @@ function doEditMeta(isDel)
 		json[blockedMeta[i.kind].name] = metaValue;
 		if (blockedMeta[i.kind].list) json[blockedMeta[i.kind].name] = i.metadata;
 
-		callApi(`zones/${ctx.zone}`, zoneMeta, { method: "PUT", okResp: 204, json: JSON.stringify(json) } );
+		nxtFn = zoneMeta;
+		if (i.kind == "KIND") {
+			nxtFn = function(res) {
+				callApi(`zones/${ctx.zone}`, (data) => {
+					ctx.zoneDetails = data;
+					zoneMeta();
+					} );
+				};
+			}
+
+		callApi(`zones/${ctx.zone}`, nxtFn, { method: "PUT", okResp: 204, json: JSON.stringify(json) } );
 		}
 	else {
 		let hdr = { method: "PUT", okResp: 200, json: JSON.stringify({ metadata: i.metadata }) };
