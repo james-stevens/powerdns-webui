@@ -43,7 +43,7 @@ The only exception to this is occasionally when the `NSEC3PARAM` value is displa
 This is a summary of the features this WebUI provides to PowerDNS
 
 * **Servers** - contact PowerDNS Servers directly, or indirectly though a web proxy, HTTP or HTTPS (see `Browser Security Restrictions` below)
-* **Zones** - Add, View, Remove, Sign, Unsign, Force NOTIFY, Rectify, Download in RFC format, force update (slave only)
+* **Zones** - Add, View, Remove, Sign, Unsign, Force NOTIFY, Rectify, Download in RFC format, force update (slave only), Change type/kind
 * **Metadata** - Add, Edit, Remove Metadata items or individual values, with some clientside validation, including picking drop-downs where specific metadata items have a limited range of values
 * **Hosts/names** - Master or Native only - Add, Edit, Remove RRs / RR-Sets with some clientside validation, Change the TTL of an RR-Set. Copy records, including between zones, by renaming the RR-Set
 * **TSIG Keys** - Add, Regenerate, Remove, click to copy name or digest to clipboard. NOTE: Adding multiple TSIG keys, of different algorythms, does not work in PowerDNS v4.2.0
