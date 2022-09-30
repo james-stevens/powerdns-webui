@@ -1957,7 +1957,7 @@ function doNewName()
 		name = ctx.zone;
 	else {
 		if (!hostnameCheck.test(f.rrName.value)) {
-			errMsg("Invalid host name");
+			errMsg("Invalid Record Name");
 			f.rrName.focus();
 			f.rrName.select();
 			return false;
@@ -2082,7 +2082,7 @@ function zoneDetails(data)
 	x += "</table></td><td align=center>";
 
 	if (ctx.zoneDetails.kind != "Slave")
-		x += btn("zoneAddHost()","Add Host",`Add a host to the zone ${ctx.zone}`,sz) + sp;
+		x += btn("zoneAddHost()","Add Record",`Add an DNS record to the zone ${ctx.zone}`,sz) + sp;
 
 	x += btn("zoneAxfr()","Download",`Download ${ctx.zone} in RFC/AXFR format`,sz) + sp
 		+ btn('zoneMeta()',"Metadata",`Load the META data for ${ctx.zone}`,sz) + sp
@@ -2377,7 +2377,7 @@ function doNewZone()
 			if (v.substr(v.length-1)!=".") v += ".";
 
 			if (!fqdnCheck.test(v)) {
-				errMsg(`Invalid Host Name: ${v}`);
+				errMsg(`Invalid Record Name: ${v}`);
 				x.focus(); x.select();
 				return false;
 				}
@@ -2859,7 +2859,7 @@ function keyEsc(e) {
 <div id=addName style="display: none;">
 	<table width=40% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New Host</h2></td></tr>
+	<tr><td colspan=2 align=center><h2>Add a New Record</h2></td></tr>
 	<form method=post action="/" name=newNameForm onSubmit="return doNewName();">
 		<tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);" name=rrName></td></tr>
 		<tr><td class=formPrompt>RR Type:</td><td><select name=rrType>
