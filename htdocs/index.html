@@ -1059,7 +1059,8 @@ function findZoneName(name)
 function changeName()
 {
 	let z = null;
-	let name = document.rrForm.new.value;
+	let f = document.rrForm;
+	let name = f.new.value;
 	if (name.substr(name.length-1)!=".") {
 		let t = findZoneName(`${name}.`);
 		if (t != null) {
@@ -1074,10 +1075,21 @@ function changeName()
 	else
 		z = findZoneName(name);
 
+	if (havePuny) {
+		let as_puny = toASCII(name);
+		if ((as_puny != name)&&(hasIDN(as_puny))) name = as_puny;
+		}
+
+	if (!fqdnCheck.test(name)) {
+		errMsg("Invalid Record Name");
+		f.new.focus();
+		return false;
+		}
+
 	if (z != "") ctx.zone = z;
 	else {
 		errMsg("No matching zone");
-		document.rrForm.new.focus();
+		f.new.focus();
 		return false;
 		}
 
