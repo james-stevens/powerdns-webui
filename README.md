@@ -38,7 +38,7 @@ click button in the navigation bar that will reload the data you are seeing.
 The only exception to this is occasionally when the `NSEC3PARAM` value is displayed on the DNSSEC page.
 
 
-`punycpde.js` adaapted from the [module by Mathias Bynens](https://github.com/mathiasbynens/punycode.js)
+`punycpde.js` is a very slightly modified version of the [module by Mathias Bynens](https://github.com/mathiasbynens/punycode.js)
 
 
 
