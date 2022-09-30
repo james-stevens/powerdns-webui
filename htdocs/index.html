@@ -2392,7 +2392,14 @@ function doMakeZone(data)
 function doNewZone()
 {
 	let name = document.newZoneForm.zoneName.value;
+
+	if (havePuny) {
+		let as_puny = toASCII(name);
+		if ((as_puny != name)&&(hasIDN(as_puny))) name = as_puny;
+		}
+
 	if (name.substr(name.length-1)!=".") name += ".";
+
 	if (!fqdnCheck.test(name)) {
 		errMsg("Invalid domain name");
 		document.newZoneForm.zoneName.focus();
@@ -2474,8 +2481,12 @@ function zoneListDetails(data)
 	let x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
 	x += "<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
+
+		let idn_name = i.name;
+		if ((havePuny)&&(hasIDN(idn_name))) idn_name = toUnicode(idn_name);
+
 		x += `<tr class=dataRow onClick='zoneDetailsLoad("${i.name}")'>`
-			+ `<td>${i.name}</td><td>${i.kind}</td>`;
+			+ `<td title="${idn_name}">${i.name}</td><td>${i.kind}</td>`;
 
 		t = "";
 		hlp = "Zone is NOT dnssec signed";
@@ -2579,7 +2590,11 @@ function topLine()
 	if ("searchTerm" in ctx) delete ctx.searchTerm;
 
 	if ("zone" in ctx) {
-		x += btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),`Reload all records in ${ctx.zone}`);
+
+		let idn_name = ctx.zone;
+		if ((havePuny)&&(hasIDN(idn_name))) idn_name = toUnicode(idn_name);
+
+		x += btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),`Reload all records in ${idn_name}`);
 
 		if ("rec" in ctx) {
 			let name = "@";
