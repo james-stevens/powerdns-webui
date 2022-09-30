@@ -3,6 +3,8 @@
 <html>
 <head>
 	<title>PowerDNS WebUI - Login</title>
+	<meta charSet="utf-8"/>
+	<script src="./punycode.js"></script>
 </head>
 <script language="Javascript">
 	const debugAPI = false;
@@ -194,8 +196,8 @@ td {
 </style>
 
 <script language="Javascript">
-
 console.clear();
+const havePuny = (typeof toUnicode === 'function');
 
 var gbl = {
 	server: null,
@@ -223,6 +225,7 @@ var ctx = { }; // will store the context of what the user is up to
 //=============================================================================================
 // Some system constants
 //=============================================================================================
+
 
 // add a trailing '.' for these record types, if the user forgets
 const autoAddDot = { rrMX: true, rrNS: true, rrCNAME: true, };
@@ -1214,9 +1217,13 @@ function drawOneRecord(rrs)
 	x += '<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="75%" /></colgroup>'
 	for(let idx in ctx.rec.rrs.records) {
 		let i = ctx.rec.rrs.records[idx];
+
+		let idn_name = ctx.rec.name;
+		if ((havePuny)&&(hasIDN(idn_name))) idn_name = toUnicode(idn_name);
+
 		x += "<tr class=dataRow>"
 			+ `<td onClick='deleteRRitem(${idx});' align=center>${gbl.bin}</td>`
-			+ `<td onClick='clickRecName(${idx});'><span id=nme${idx}>${ctx.rec.name}</span></td>`
+			+ `<td title="${idn_name}" onClick='clickRecName(${idx});'><span id=nme${idx}>${ctx.rec.name}</span></td>`
 			+ `<td align=right onClick='clickTTL(${idx});'><span id=ttl${idx}>${ctx.rec.rrs.ttl}</span></td>`
 			+ `<td>${ctx.rec.rrs.type}</td>`
 			+ `<td class=dataCell onClick='clickData(${idx});'><span id=rrs${idx}>${i.content}</span></td></tr>`;
@@ -1956,6 +1963,12 @@ function doNewName()
 	if ((f.rrName.value == "")||(f.rrName.value == "@"))
 		name = ctx.zone;
 	else {
+		if (havePuny) {
+			let as_puny = toASCII(f.rrName.value);
+			if ((as_puny != f.rrName.value)&&(hasIDN(as_puny)))
+				f.rrName.value = as_puny;
+			}
+
 		if (!hostnameCheck.test(f.rrName.value)) {
 			errMsg("Invalid Record Name");
 			f.rrName.focus();
@@ -2018,6 +2031,14 @@ function zoneAddHost()
 
 
 
+function hasIDN(name)
+{
+	let x = name.indexOf("xn--");
+	return ((x==0)||((x>0)&&(name[x-1]==".")));
+}
+
+
+
 function zoneDetails(data)
 {
 	data.rrsets.sort((a,b) => {
@@ -2054,8 +2075,10 @@ function zoneDetails(data)
 		+ "<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";
 
 	for(let i of data.rrsets) {
+		let idn_name = i.name;
+		if ((havePuny)&&(hasIDN(idn_name))) idn_name = toUnicode(idn_name);
 		x += `<tr onClick="clickZoneRecord('${i.name}','${i.type}');" class=dataRow>`
-			+ `<td valign=top>${i.name.substr(0,i.name.length - ctx.zone.length - 1)}</td>`
+			+ `<td title="${idn_name}" valign=top>${i.name.substr(0,i.name.length - ctx.zone.length - 1)}</td>`
 			+ `<td valign=top align=right>${i.ttl}</td>`
 			+ `<td valign=top>${i.type}</td><td class=dataCell valign=top>`;
 

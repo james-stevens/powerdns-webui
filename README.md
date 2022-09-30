@@ -38,6 +38,10 @@ click button in the navigation bar that will reload the data you are seeing.
 The only exception to this is occasionally when the `NSEC3PARAM` value is displayed on the DNSSEC page.
 
 
+`punycpde.js` adaapted from the [module by Mathias Bynens](https://github.com/mathiasbynens/punycode.js)
+
+
+
 # Features
 
 This is a summary of the features this WebUI provides to PowerDNS
