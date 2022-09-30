@@ -23,6 +23,10 @@ Or just stop by to say `hello` or `thanks`.
 which allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
 You can clone the project, if you want, but this is the only file you need in order to add a complete WebUI to your PowerDNS Server.
 
+If you want automatic IDN<->PunyCode conversion, you will also need the file `punycpde.js` which
+is a very slightly modified version of the [module by Mathias Bynens](https://github.com/mathiasbynens/punycode.js).
+If you do not include this file, everything should still work fine. IDN names are displayed as tool-tips.
+
 It is primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
 but it should handle native / slave zones OK.
 If you are using this webapp for slave / native, please let me know if there are features it needs.
@@ -37,8 +41,6 @@ click button in the navigation bar that will reload the data you are seeing.
 
 The only exception to this is occasionally when the `NSEC3PARAM` value is displayed on the DNSSEC page.
 
-
-`punycpde.js` is a very slightly modified version of the [module by Mathias Bynens](https://github.com/mathiasbynens/punycode.js)
 
 
 
