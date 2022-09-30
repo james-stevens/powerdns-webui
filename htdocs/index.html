@@ -2369,7 +2369,7 @@ function doNewZone()
 
 	let ns = [];
 	let ip = [];
-	for(let i=0;i<4;i++) {
+	for(let i=0;i<6;i++) {
 		let x = document.newZoneForm[`ns${i}`];
 		let v = x.value;
 
@@ -2834,17 +2834,23 @@ function keyEsc(e) {
 		<tr><td class=formPrompt>Name :</td><td><input onkeydown="keyEsc(event);" name=zoneName></td></tr>
 		<tr><td class=formPrompt>Type :</td><td><select onChange="zoneKindChange(this);" name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr>
 		</tbody><tbody id="asMaster">
-			<tr><td class=formPrompt>Name Servers :</td><td>
+			<tr><td class=formPrompt>Name Servers:</td><td>
 				<input size=40 name=ns0><br>
 				<input size=40 name=ns1><br>
 				<input size=40 name=ns2><br>
-				<input size=40 name=ns3><br></td></tr>
+				<input size=40 name=ns3><br>
+				<input size=40 name=ns4><br>
+				<input size=40 name=ns5><br>
+				</td></tr>
 		</tbody><tbody id="asSlave" style="display: none;">
 			<tr><td class=formPrompt>Master's IPs :</td><td>
 				<input size=40 name=ip0><br>
 				<input size=40 name=ip1><br>
 				<input size=40 name=ip2><br>
-				<input size=40 name=ip3><br></td></tr>
+				<input size=40 name=ip3><br>
+				<input size=40 name=ip4><br>
+				<input size=40 name=ip5><br>
+				</td></tr>
 		</tbody>
 		<tr><td colspan=2><hr></td></tr>
 		<tr><td align=center colspan=2><span title="Cancel adding zone" class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone" class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
