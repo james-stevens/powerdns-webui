@@ -1,0 +1,205 @@
+
+.fullvis { font-family:inherit; font-size:14pt; visibility: visible; opacity: 1; text-align: center; }
+.fadein  { font-family:inherit; font-size:14pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
+.fadeout { font-family:inherit; font-size:14pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+	color: #c0c0e0;
+	opacity: 1; /* Firefox */
+	}
+
+.btmBtnBar {
+	background-color: #777799;
+	text-align: center;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	}
+
+#topSpan{
+	background-color: #777799;
+	height: 55px;
+	line-height: 55px;
+	margin-top: 0px;
+	padding-left: 0px;
+	padding-top: 1px;
+	top: 0px;
+	}
+
+html {
+	color: white;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-size: 14px;
+	background-color:#666688;
+	scrollbar-base-color:#666699;
+	scrollbar-arrow-color:#ddddff;
+	}
+
+th {
+	color: black;
+	font-family: inherit;
+	font-size: inherit;
+	background-color:#a0a0cc;
+	font-weight: bold;
+	padding-left: 6px;
+	padding-right: 6px;
+	}
+
+select {
+	padding: 5px 12px;
+	background-color: #555577;
+	color: white;
+	font-family: inherit;
+	font-size: 14px;
+	border-radius: 6px;
+	border: 1px solid;
+	border-color: #d0d0e0;
+}
+
+input {
+	padding: 5px 12px;
+	background-color: #555577;
+	color: white;
+	font-family: inherit;
+	font-size: 14px;
+	border-radius: 6px;
+	border: 1px solid;
+	border-color: #d0d0e0;
+	}
+
+input:focus {
+	border-color: #ffffff;
+	}
+
+.inputBad {
+	color: black;
+	background-color: #ffd0d0;
+	font-family: inherit;
+	font-size: 14px;
+	}
+
+body {
+	color: white;
+	font-family: inherit;
+	font-size: inherit;
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	background-color:#666688;
+	scrollbar-base-color:#666699;
+	scrollbar-arrow-color:#ddddff;
+	}
+
+
+a {
+	color: #b0b0ff;
+	text-decoration:none;
+	}
+
+a:hover {
+	text-decoration: underline;
+	}
+
+form {
+	margin:0px;
+	}
+
+.myBtn {
+	text-align: center;
+	display: inline-block;
+	background-color: #c0c0e0;
+	color: black;
+	font-family: inherit;
+	font-size: 14px;
+	border-radius: 6px;
+	border: 1px solid;
+	border-color: #eeeeff;
+	padding: 5px 16px;
+	cursor: pointer;
+	margin-top: 0px;
+	margin-left: 10px;
+	margin-bottom: 2px;
+	margin-right: 2px;
+	}
+
+.myBtn:hover {
+	border-color: #ffffff;
+	background-color: #d8d8ff;
+	}
+
+.myBtn:active {
+	position: relative;
+	box-shadow: none;
+	text-shadow: none;
+	top: 1px;
+	left: 1px;
+	}
+
+.dnskey {
+	color: #383855;
+	}
+
+td {
+	font-family:inherit;
+	font-size: 14px;
+	vertical-align: top;
+	padding-left: 7px;
+	padding-right: 7px;
+	white-space: nowrap;
+	}
+
+.dataCell {
+	font-family:inherit;
+	font-size: 14px;
+	vertical-align: top;
+	padding-left: 7px;
+	padding-right: 7px;
+	white-space: normal;
+	min-width: 50%;
+	overflow-wrap: anywhere;
+	}
+
+.dataRow {
+	font-family: inherit;
+	font-size: 14px;
+	cursor: pointer;
+	color: white;
+	background-color: #666688;
+	}
+
+.dataRow:hover {
+	background-color: #4f4f6f;
+	}
+
+
+.formPrompt {
+	font-family:inherit;
+	font-size: 14px;
+	color: white;
+	text-align: right;
+	padding-top: 8px;
+	}
+
+
+.msgPop {
+	position: absolute;
+	left: 10px;
+	top: 20px;
+	font-family:inherit;
+	font-size:16pt;
+	width: 95%;
+	background: #ffd0d0;
+	text-align: center;
+	color: black;
+	padding: 5px;
+	border-radius: 6px;
+	}
+
+.msgPopNo {
+	visibility: hidden;
+	opacity: 0; transition: visibility 0s 1s, opacity 1s linear;
+	}
+
+.msgPopYes {
+	visibility: visible;
+	opacity: 1; transition: opacity 0.5s linear;
+	}

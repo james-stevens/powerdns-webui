@@ -9,29 +9,43 @@
 	const debugAPI = false;
 </script>
 
-
 <style type='text/css'>
 
-.fullvis { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; text-align: center; }
-.fadein  { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
-.fadeout { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
+.fullvis { font-family:inherit; font-size:14pt; visibility: visible; opacity: 1; text-align: center; }
+.fadein  { font-family:inherit; font-size:14pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
+.fadeout { font-family:inherit; font-size:14pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+	color: #c0c0e0;
+	opacity: 1; /* Firefox */
+	}
+
+h2 {
+	text-align: center;
+	}
+
+.btmBtnBar {
+	text-align: center;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border: 1px solid;
+	border-color: #8888aa;
+	}
 
 #topSpan{
-	background-color: #666688;
+	background-color: #777799;
 	height: 55px;
 	line-height: 55px;
 	margin-top: 0px;
 	padding-left: 0px;
 	padding-top: 1px;
-	position: -webkit-sticky;
-	position: sticky;
 	top: 0px;
 	}
 
 html {
 	color: white;
 	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
+	font-size: 14px;
 	background-color:#666688;
 	scrollbar-base-color:#666699;
 	scrollbar-arrow-color:#ddddff;
@@ -39,8 +53,8 @@ html {
 
 th {
 	color: black;
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
+	font-family: inherit;
+	font-size: inherit;
 	background-color:#a0a0cc;
 	font-weight: bold;
 	padding-left: 6px;
@@ -48,30 +62,45 @@ th {
 	}
 
 select {
-	color: black;
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 8pt;
-	}
+	padding: 5px 12px;
+	background-color: #555577;
+	color: white;
+	font-family: inherit;
+	font-size: 14px;
+	border-radius: 6px;
+	border: 1px solid;
+	border-color: #d0d0e0;
+}
 
 input {
-	color: black;
-	background-color: white;
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 8pt;
+	padding: 5px 12px;
+	background-color: #555577;
+	color: white;
+	font-family: inherit;
+	font-size: 14px;
+	border-radius: 6px;
+	border: 1px solid;
+	border-color: #d0d0e0;
+	}
+
+input:focus {
+	border-color: #ffffff;
 	}
 
 .inputBad {
 	color: black;
 	background-color: #ffd0d0;
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 8pt;
+	font-family: inherit;
+	font-size: 14px;
 	}
 
 body {
 	color: white;
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
+	font-family: inherit;
+	font-size: inherit;
 	margin-top: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
 	background-color:#666688;
 	scrollbar-base-color:#666699;
 	scrollbar-arrow-color:#ddddff;
@@ -94,15 +123,14 @@ form {
 .myBtn {
 	text-align: center;
 	display: inline-block;
-	background-color: #d0d0ff;
+	background-color: #c0c0e0;
 	color: black;
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 10pt;
-	font-weight: bold;
-	border-radius: 25px;
-	padding: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
+	font-family: inherit;
+	font-size: 14px;
+	border-radius: 6px;
+	border: 1px solid;
+	border-color: #eeeeff;
+	padding: 5px 16px;
 	cursor: pointer;
 	margin-top: 0px;
 	margin-left: 10px;
@@ -111,8 +139,8 @@ form {
 	}
 
 .myBtn:hover {
-	box-shadow: 3px 3px #222244;
-	text-shadow: 1px 1px #ffffff;
+	border-color: #ffffff;
+	background-color: #d8d8ff;
 	}
 
 .myBtn:active {
@@ -128,8 +156,8 @@ form {
 	}
 
 td {
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
+	font-family:inherit;
+	font-size: 14px;
 	vertical-align: top;
 	padding-left: 7px;
 	padding-right: 7px;
@@ -137,8 +165,8 @@ td {
 	}
 
 .dataCell {
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
+	font-family:inherit;
+	font-size: 14px;
 	vertical-align: top;
 	padding-left: 7px;
 	padding-right: 7px;
@@ -148,23 +176,24 @@ td {
 	}
 
 .dataRow {
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 10pt;
+	font-family: inherit;
+	font-size: 14px;
 	cursor: pointer;
 	color: white;
 	background-color: #666688;
 	}
 
 .dataRow:hover {
-	background-color: #444466;
+	background-color: #4f4f6f;
 	}
 
 
 .formPrompt {
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
+	font-family:inherit;
+	font-size: 14px;
 	color: white;
 	text-align: right;
+	padding-top: 8px;
 	}
 
 
@@ -172,14 +201,14 @@ td {
 	position: absolute;
 	left: 10px;
 	top: 20px;
-	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-family:inherit;
 	font-size:16pt;
 	width: 95%;
 	background: #ffd0d0;
 	text-align: center;
 	color: black;
 	padding: 5px;
-	border-radius: 10px;
+	border-radius: 6px;
 	}
 
 .msgPopNo {
@@ -191,8 +220,8 @@ td {
 	visibility: visible;
 	opacity: 1; transition: opacity 0.5s linear;
 	}
-
 </style>
+
 
 <script language="Javascript">
 console.clear();
@@ -215,6 +244,8 @@ var gbl = {
 	nsec: "&#x1F512;",
 	nsec3: "&#x1F510;",
 	clip: "&#x1F4CE;",
+
+	sp: "<div style='height: 7px;'></div>"
 	};
 
 var ctx = { }; // will store the context of what the user is up to
@@ -604,7 +635,7 @@ function showOneStats(data)
 		}
 
 	x += "</table>";
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 	topLine();
 }
 
@@ -641,7 +672,7 @@ function showStats(data)
 			}
 		});
 	x += "</table>";
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 	topLine()
 }
 
@@ -779,14 +810,14 @@ function clickAddMeta(item,val,dataIdx,itemIdx)
 
 	if (val == null) {
 		addBtn = "Add Metadata";
-		x += "<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>"
+		x += "<tr><td colspan=2><h2>Add a New Metadata Item</h2></td></tr>"
 			+ "<tr><td class=formPrompt>Metadata: </td><td><select onChange='clickAddMeta(this.value.toUpperCase());' name=metaItem>";
 		allMetaItems.forEach(i => { c=""; if (i==item) c="selected"; x += `<option ${c}>${i}` });
 		x += '</select></td></tr>';
 		}
 	else {
-		x += `<tr><td colspan=2 align=center><h2>Edit a Metadata Item</h2></td></tr>`
-			+ `<tr><td class=formPrompt>Metadata Item: </td><td>${item}</td></tr>`
+		x += `<tr><td colspan=2><h2>Edit a Metadata Item</h2></td></tr>`
+			+ `<tr><td align=right>Metadata Item :</td><td>${item}</td></tr>`
 			+ `<input type=hidden name=metaItem value="${item}">`;
 		}
 
@@ -803,8 +834,8 @@ function clickAddMeta(item,val,dataIdx,itemIdx)
 	else
 		x += `<input size=50 name=metaValue></td></tr>`;
 
-	x += '<tr><td colspan=2><hr></td></tr>'
-		+ '<tr><td align=center colspan=2>'
+	x += '<tr><td><div style="height: 10px;"></div></td></tr>'
+		+ '<tr><td class=btmBtnBar colspan=2>'
 		+ '<span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>'
 
 	if (showDelete(item,val))
@@ -814,7 +845,7 @@ function clickAddMeta(item,val,dataIdx,itemIdx)
 		+ '<input type=submit style="display: none;">'
 		+ '</table></form>';
 
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 
 	if (val != null) document.newMetaForm.metaValue.value = val;
 	else {
@@ -869,7 +900,7 @@ function zoneMetaDetails(data)
 		}
 
 	x += "</table>";
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 	topLine();
 }
 
@@ -1245,7 +1276,7 @@ function drawOneRecord(rrs)
 			+ `<td>${ctx.rec.rrs.type}</td>`
 			+ `<td class=dataCell onClick='clickData(${idx});'><span id=rrs${idx}>${i.content}</span></td></tr>`;
 		}
-	gbl.bot.innerHTML = `${x}</table>`;
+	gbl.bot.innerHTML = gbl.sp + `${x}</table>`;
 	topLine();
 }
 
@@ -1433,7 +1464,7 @@ function signZone()
 	let x = "<form onSubmit='return doSignZone();' name=signZoneForm><table align=center>";
 
 	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
-		+ `<tr><th colspan=2>DNSSEC Sign: ${ctx.zone}</th></tr>`;
+		+ `<tr><td colspan=2><h2>DNSSEC Sign: ${ctx.zone}</h2></td></tr>`;
 
 	x += `<tr><td class=formPrompt>Key Policy: </td><td><select onChange="showHideBits('signZoneForm');" name=keyPolicy>`;
 	["KSK+ZSK", "CSK"].forEach(i => { x += `<option>${i}` } );
@@ -1445,7 +1476,7 @@ function signZone()
 	x += "</select></td></tr>";
 
 	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
-		+ "<tr><td align=center colspan=2>"
+		+ "<tr><td class=btmBtnBar colspan=2>"
 		+ btn("loadThisZone()","Cancel",`Do not sign ${ctx.zone}`)
 		+ btn("doSignZone()","Sign Zone",`DNSSEC Sign ${ctx.zone}`)
 		+ "</td></tr><tr><td><div style='height: 15px;'></div></td></tr>"
@@ -1461,7 +1492,7 @@ function signZone()
 		+ "<b>CSK</b> uses one key instead of two, but means your zone will double in size during key rollover.<br>With <b>KSK+ZSK</b> you have two keys to roll-over, but you can keep the same zone size during the process."
 		+ "</td></tr></table>"
 
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 }
 
 
@@ -1506,9 +1537,9 @@ function doAddKey()
 
 function clickAddKey()
 {
-	let x = "<form onSubmit='return doAddKey();' name=addKeyForm><table align=center>"
-		+ "<tr><td><div style='height: 15px;'></div></td></tr>"
-		+ "<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
+	let x = "<form onSubmit='return doAddKey();' name=addKeyForm><table width=55% align=center>"
+		+ "<tr><td><div style='height: 20px;'></div></td></tr>"
+		+ "<tr><td colspan=2><h2>Add a DNSSEC Key</h2></td></tr>"
 		+ "<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";
 
 	["ksk","zsk","csk"].forEach(i => { x += `<option value=${i}>${i.toUpperCase()}` } );
@@ -1520,7 +1551,7 @@ function clickAddKey()
 	x += "</select></td></tr>";
 
 	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
-		+ "<tr><td align=center colspan=2>"
+		+ "<tr><td class=btmBtnBar colspan=2>"
 		+ btn("cancelAddKey()","Cancel",`Do not add a key to the zone ${ctx.zone}`)
 		+ btn("doAddKey()","Add a Key",`Add a key to the zone ${ctx.zone}`)
 		+ "</td></tr><tr><td><div style='height: 15px;'></div></td></tr>"
@@ -1747,19 +1778,18 @@ function showKeys(data)
 		x += "<tr><td><div style='height: 15px;'></div></td></tr>";
 		}
 
-	let sp = "<div style='height: 7px;'></div>";
 	let sz = 100;
 
 	x += "</table></td><td>"
-		+ btn('clickAddKey()',"Add Key",`Add a DNSSEC Key to ${ctx.zone}`,sz) + sp;
-		+ btn('deleteAllKeys()',"Unsign",`Remove all DNSSEC on ${ctx.zone}`,sz) + sp;
+		+ btn('clickAddKey()',"Add Key",`Add a DNSSEC Key to ${ctx.zone}`,sz) + gbl.sp;
+		+ btn('deleteAllKeys()',"Unsign",`Remove all DNSSEC on ${ctx.zone}`,sz) + gbl.sp;
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
-		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + sp
-			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone}`,sz) + sp;
+		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + gbl.sp
+			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone}`,sz) + gbl.sp;
 		}
 	else
-		x += btn("setNSEC3()","Add NSEC3",`Switch this zone to NSEC3 ${ctx.zone}`,sz) + sp;
+		x += btn("setNSEC3()","Add NSEC3",`Switch this zone to NSEC3 ${ctx.zone}`,sz) + gbl.sp;
 
 	x += "</td></tr></table>";
 
@@ -1852,20 +1882,20 @@ function showKeys(data)
 		}
 
 
-	x += "<tr><td colspan=2><hr></td></tr>"
+	x += "<tr><td><div style='height: 10px;'></div></td></tr>"
 
 	if (key_txt == null)
 		x += "<tr><td><h3>DNSSEC Key Rollover State could not be detected</h3></td></tr>"
 	else
 		x += key_txt + zkey_txt;
 
-	x += "<tr><td colspan=2><hr></td></tr>"
+	x += "<tr><td><div style='height: 10px;'></div></td></tr>"
 
 	x += "</table>";
 	if (notes != null) x += `<center>${notes}</center>`;
 	x += "</div><div id='dnssecBot'></div>"
 
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 
 	topLine();
 
@@ -1954,7 +1984,7 @@ function dropZone()
 		+ btn("loadThisZone();","Cancel",`Do not delete the zone ${ctx.zone}`)
 		+ "&nbsp;"
 		+ btn("doDropZone()",`Drop '${ctx.zone}'`,`Delete the zone ${ctx.zone} and ALL its records`);
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 }
 
 
@@ -2112,36 +2142,35 @@ function zoneDetails(data)
 		x += "</td></tr>";
 		}
 
-	let sp = "<div style='height: 7px;'></div>";
 	let sz = 100;
 
 	x += "</table></td><td align=center>";
 
 	if (ctx.zoneDetails.kind != "Slave")
-		x += btn("zoneAddHost()","Add Record",`Add an DNS record to the zone ${ctx.zone}`,sz) + sp;
+		x += btn("zoneAddHost()","Add Record",`Add an DNS record to the zone ${ctx.zone}`,sz) + gbl.sp;
 
-	x += btn("zoneAxfr()","Download",`Download ${ctx.zone} in RFC/AXFR format`,sz) + sp
-		+ btn('zoneMeta()',"Metadata",`Load the META data for ${ctx.zone}`,sz) + sp
-		+ btn('zoneNotify()',"Notify Zone",`Notify the slaves of ${ctx.zone}`,sz) + sp;
+	x += btn("zoneAxfr()","Download",`Download ${ctx.zone} in RFC/AXFR format`,sz) + gbl.sp
+		+ btn('zoneMeta()',"Metadata",`Load the META data for ${ctx.zone}`,sz) + gbl.sp
+		+ btn('zoneNotify()',"Notify Zone",`Notify the slaves of ${ctx.zone}`,sz) + gbl.sp;
 
 	if (ctx.zoneDetails.dnssec)
-		x += btn('zoneRectify()',"Rectify Zone",`Rectify the data for ${ctx.zone}`,sz) + sp;
+		x += btn('zoneRectify()',"Rectify Zone",`Rectify the data for ${ctx.zone}`,sz) + gbl.sp;
 
 	if (ctx.zoneDetails.kind == "Slave")
-		x += btn('zoneRetrieve()',"Retrieve Zone",`Retrieve ${ctx.zone} from its master(s)`,sz) + sp;
+		x += btn('zoneRetrieve()',"Retrieve Zone",`Retrieve ${ctx.zone} from its master(s)`,sz) + gbl.sp;
 
 	x += btn('dropZone()',"Drop Zone",`Delete ${ctx.zone} and ALL its records`,sz);
 
-	x += "<hr>";
+	x += gbl.sp + gbl.sp;
 
 	if (ctx.zoneDetails.dnssec) {
-		x += btn('zoneKeys()',"DNSSEC Keys",`View DNSSEC keys for ${ctx.zone}`,sz) + sp;
+		x += btn('zoneKeys()',"DNSSEC Keys",`View DNSSEC keys for ${ctx.zone}`,sz) + gbl.sp;
 		}
 	else
-		x += btn('signZone()',"Sign Zone",`DNSSEC sign ${ctx.zone}`,sz) + sp;
+		x += btn('signZone()',"Sign Zone",`DNSSEC sign ${ctx.zone}`,sz) + gbl.sp;
 
 	x += "</td></tr></table>";
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 
 	topLine();
 }
@@ -2217,7 +2246,7 @@ function searchResults(data)
 		x += "</tr>";
 		}
 	x += "</table>";
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 }
 
 
@@ -2225,9 +2254,15 @@ function searchResults(data)
 function searchFormSubmit()
 {
 	let s = document.searchForm.searchTerm.value;
+
+	let as_puny = toASCII(s);
+	if ((as_puny != s)&&(hasIDN(as_puny))) s = as_puny;
+
+	console.log(s);
 	ctx.searchTerm = s;
 	document.searchForm.searchTerm.value = "";
 	callApi(`search-data?q=${s}`,searchResults);
+
 	return false;
 }
 
@@ -2322,17 +2357,17 @@ function showTSIG(tsig)
 		ctx = {}; topLine();
 
 		let x = "<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
-			+ `<tr class=dataRow onClick=\"clickTSIG('${data.id}','Name');\"><td class=formPrompt>TSIG Name :</td><td>${data.id}</td></tr>`
-			+ `<tr><td class=formPrompt>TSIG Algorithm :</td><td>${data.algorithm.toUpperCase()}</td></tr>`
-			+ `<tr onClick=\"clickTSIG('${data.key}','Key');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>${data.key}</td></tr>`
-			+ "<tr><td align=center colspan=2><hr></td></tr>"
-			+ "<tr><td align=center colspan=2>"
+			+ `<tr class=dataRow onClick=\"clickTSIG('${data.id}','Name');\"><td align=right>TSIG Name :</td><td>${data.id}</td></tr>`
+			+ `<tr><td align=right>TSIG Algorithm :</td><td>${data.algorithm.toUpperCase()}</td></tr>`
+			+ `<tr onClick=\"clickTSIG('${data.key}','Key');\" class=dataRow><td align=right>TSIG Key :</td><td>${data.key}</td></tr>`
+			+ "<tr><td><div style='height: 10px;'></div></td></tr>"
+			+ "<tr><td class=btmBtnBar colspan=2>"
 			+ btn("loadTsigList()","Back","Go back to the list of TSIGs")
 			+ btn(`regenTSIG('${data.id}','${data.algorithm}')`,"Rollover","Replace this TSIG Key, keeping the name")
 			+ btn(`deleteTSIG('${data.id}')`,"Delete","Delete this TSIG Key")
 			+ "</td></tr></table>";
 
-		gbl.bot.innerHTML = x;
+		gbl.bot.innerHTML = gbl.sp + x;
 		topLine();
 		});
 }
@@ -2369,7 +2404,7 @@ function showTsigList(data)
 	setState(`${gbl.server}: TSIGs`, { state: "tsig", server: gbl.server, tsig: true });
 	ctx = {}; topLine();
 
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 }
 
 
@@ -2512,7 +2547,7 @@ function zoneListDetails(data)
 	x += "</td></tr></table>";
 
 	topLine();
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 }
 
 
@@ -2576,7 +2611,7 @@ function topLine()
 
 	gbl.forms.forEach(i => i.style.display = "none");
 
-	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
+	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1>"
 		+ `<font size=+1><a title='Open this page in a new window' target=_blank href='${window.origin}${gbl.pathname}?`;
 
 	let x = `'>${gbl.page}</a></font></td><td>`
@@ -2648,7 +2683,7 @@ function topLine()
 
 	x += "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=30 name=searchTerm></form></td>"
-		+ "</tr><table><hr>";
+		+ "</tr><table>";
 
 	gbl.top.innerHTML = y + btoa(JSON.stringify(gbl.state)) + x;
 }
@@ -2853,19 +2888,21 @@ function keyEsc(e) {
 <body onLoad="startUp();">
 
 <div id="topSpan">
+<div style='height: 10px;'></div>
 <table border=0 cellspacing=0 cellpadding=0 width=100%>
 <tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr>
 </table>
 </div>
 
 <div id="lowerSpan">
+	<div style='height: 10px;'></div>
 	<table align=center>
 	<form action="/" onSubmit="return initialLogin()" name=loginForm>
-		<tr><td class=formPrompt>Server:</td><td><input title="PowerDNS RestAPI, can include optional :[port] and sub-directory" name=server size=40 value=""></td></tr>
-		<tr><td class=formPrompt>API-Key:</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
-		<tr><td class=formPrompt>HTTPS (SSL/TLS):</td><td><input title="Connect to API over HTTPS, not HTTP" type=checkbox name=with_https></td></tr>
-		<tr><td class=formPrompt>Fast Zone List:</td><td><input title="Fast load long zone lists by excluding some information" type=checkbox name=fast_zone_list></td></tr>
-		<tr><td align=center colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
+		<tr><td class=formPrompt>Server :</td><td><input title="PowerDNS RestAPI, can include optional :[port] and sub-directory" name=server size=40 value=""></td></tr>
+		<tr><td class=formPrompt>API-Key :</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
+		<tr><td align=right>HTTPS (SSL/TLS) :</td><td><input title="Connect to API over HTTPS, not HTTP" type=checkbox name=with_https></td></tr>
+		<tr><td align=right>Fast Zone List :</td><td><input title="Fast load long zone lists by excluding some information" type=checkbox name=fast_zone_list></td></tr>
+		<tr><td class=btmBtnBar colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
@@ -2877,14 +2914,15 @@ function keyEsc(e) {
 
 
 <div id=addZone style="display: none;">
+	<div style='height: 10px;'></div>
 	<table width=40% align=center><tbody id="startBody">
 	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr>
+	<tr><td colspan=2><h2>Add a New Zone</h2></td></tr>
 	<form method=post action="/" name=newZoneForm onSubmit="return doNewZone();">
 		<tr><td class=formPrompt>Name :</td><td><input onkeydown="keyEsc(event);" name=zoneName></td></tr>
 		<tr><td class=formPrompt>Type :</td><td><select onChange="zoneKindChange(this);" name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr>
 		</tbody><tbody id="asMaster">
-			<tr><td class=formPrompt>Name Servers:</td><td>
+			<tr><td align=right>Name Servers :</td><td>
 				<input size=40 name=ns0><br>
 				<input size=40 name=ns1><br>
 				<input size=40 name=ns2><br>
@@ -2893,7 +2931,7 @@ function keyEsc(e) {
 				<input size=40 name=ns5><br>
 				</td></tr>
 		</tbody><tbody id="asSlave" style="display: none;">
-			<tr><td class=formPrompt>Master's IPs :</td><td>
+			<tr><td align=right>Master's IPs :</td><td>
 				<input size=40 name=ip0><br>
 				<input size=40 name=ip1><br>
 				<input size=40 name=ip2><br>
@@ -2902,8 +2940,8 @@ function keyEsc(e) {
 				<input size=40 name=ip5><br>
 				</td></tr>
 		</tbody>
-		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span title="Cancel adding zone" class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone" class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
+		<tr><td><div style='height: 10px;'></div></td></tr>
+		<tr><td class=btmBtnBar colspan=2><span title="Cancel adding zone" class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone" class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
@@ -2913,9 +2951,10 @@ function keyEsc(e) {
 
 
 <div id=addName style="display: none;">
-	<table width=40% align=center>
+	<div style='height: 10px;'></div>
+	<table width=35% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New Record</h2></td></tr>
+	<tr><td colspan=2><h2>Add a New Record</h2></td></tr>
 	<form method=post action="/" name=newNameForm onSubmit="return doNewName();">
 		<tr><td class=formPrompt>Record Name:</td><td><input onkeydown="keyEsc(event);" name=rrName></td></tr>
 		<tr><td class=formPrompt>RR Type:</td><td><select name=rrType>
@@ -2935,8 +2974,8 @@ function keyEsc(e) {
 
 		</select></td></tr>
 		<tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr>
-		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR" onClick="loadThisZone();">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
+		<tr><td><div style='height: 10px;'></div></td></tr>
+		<tr><td class=btmBtnBar colspan=2><span class=myBtn title="Cancel adding RR" onClick="loadThisZone();">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
@@ -2945,9 +2984,10 @@ function keyEsc(e) {
 
 
 <div id=addTsig style="display: none;">
+	<div style='height: 10px;'></div>
 	<table width=40% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New TSIG Key</h2></td></tr>
+	<tr><td colspan=2><h2>Add a New TSIG Key</h2></td></tr>
 	<form method=post action="/" name=newTsigForm onSubmit="return formAddTsig();">
 		<tr><Td class=formPrompt>TSIG Name: </td><td><input size=50 name=tsigName></td></tr>
 		<tr><td class=formPrompt>TSIG Algrythm: </td><td><select name=tsigAlg>
@@ -2955,8 +2995,8 @@ function keyEsc(e) {
 			<option value="hmac-sha224">HMAC-SHA224<option value="hmac-sha1">HMAC-SHA1<option value="hmac-md5">HMAC-MD5
 		</select></td></tr>
 		<tr><Td class=formPrompt>TSIG Key: </td><td><input placeholder='Leave blank, for auto-generated key' size=100 name=tsigKey></td></tr>
-		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding a TSIG Key" onClick="loadTsigList();">Cancel</span><span title="Add this TSIG Key" class=myBtn onClick="formAddTsig();">Add TSIG</span></td></tr>
+		<tr><td><div style='height: 10px;'></div></td></tr>
+		<tr><td class=btmBtnBar colspan=2><span class=myBtn title="Cancel adding a TSIG Key" onClick="loadTsigList();">Cancel</span><span title="Add this TSIG Key" class=myBtn onClick="formAddTsig();">Add TSIG</span></td></tr>
 	<input type=submit style="display: none;">
 	</form>
 	</table>
