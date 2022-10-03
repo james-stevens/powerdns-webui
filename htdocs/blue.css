@@ -111,13 +111,13 @@ form {
 .myBtn {
 	text-align: center;
 	display: inline-block;
-	background-color: #b0b0d0;
-	color: black;
+	background-color: #8888aa;
+	color: white;
 	font-family: inherit;
 	font-size: 14px;
 	border-radius: 6px;
 	border: 1px solid;
-	border-color: #eeeeff;
+	border-color: #aaaacc;
 	padding: 5px 16px;
 	cursor: pointer;
 	margin-top: 0px;
@@ -127,8 +127,8 @@ form {
 	}
 
 .myBtn:hover {
-	border-color: #ffffff;
-	background-color: #d0d0f0;
+	border-color: #d0d0ff;
+	background-color: #9999bb;
 	}
 
 .myBtn:active {
