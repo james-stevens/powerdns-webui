@@ -2087,7 +2087,8 @@ function zoneDetails(data)
 		let pfx_name = i.name.substr(0,i.name.length - ctx.zone.length - 1);
 		let idn_name = i.name,idn_col = "";
 
-		if (hasIDN(pfx_name)) idn_col = idn_name = toUnicode(idn_name);
+		if (hasIDN(pfx_name)) idn_col = toUnicode(idn_name);
+		if (hasIDN(idn_name)) idn_name = toUnicode(idn_name);
 
 		x += `<tr onClick="clickZoneRecord('${i.name}','${i.type}');" class=dataRow>`
 			+ `<td title="${idn_name}" valign=top>${pfx_name}</td>`
@@ -2963,13 +2964,13 @@ function keyEsc(e) {
 
 <div id=myMsgPop class='msgPop msgPopNo'></div>
 
+<script language="Javascript">
 
 /*
 The rest of this file is a very slightly modified version of the `punycode.js` module by Mathias Bynens
 https://github.com/mathiasbynens/punycode.js
 */
 
-<script language="Javascript">
 /** Highest positive signed 32-bit float value */
 const maxInt = 2147483647; // aka. 0x7FFFFFFF or 2^31-1
 
