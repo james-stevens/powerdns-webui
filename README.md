@@ -25,7 +25,7 @@ You can clone the project, if you want, but this is the only file you need in or
 
 Punycode to IDN decoding & encoding is done by a very slightly modified version of the
 [module by Mathias Bynens](https://github.com/mathiasbynens/punycode.js)
-whic has been appended to the `index.html` file.
+which has been appended to the `index.html` file.
 
 It is primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
 but it should handle native / slave zones OK.
