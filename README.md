@@ -63,7 +63,8 @@ This is a summary of the features this WebUI provides to PowerDNS
 	* DS digest, click to copy digest to clipboard
 	* Convert NSEC to NSEC3 or vice versa. NOTE: removing the NSEC3 param record using the Rest/API does not work in PowerDNS v4.2.0
 	* NSEC3PARAM roll-over - Yeah, some people like to do it. What can you say.
-* Punycode - where record or zone names are [punycode](https://en.wikipedia.org/wiki/Punycode) encoded, they will be decoded and the IDN version will be displayed (look out for tooltips!)
+* Punycode - where record or zone names are [punycode](https://en.wikipedia.org/wiki/Punycode) encoded, they will be decoded and the IDN version will be displayed (look out for tooltips!).
+	When zones or records are created or renamed, the name can be entered as UTF-8 and it will be automatically encoded to punycode.
 * **Stats** - ability to view all server stats data, including breaking out data presented in lists
 * Ability to maintain a [bind-9.11 catalog zone](https://kb.isc.org/docs/aa-01401), for RFC/XFR (not native) slaves.
 
