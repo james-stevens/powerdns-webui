@@ -23,7 +23,7 @@ Or just stop by to say `hello` or `thanks`.
 which allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
 You can clone the project, if you want, but this is the only file you need in order to add a complete WebUI to your PowerDNS Server.
 
-IDN<->Punycode conversion is done by a very slightly modified version of the
+Punycode to IDN decoding & encoding is done by a very slightly modified version of the
 [module by Mathias Bynens](https://github.com/mathiasbynens/punycode.js)
 whic has been appended to the `index.html` file.
 
