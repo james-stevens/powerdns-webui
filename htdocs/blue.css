@@ -8,11 +8,16 @@
 	opacity: 1; /* Firefox */
 	}
 
+h2 {
+	text-align: center;
+	}
+
 .btmBtnBar {
-	background-color: #777799;
 	text-align: center;
 	padding-top: 10px;
 	padding-bottom: 10px;
+	border: 1px solid;
+	border-color: #8888aa;
 	}
 
 #topSpan{
@@ -203,3 +208,4 @@ td {
 	visibility: visible;
 	opacity: 1; transition: opacity 0.5s linear;
 	}
+
