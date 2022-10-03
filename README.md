@@ -23,9 +23,9 @@ Or just stop by to say `hello` or `thanks`.
 which allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
 You can clone the project, if you want, but this is the only file you need in order to add a complete WebUI to your PowerDNS Server.
 
-If you want automatic IDN<->PunyCode conversion, you will also need the file `punycpde.js` which
-is a very slightly modified version of the [module by Mathias Bynens](https://github.com/mathiasbynens/punycode.js).
-If you do not include this file, everything should still work fine. IDN names are displayed as tool-tips.
+IDN<->Punycode conversion is done by a very slightly modified version of the
+[module by Mathias Bynens](https://github.com/mathiasbynens/punycode.js)
+whic has been appended to the `index.html` file.
 
 It is primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
 but it should handle native / slave zones OK.
@@ -63,6 +63,7 @@ This is a summary of the features this WebUI provides to PowerDNS
 	* DS digest, click to copy digest to clipboard
 	* Convert NSEC to NSEC3 or vice versa. NOTE: removing the NSEC3 param record using the Rest/API does not work in PowerDNS v4.2.0
 	* NSEC3PARAM roll-over - Yeah, some people like to do it. What can you say.
+* Punycode - where record or zone names are [punycode](https://en.wikipedia.org/wiki/Punycode) encoded, they will be decoded and the IDN version will be displayed (look out for tooltips!)
 * **Stats** - ability to view all server stats data, including breaking out data presented in lists
 * Ability to maintain a [bind-9.11 catalog zone](https://kb.isc.org/docs/aa-01401), for RFC/XFR (not native) slaves.
 
