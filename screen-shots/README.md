@@ -1,8 +1,8 @@
 # List of all zones
-![One](Selection_2020-03-23_012.png)
+![One](Screenshot_2022-10-04_16-34-55.png)
 
 # Looking at the records in a zone
-![One](Selection_2020-03-23_013.png)
+![One](Screenshot_2022-10-04_16-35-18.png)
 
 # DNSSEC Keys and DS records
-![One](Selection_2020-03-23_014.png)
+![One](Screenshot_2022-10-04_16-35-39.png)
