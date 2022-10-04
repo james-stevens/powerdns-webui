@@ -10,14 +10,22 @@
 
 const debugAPI = false;
 
+const theme_colours = {
+	"blue": [ "000000","383855","4f4f6f","555577","666688","666699",
+		"777799","8888aa","9999bb","a0a0cc","aaaacc","b0b0ff","c0c0e0",
+		"d0d0ff","ddddff","ffd0d0","ffffff"
+		]
+	};
 
-const themes = { "blue_css": `
+
+function theme_css(theme) {
+	return `
 .fullvis { font-family:inherit; font-size:14pt; visibility: visible; opacity: 1; text-align: center; }
 .fadein  { font-family:inherit; font-size:14pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
 .fadeout { font-family:inherit; font-size:14pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
 
 ::placeholder {
-	color: #c0c0e0;
+	color: #${theme_colours[theme][12]};
 	opacity: 1; }
 
 .topLink { font-size: 20px; }
@@ -28,12 +36,12 @@ h2 { text-align: center; }
 	padding-top: 10px;
 	padding-bottom: 10px;
 	border: 1px solid;
-	border-color: #8888aa;
+	border-color: #${theme_colours[theme][7]};
 	border-radius: 6px;
 	}
 
 #topSpan{
-	background-color: #777799;
+	background-color: #${theme_colours[theme][6]};
 	height: 55px;
 	line-height: 55px;
 	margin-top: 0px;
@@ -43,19 +51,19 @@ h2 { text-align: center; }
 	}
 
 html {
-	color: #ffffff;
+	color: #${theme_colours[theme][16]};
 	font-family:Verdana,Arial,Helvetica,sans-serif;
 	font-size: 14px;
-	background-color: #666688;
-	scrollbar-base-color: #666699;
-	scrollbar-arrow-color: #ddddff;
+	background-color: #${theme_colours[theme][4]};
+	scrollbar-base-color: #${theme_colours[theme][5]};
+	scrollbar-arrow-color: #${theme_colours[theme][14]};
 	}
 
 th {
-	color: #000000;
+	color: #${theme_colours[theme][0]};
 	font-family: inherit;
 	font-size: inherit;
-	background-color: #a0a0cc;
+	background-color: #${theme_colours[theme][9]};
 	font-weight: bold;
 	padding-left: 6px;
 	padding-right: 6px;
@@ -63,52 +71,52 @@ th {
 
 select {
 	padding: 5px 12px;
-	background-color: #555577;
-	color: #ffffff;
+	background-color: #${theme_colours[theme][3]};
+	color: #${theme_colours[theme][16]};
 	font-family: inherit;
 	font-size: 14px;
 	border-radius: 6px;
 	border: 1px solid;
-	border-color: #8888aa;
+	border-color: #${theme_colours[theme][7]};
 }
 
 input {
 	padding: 5px 12px;
-	background-color: #555577;
-	color: #ffffff;
+	background-color: #${theme_colours[theme][3]};
+	color: #${theme_colours[theme][16]};
 	font-family: inherit;
 	font-size: 14px;
 	border-radius: 6px;
 	border: 1px solid;
-	border-color: #8888aa;
+	border-color: #${theme_colours[theme][7]};
 	}
 
 input:focus {
-	border-color: #ffffff;
+	border-color: #${theme_colours[theme][16]};
 	}
 
 .inputBad {
-	color: #000000;
-	background-color: #ffd0d0;
+	color: #${theme_colours[theme][0]};
+	background-color: #${theme_colours[theme][15]};
 	font-family: inherit;
 	font-size: 14px;
 	}
 
 body {
-	color: #ffffff;
+	color: #${theme_colours[theme][16]};
 	font-family: inherit;
 	font-size: inherit;
 	margin-top: 0px;
 	margin-left: 0px;
 	margin-right: 0px;
-	background-color: #666688;
-	scrollbar-base-color: #666699;
-	scrollbar-arrow-color: #ddddff;
+	background-color: #${theme_colours[theme][4]};
+	scrollbar-base-color: #${theme_colours[theme][5]};
+	scrollbar-arrow-color: #${theme_colours[theme][14]};
 	}
 
 
 a {
-	color: #b0b0ff;
+	color: #${theme_colours[theme][11]};
 	text-decoration:none;
 	}
 
@@ -123,13 +131,13 @@ form {
 .myBtn {
 	text-align: center;
 	display: inline-block;
-	background-color: #8888aa;
-	color: #ffffff;
+	background-color: #${theme_colours[theme][7]};
+	color: #${theme_colours[theme][16]};
 	font-family: inherit;
 	font-size: 14px;
 	border-radius: 6px;
 	border: 1px solid;
-	border-color: #aaaacc;
+	border-color: #${theme_colours[theme][10]};
 	padding: 5px 16px;
 	cursor: pointer;
 	margin-top: 0px;
@@ -139,8 +147,8 @@ form {
 	}
 
 .myBtn:hover {
-	border-color: #d0d0ff;
-	background-color: #9999bb;
+	border-color: #${theme_colours[theme][13]};
+	background-color: #${theme_colours[theme][8]};
 	}
 
 .myBtn:active {
@@ -152,7 +160,7 @@ form {
 	}
 
 .dnskey {
-	color: #383855;
+	color: #${theme_colours[theme][1]};
 	}
 
 td {
@@ -179,19 +187,19 @@ td {
 	font-family: inherit;
 	font-size: 14px;
 	cursor: pointer;
-	color: #ffffff;
-	background-color: #666688;
+	color: #${theme_colours[theme][16]};
+	background-color: #${theme_colours[theme][4]};
 	}
 
 .dataRow:hover {
-	background-color: #4f4f6f;
+	background-color: #${theme_colours[theme][2]};
 	}
 
 
 .formPrompt {
 	font-family:inherit;
 	font-size: 14px;
-	color: #ffffff;
+	color: #${theme_colours[theme][16]};
 	text-align: right;
 	padding-top: 8px;
 	}
@@ -204,9 +212,9 @@ td {
 	font-family:inherit;
 	font-size:16pt;
 	width: 95%;
-	background: #ffd0d0;
+	background: #${theme_colours[theme][15]};
 	text-align: center;
-	color: #000000;
+	color: #${theme_colours[theme][0]};
 	padding: 5px;
 	border-radius: 6px;
 	}
@@ -230,7 +238,7 @@ var gbl = {
 	apikey: null,
 	with_https: true,
 	fast_zone_list: false,
-	theme: "blue_css",
+	theme: "blue",
 	zone_list: "zones",
 	default_ttl: 86400,
 	state: { state: "login" },
@@ -2735,7 +2743,7 @@ function startUp()
 
 	loadCookies()
 
-	document.querySelector("style").innerText = themes[f.theme.value];
+	changeTheme(f.theme.value);
 
 	window.addEventListener('popstate', e => {
 		if (e.state == null) goLogin();
@@ -2775,10 +2783,10 @@ function startUp()
 
 
 
-function changeTheme(theme_select)
+function changeTheme(theme_name)
 {
-	gbl.theme = this.value;
-	document.querySelector("style").innerText = themes[this.value];
+	gbl.theme = theme_name;
+	document.querySelector("style").innerText = theme_css(theme_name);
 }
 
 
@@ -2919,7 +2927,7 @@ function keyEsc(e) {
 		<tr><td class=formPrompt>API-Key :</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
 		<tr><td align=right>HTTPS (SSL/TLS) :</td><td><input title="Connect to API over HTTPS, not HTTP" type=checkbox name=with_https></td></tr>
 		<tr><td align=right>Fast Zone List :</td><td><input title="Fast load long zone lists by excluding some information" type=checkbox name=fast_zone_list></td></tr>
-		<tr><td class=formPrompt>Theme :</td><td><select onChange="changeTheme(this);" name="theme"><option value="blue_css">Blue<option value="blue_css">Dark<option value="blue_css">Light</select></td></tr>
+		<tr><td class=formPrompt>Theme :</td><td><select onChange="changeTheme(this.value);" name="theme"><option value="blue">Blue<option value="blue">Dark<option value="blue">Light</select></td></tr>
 		<tr><td><div style='height: 10px;'></div></td></tr>
 		<tr><td class=btmBtnBar colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
