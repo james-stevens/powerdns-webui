@@ -23,6 +23,10 @@ Or just stop by to say `hello` or `thanks`.
 which allows you to browse and edit DNS data held in a PowerDNS Database using only the PowerDNS RestAPI.
 You can clone the project, if you want, but this is the only file you need in order to add a complete WebUI to your PowerDNS Server.
 
+Punycode to IDN decoding & encoding is done by a very slightly modified version of the
+[module by Mathias Bynens](https://github.com/mathiasbynens/punycode.js)
+which has been appended to the `index.html` file.
+
 It is primarily aimed at those who are using PowerDNS as a DNS Master, as this is what I do,
 but it should handle native / slave zones OK.
 If you are using this webapp for slave / native, please let me know if there are features it needs.
@@ -36,6 +40,8 @@ A critial design goal was to ensure that the data you see has come live from the
 click button in the navigation bar that will reload the data you are seeing.
 
 The only exception to this is occasionally when the `NSEC3PARAM` value is displayed on the DNSSEC page.
+
+
 
 
 # Features
@@ -57,6 +63,9 @@ This is a summary of the features this WebUI provides to PowerDNS
 	* DS digest, click to copy digest to clipboard
 	* Convert NSEC to NSEC3 or vice versa. NOTE: removing the NSEC3 param record using the Rest/API does not work in PowerDNS v4.2.0
 	* NSEC3PARAM roll-over - Yeah, some people like to do it. What can you say.
+* Punycode - where record or zone names are [punycode](https://en.wikipedia.org/wiki/Punycode) encoded, they will be decoded and the IDN version will be displayed (look out for tooltips!).
+	When zones or records are created or renamed, the name can be entered as UTF-8 and it will be automatically encoded to punycode.
+* Basic Theme Support - comes with four hardcoded colour schemes
 * **Stats** - ability to view all server stats data, including breaking out data presented in lists
 * Ability to maintain a [bind-9.11 catalog zone](https://kb.isc.org/docs/aa-01401), for RFC/XFR (not native) slaves.
 
@@ -161,7 +170,7 @@ or whatever you chose in the Apache conf, and request the URL `https://<server-i
 
 If it worked correctly, you should see a screen like this.
 
-![Frist Screen](/first.png)
+![Frist Screen](/first2.png)
 
 Because it prompts you for a server name, you can use one copy of this webapp to access any PowerDNS RestAPI
 you can reach, subject to the browser restrictions described above.

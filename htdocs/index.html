@@ -2,83 +2,136 @@
 <!--- Alternative license arrangements are possible, contact me for more information --->
 <html>
 <head>
-	<title>PowerDNS WebUI - Login</title>
+	<title>PowerDNS Admin WebUI - Login</title>
+	<meta charSet="utf-8"/>
 </head>
+<style type='text/css'></style>
 <script language="Javascript">
-	const debugAPI = false;
-</script>
+
+const debugAPI = false;
+
+const theme_colours = {
+	"blue": [
+		"000000","383855","4f4f6f","555577","666688",
+		"666699","777799","8888aa","9999bb","a0a0cc",
+		"aaaacc","b0b0ff","c0c0e0","d0d0ff","ddddff",
+		"ffd0d0","ffffff","8888aa"
+		],
+	"red": [
+		"000000","553838","6f4f4f","775555","886666",
+		"996666","997777","aa8888","bb9999","cca0a0",
+		"ccaaaa","ffb0b0","e0c0c0","ffd0d0","ffdddd",
+		"d0d0ff","ffffff","aa8888"
+		],
+	"light": [
+		"000000","555555","F0F2F4","F6F8FA","ffffff",
+		"999999","F6F8FA","aaaaaa","F0F2F4","cccccc",
+		"cccccc","9898ff","e0e0e0","cccccc","ffffff",
+		],
+	"dark": [
+		"C9D1D9","555555","262B32","010409","0D1117",
+		"999999","262B32","464B52","31363D","464B52",
+		"464B52","9898ff","e0e0e0","767B92","ffffff",
+		"ffd0d0","C9D1D9","21262D"
+		]
+	};
 
 
-<style type='text/css'>
+function theme_css(theme) {
+	return `
+.fullvis { font-family:inherit; font-size:14pt; visibility: visible; opacity: 1; text-align: center; }
+.fadein  { font-family:inherit; font-size:14pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
+.fadeout { font-family:inherit; font-size:14pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
 
-.fullvis { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; text-align: center; }
-.fadein  { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
-.fadeout { font-family:Verdana,Arial,Helvetica,sans-serif; font-size:14pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
+::placeholder {
+	color: #${theme_colours[theme][12]};
+	opacity: 1; }
+
+.topLink { font-size: 20px; }
+h2 { text-align: center; }
+
+.btmBtnBar {
+	text-align: center;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border: 1px solid;
+	border-color: #${theme_colours[theme][7]};
+	border-radius: 6px;
+	}
 
 #topSpan{
-	background-color: #666688;
+	background-color: #${theme_colours[theme][6]};
 	height: 55px;
 	line-height: 55px;
 	margin-top: 0px;
 	padding-left: 0px;
 	padding-top: 1px;
-	position: -webkit-sticky;
-	position: sticky;
 	top: 0px;
 	}
 
 html {
-	color: white;
+	color: #${theme_colours[theme][16]};
 	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
-	background-color:#666688;
-	scrollbar-base-color:#666699;
-	scrollbar-arrow-color:#ddddff;
+	font-size: 14px;
+	background-color: #${theme_colours[theme][4]};
+	scrollbar-base-color: #${theme_colours[theme][5]};
+	scrollbar-arrow-color: #${theme_colours[theme][14]};
 	}
 
 th {
-	color: black;
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
-	background-color:#a0a0cc;
+	color: #${theme_colours[theme][0]};
+	font-family: inherit;
+	font-size: 18px;
+	background-color: #${theme_colours[theme][9]};
 	font-weight: bold;
 	padding-left: 6px;
 	padding-right: 6px;
 	}
 
 select {
-	color: black;
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 8pt;
-	}
+	padding: 5px 12px;
+	background-color: #${theme_colours[theme][3]};
+	color: #${theme_colours[theme][16]};
+	font-family: inherit;
+	font-size: 14px;
+	border-radius: 6px;
+	border: 1px solid;
+	border-color: #${theme_colours[theme][7]};
+}
 
 input {
-	color: black;
-	background-color: white;
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 8pt;
+	padding: 5px 12px;
+	background-color: #${theme_colours[theme][3]};
+	color: #${theme_colours[theme][16]};
+	font-family: inherit;
+	font-size: 14px;
+	border-radius: 6px;
+	border: 1px solid;
+	border-color: #${theme_colours[theme][7]};
 	}
 
 .inputBad {
-	color: black;
-	background-color: #ffd0d0;
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 8pt;
+	color: #${theme_colours[theme][0]};
+	background-color: #${theme_colours[theme][15]};
+	font-family: inherit;
+	font-size: 14px;
 	}
 
 body {
-	color: white;
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
+	color: #${theme_colours[theme][16]};
+	font-family: inherit;
+	font-size: inherit;
 	margin-top: 0px;
-	background-color:#666688;
-	scrollbar-base-color:#666699;
-	scrollbar-arrow-color:#ddddff;
+	margin-left: 0px;
+	margin-right: 0px;
+	background-color: #${theme_colours[theme][4]};
+	scrollbar-base-color: #${theme_colours[theme][5]};
+	scrollbar-arrow-color: #${theme_colours[theme][14]};
 	}
 
 
 a {
-	color: #b0b0ff;
+	color: #${theme_colours[theme][11]};
 	text-decoration:none;
 	}
 
@@ -93,15 +146,14 @@ form {
 .myBtn {
 	text-align: center;
 	display: inline-block;
-	background-color: #d0d0ff;
-	color: black;
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 10pt;
-	font-weight: bold;
-	border-radius: 25px;
-	padding: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
+	background-color: #${theme_colours[theme][17]};
+	color: #${theme_colours[theme][16]};
+	font-family: inherit;
+	font-size: 14px;
+	border-radius: 6px;
+	border: 1px solid;
+	border-color: #${theme_colours[theme][10]};
+	padding: 5px 16px;
 	cursor: pointer;
 	margin-top: 0px;
 	margin-left: 10px;
@@ -110,8 +162,8 @@ form {
 	}
 
 .myBtn:hover {
-	box-shadow: 3px 3px #222244;
-	text-shadow: 1px 1px #ffffff;
+	border-color: #${theme_colours[theme][13]};
+	background-color: #${theme_colours[theme][8]};
 	}
 
 .myBtn:active {
@@ -123,12 +175,12 @@ form {
 	}
 
 .dnskey {
-	color: #383855;
+	color: #${theme_colours[theme][1]};
 	}
 
 td {
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
+	font-family:inherit;
+	font-size: 14px;
 	vertical-align: top;
 	padding-left: 7px;
 	padding-right: 7px;
@@ -136,8 +188,8 @@ td {
 	}
 
 .dataCell {
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
+	font-family:inherit;
+	font-size: 14px;
 	vertical-align: top;
 	padding-left: 7px;
 	padding-right: 7px;
@@ -147,23 +199,24 @@ td {
 	}
 
 .dataRow {
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 10pt;
+	font-family: inherit;
+	font-size: 14px;
 	cursor: pointer;
-	color: white;
-	background-color: #666688;
+	color: #${theme_colours[theme][16]};
+	background-color: #${theme_colours[theme][4]};
 	}
 
 .dataRow:hover {
-	background-color: #444466;
+	background-color: #${theme_colours[theme][2]};
 	}
 
 
 .formPrompt {
-	font-family:Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
-	color: white;
+	font-family:inherit;
+	font-size: 14px;
+	color: #${theme_colours[theme][16]};
 	text-align: right;
+	padding-top: 8px;
 	}
 
 
@@ -171,14 +224,14 @@ td {
 	position: absolute;
 	left: 10px;
 	top: 20px;
-	font-family:Verdana,Arial,Helvetica,sans-serif;
+	font-family:inherit;
 	font-size:16pt;
 	width: 95%;
-	background: #ffd0d0;
+	background: #${theme_colours[theme][15]};
 	text-align: center;
-	color: black;
+	color: #${theme_colours[theme][0]};
 	padding: 5px;
-	border-radius: 10px;
+	border-radius: 6px;
 	}
 
 .msgPopNo {
@@ -190,10 +243,8 @@ td {
 	visibility: visible;
 	opacity: 1; transition: opacity 0.5s linear;
 	}
+`};
 
-</style>
-
-<script language="Javascript">
 
 console.clear();
 
@@ -202,6 +253,7 @@ var gbl = {
 	apikey: null,
 	with_https: true,
 	fast_zone_list: false,
+	theme: "blue",
 	zone_list: "zones",
 	default_ttl: 86400,
 	state: { state: "login" },
@@ -215,6 +267,8 @@ var gbl = {
 	nsec: "&#x1F512;",
 	nsec3: "&#x1F510;",
 	clip: "&#x1F4CE;",
+
+	sp: "<div style='height: 7px;'></div>"
 	};
 
 var ctx = { }; // will store the context of what the user is up to
@@ -224,10 +278,11 @@ var ctx = { }; // will store the context of what the user is up to
 // Some system constants
 //=============================================================================================
 
+
 // add a trailing '.' for these record types, if the user forgets
 const autoAddDot = { rrMX: true, rrNS: true, rrCNAME: true, };
 
-const pdnsCookies = { "pdns_fast_zone_list":1, "pdns_with_https":1,"pdns_server":1 };
+const pdnsCookies = { "pdns_theme":1, "pdns_fast_zone_list":1, "pdns_with_https":1,"pdns_server":1 };
 
 
 // regex for an FQDN hostname
@@ -433,7 +488,7 @@ function setState(title,state)
 function nameToCatalog(name) {
 	/**
 	* Secure Hash Algorithm (SHA1)
-	* http://www.webtoolkit.info/
+	* http://www.webtoolkit.info/javascript_sha1.html
 	**/
 	function SHA1(in_msg,msg_len) {
 
@@ -560,6 +615,15 @@ function nameToCatalog(name) {
 
 
 
+function hasIDN(name)
+{
+	if (name.substr(0,4)=="xn--") return true;
+	if (name.indexOf(".xn--") > 0) return true
+	return false;
+}
+
+
+
 //=============================================================================================
 // Stats handling
 //=============================================================================================
@@ -594,7 +658,7 @@ function showOneStats(data)
 		}
 
 	x += "</table>";
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 	topLine();
 }
 
@@ -631,7 +695,7 @@ function showStats(data)
 			}
 		});
 	x += "</table>";
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 	topLine()
 }
 
@@ -769,14 +833,14 @@ function clickAddMeta(item,val,dataIdx,itemIdx)
 
 	if (val == null) {
 		addBtn = "Add Metadata";
-		x += "<tr><td colspan=2 align=center><h2>Add a New Metadata Item</h2></td></tr>"
+		x += "<tr><td colspan=2><h2>Add a New Metadata Item</h2></td></tr>"
 			+ "<tr><td class=formPrompt>Metadata: </td><td><select onChange='clickAddMeta(this.value.toUpperCase());' name=metaItem>";
 		allMetaItems.forEach(i => { c=""; if (i==item) c="selected"; x += `<option ${c}>${i}` });
 		x += '</select></td></tr>';
 		}
 	else {
-		x += `<tr><td colspan=2 align=center><h2>Edit a Metadata Item</h2></td></tr>`
-			+ `<tr><td class=formPrompt>Metadata Item: </td><td>${item}</td></tr>`
+		x += `<tr><td colspan=2><h2>Edit a Metadata Item</h2></td></tr>`
+			+ `<tr><td align=right>Metadata Item :</td><td>${item}</td></tr>`
 			+ `<input type=hidden name=metaItem value="${item}">`;
 		}
 
@@ -793,8 +857,8 @@ function clickAddMeta(item,val,dataIdx,itemIdx)
 	else
 		x += `<input size=50 name=metaValue></td></tr>`;
 
-	x += '<tr><td colspan=2><hr></td></tr>'
-		+ '<tr><td align=center colspan=2>'
+	x += '<tr><td><div style="height: 10px;"></div></td></tr>'
+		+ '<tr><td class=btmBtnBar colspan=2>'
 		+ '<span class=myBtn title="Cancel adding Metadata" onClick="zoneMeta();">Cancel</span>'
 
 	if (showDelete(item,val))
@@ -804,7 +868,7 @@ function clickAddMeta(item,val,dataIdx,itemIdx)
 		+ '<input type=submit style="display: none;">'
 		+ '</table></form>';
 
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 
 	if (val != null) document.newMetaForm.metaValue.value = val;
 	else {
@@ -859,7 +923,7 @@ function zoneMetaDetails(data)
 		}
 
 	x += "</table>";
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 	topLine();
 }
 
@@ -1056,7 +1120,8 @@ function findZoneName(name)
 function changeName()
 {
 	let z = null;
-	let name = document.rrForm.new.value;
+	let f = document.rrForm;
+	let name = f.new.value;
 	if (name.substr(name.length-1)!=".") {
 		let t = findZoneName(`${name}.`);
 		if (t != null) {
@@ -1071,10 +1136,19 @@ function changeName()
 	else
 		z = findZoneName(name);
 
+	let as_puny = toASCII(name);
+	if ((as_puny != name)&&(hasIDN(as_puny))) name = as_puny;
+
+	if (!fqdnCheck.test(name)) {
+		errMsg("Invalid Record Name");
+		f.new.focus();
+		return false;
+		}
+
 	if (z != "") ctx.zone = z;
 	else {
 		errMsg("No matching zone");
-		document.rrForm.new.focus();
+		f.new.focus();
 		return false;
 		}
 
@@ -1214,14 +1288,18 @@ function drawOneRecord(rrs)
 	x += '<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="75%" /></colgroup>'
 	for(let idx in ctx.rec.rrs.records) {
 		let i = ctx.rec.rrs.records[idx];
+
+		let idn_name = ctx.rec.name;
+		if (hasIDN(idn_name)) idn_name = toUnicode(idn_name);
+
 		x += "<tr class=dataRow>"
 			+ `<td onClick='deleteRRitem(${idx});' align=center>${gbl.bin}</td>`
-			+ `<td onClick='clickRecName(${idx});'><span id=nme${idx}>${ctx.rec.name}</span></td>`
+			+ `<td title="${idn_name}" onClick='clickRecName(${idx});'><span id=nme${idx}>${ctx.rec.name}</span></td>`
 			+ `<td align=right onClick='clickTTL(${idx});'><span id=ttl${idx}>${ctx.rec.rrs.ttl}</span></td>`
 			+ `<td>${ctx.rec.rrs.type}</td>`
 			+ `<td class=dataCell onClick='clickData(${idx});'><span id=rrs${idx}>${i.content}</span></td></tr>`;
 		}
-	gbl.bot.innerHTML = `${x}</table>`;
+	gbl.bot.innerHTML = gbl.sp + `${x}</table>`;
 	topLine();
 }
 
@@ -1409,7 +1487,7 @@ function signZone()
 	let x = "<form onSubmit='return doSignZone();' name=signZoneForm><table align=center>";
 
 	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
-		+ `<tr><th colspan=2>DNSSEC Sign: ${ctx.zone}</th></tr>`;
+		+ `<tr><td colspan=2><h2>DNSSEC Sign: ${ctx.zone}</h2></td></tr>`;
 
 	x += `<tr><td class=formPrompt>Key Policy: </td><td><select onChange="showHideBits('signZoneForm');" name=keyPolicy>`;
 	["KSK+ZSK", "CSK"].forEach(i => { x += `<option>${i}` } );
@@ -1421,7 +1499,7 @@ function signZone()
 	x += "</select></td></tr>";
 
 	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
-		+ "<tr><td align=center colspan=2>"
+		+ "<tr><td class=btmBtnBar colspan=2>"
 		+ btn("loadThisZone()","Cancel",`Do not sign ${ctx.zone}`)
 		+ btn("doSignZone()","Sign Zone",`DNSSEC Sign ${ctx.zone}`)
 		+ "</td></tr><tr><td><div style='height: 15px;'></div></td></tr>"
@@ -1437,7 +1515,7 @@ function signZone()
 		+ "<b>CSK</b> uses one key instead of two, but means your zone will double in size during key rollover.<br>With <b>KSK+ZSK</b> you have two keys to roll-over, but you can keep the same zone size during the process."
 		+ "</td></tr></table>"
 
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 }
 
 
@@ -1482,9 +1560,9 @@ function doAddKey()
 
 function clickAddKey()
 {
-	let x = "<form onSubmit='return doAddKey();' name=addKeyForm><table align=center>"
-		+ "<tr><td><div style='height: 15px;'></div></td></tr>"
-		+ "<tr><th colspan=2>Add a DNSSEC Key</th></tr>"
+	let x = "<form onSubmit='return doAddKey();' name=addKeyForm><table width=55% align=center>"
+		+ "<tr><td><div style='height: 20px;'></div></td></tr>"
+		+ "<tr><td colspan=2><h2>Add a DNSSEC Key</h2></td></tr>"
 		+ "<tr><Td class=formPrompt>Key Type :</td><td><select name=keyKind>";
 
 	["ksk","zsk","csk"].forEach(i => { x += `<option value=${i}>${i.toUpperCase()}` } );
@@ -1496,7 +1574,7 @@ function clickAddKey()
 	x += "</select></td></tr>";
 
 	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
-		+ "<tr><td align=center colspan=2>"
+		+ "<tr><td class=btmBtnBar colspan=2>"
 		+ btn("cancelAddKey()","Cancel",`Do not add a key to the zone ${ctx.zone}`)
 		+ btn("doAddKey()","Add a Key",`Add a key to the zone ${ctx.zone}`)
 		+ "</td></tr><tr><td><div style='height: 15px;'></div></td></tr>"
@@ -1723,19 +1801,18 @@ function showKeys(data)
 		x += "<tr><td><div style='height: 15px;'></div></td></tr>";
 		}
 
-	let sp = "<div style='height: 7px;'></div>";
 	let sz = 100;
 
 	x += "</table></td><td>"
-		+ btn('clickAddKey()',"Add Key",`Add a DNSSEC Key to ${ctx.zone}`,sz) + sp;
-		+ btn('deleteAllKeys()',"Unsign",`Remove all DNSSEC on ${ctx.zone}`,sz) + sp;
+		+ btn('clickAddKey()',"Add Key",`Add a DNSSEC Key to ${ctx.zone}`,sz) + gbl.sp;
+		+ btn('deleteAllKeys()',"Unsign",`Remove all DNSSEC on ${ctx.zone}`,sz) + gbl.sp;
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
-		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + sp
-			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone}`,sz) + sp;
+		x += btn("setNSEC3(true)","Del NSEC3",`Switch ${ctx.zone} from NSEC3 to NSEC`,sz) + gbl.sp
+			+ btn("setNSEC3()","Roll NSEC3",`Change the NSEC3PARAM for ${ctx.zone}`,sz) + gbl.sp;
 		}
 	else
-		x += btn("setNSEC3()","Add NSEC3",`Switch this zone to NSEC3 ${ctx.zone}`,sz) + sp;
+		x += btn("setNSEC3()","Add NSEC3",`Switch this zone to NSEC3 ${ctx.zone}`,sz) + gbl.sp;
 
 	x += "</td></tr></table>";
 
@@ -1828,20 +1905,20 @@ function showKeys(data)
 		}
 
 
-	x += "<tr><td colspan=2><hr></td></tr>"
+	x += "<tr><td><div style='height: 10px;'></div></td></tr>"
 
 	if (key_txt == null)
 		x += "<tr><td><h3>DNSSEC Key Rollover State could not be detected</h3></td></tr>"
 	else
 		x += key_txt + zkey_txt;
 
-	x += "<tr><td colspan=2><hr></td></tr>"
+	x += "<tr><td><div style='height: 10px;'></div></td></tr>"
 
 	x += "</table>";
 	if (notes != null) x += `<center>${notes}</center>`;
 	x += "</div><div id='dnssecBot'></div>"
 
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 
 	topLine();
 
@@ -1930,7 +2007,7 @@ function dropZone()
 		+ btn("loadThisZone();","Cancel",`Do not delete the zone ${ctx.zone}`)
 		+ "&nbsp;"
 		+ btn("doDropZone()",`Drop '${ctx.zone}'`,`Delete the zone ${ctx.zone} and ALL its records`);
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 }
 
 
@@ -1956,8 +2033,12 @@ function doNewName()
 	if ((f.rrName.value == "")||(f.rrName.value == "@"))
 		name = ctx.zone;
 	else {
+		let as_puny = toASCII(f.rrName.value);
+		if ((as_puny != f.rrName.value)&&(hasIDN(as_puny)))
+			f.rrName.value = as_puny;
+
 		if (!hostnameCheck.test(f.rrName.value)) {
-			errMsg("Invalid host name");
+			errMsg("Invalid Record Name");
 			f.rrName.focus();
 			f.rrName.select();
 			return false;
@@ -2051,12 +2132,20 @@ function zoneDetails(data)
 	setState(`${gbl.server}: ${ctx.zone}`, { state: "zone", server: gbl.server, zone: ctx.zone });
 
 	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>"
-		+ "<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>";
+		+ "<tr><td width=100%><table width=100% border=0 cellspacing=0 cellpadding=0>"
+		+ '<colgroup><col width="15%" /><col width="15%" /></colgroup>';
 
 	for(let i of data.rrsets) {
+
+		let pfx_name = i.name.substr(0,i.name.length - ctx.zone.length - 1);
+		let idn_name = i.name,idn_col = "";
+
+		if (hasIDN(pfx_name)) idn_col = toUnicode(idn_name);
+		if (hasIDN(idn_name)) idn_name = toUnicode(idn_name);
+
 		x += `<tr onClick="clickZoneRecord('${i.name}','${i.type}');" class=dataRow>`
-			+ `<td valign=top>${i.name.substr(0,i.name.length - ctx.zone.length - 1)}</td>`
-			+ `<td valign=top align=right>${i.ttl}</td>`
+			+ `<td title="${idn_name}" valign=top>${pfx_name}</td>`
+			+ `<td>${idn_col}</td><td valign=top align=right>${i.ttl}</td>`
 			+ `<td valign=top>${i.type}</td><td class=dataCell valign=top>`;
 
 		if (i.type == "SOA") {
@@ -2076,36 +2165,35 @@ function zoneDetails(data)
 		x += "</td></tr>";
 		}
 
-	let sp = "<div style='height: 7px;'></div>";
 	let sz = 100;
 
 	x += "</table></td><td align=center>";
 
 	if (ctx.zoneDetails.kind != "Slave")
-		x += btn("zoneAddHost()","Add Host",`Add a host to the zone ${ctx.zone}`,sz) + sp;
+		x += btn("zoneAddHost()","Add Record",`Add an DNS record to the zone ${ctx.zone}`,sz) + gbl.sp;
 
-	x += btn("zoneAxfr()","Download",`Download ${ctx.zone} in RFC/AXFR format`,sz) + sp
-		+ btn('zoneMeta()',"Metadata",`Load the META data for ${ctx.zone}`,sz) + sp
-		+ btn('zoneNotify()',"Notify Zone",`Notify the slaves of ${ctx.zone}`,sz) + sp;
+	x += btn("zoneAxfr()","Download",`Download ${ctx.zone} in RFC/AXFR format`,sz) + gbl.sp
+		+ btn('zoneMeta()',"Metadata",`Load the META data for ${ctx.zone}`,sz) + gbl.sp
+		+ btn('zoneNotify()',"Notify Zone",`Notify the slaves of ${ctx.zone}`,sz) + gbl.sp;
 
 	if (ctx.zoneDetails.dnssec)
-		x += btn('zoneRectify()',"Rectify Zone",`Rectify the data for ${ctx.zone}`,sz) + sp;
+		x += btn('zoneRectify()',"Rectify Zone",`Rectify the data for ${ctx.zone}`,sz) + gbl.sp;
 
 	if (ctx.zoneDetails.kind == "Slave")
-		x += btn('zoneRetrieve()',"Retrieve Zone",`Retrieve ${ctx.zone} from its master(s)`,sz) + sp;
+		x += btn('zoneRetrieve()',"Retrieve Zone",`Retrieve ${ctx.zone} from its master(s)`,sz) + gbl.sp;
 
 	x += btn('dropZone()',"Drop Zone",`Delete ${ctx.zone} and ALL its records`,sz);
 
-	x += "<hr>";
+	x += gbl.sp + gbl.sp;
 
 	if (ctx.zoneDetails.dnssec) {
-		x += btn('zoneKeys()',"DNSSEC Keys",`View DNSSEC keys for ${ctx.zone}`,sz) + sp;
+		x += btn('zoneKeys()',"DNSSEC Keys",`View DNSSEC keys for ${ctx.zone}`,sz) + gbl.sp;
 		}
 	else
-		x += btn('signZone()',"Sign Zone",`DNSSEC sign ${ctx.zone}`,sz) + sp;
+		x += btn('signZone()',"Sign Zone",`DNSSEC sign ${ctx.zone}`,sz) + gbl.sp;
 
 	x += "</td></tr></table>";
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 
 	topLine();
 }
@@ -2181,7 +2269,7 @@ function searchResults(data)
 		x += "</tr>";
 		}
 	x += "</table>";
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 }
 
 
@@ -2189,9 +2277,15 @@ function searchResults(data)
 function searchFormSubmit()
 {
 	let s = document.searchForm.searchTerm.value;
+
+	let as_puny = toASCII(s);
+	if ((as_puny != s)&&(hasIDN(as_puny))) s = as_puny;
+
+	console.log(s);
 	ctx.searchTerm = s;
 	document.searchForm.searchTerm.value = "";
 	callApi(`search-data?q=${s}`,searchResults);
+
 	return false;
 }
 
@@ -2286,17 +2380,17 @@ function showTSIG(tsig)
 		ctx = {}; topLine();
 
 		let x = "<table style='margin-top: 50px;' align=center border=0 cellspacing=0 cellpadding=0>"
-			+ `<tr class=dataRow onClick=\"clickTSIG('${data.id}','Name');\"><td class=formPrompt>TSIG Name :</td><td>${data.id}</td></tr>`
-			+ `<tr><td class=formPrompt>TSIG Algorithm :</td><td>${data.algorithm.toUpperCase()}</td></tr>`
-			+ `<tr onClick=\"clickTSIG('${data.key}','Key');\" class=dataRow><td class=formPrompt>TSIG Key :</td><td>${data.key}</td></tr>`
-			+ "<tr><td align=center colspan=2><hr></td></tr>"
-			+ "<tr><td align=center colspan=2>"
+			+ `<tr class=dataRow onClick=\"clickTSIG('${data.id}','Name');\"><td align=right>TSIG Name :</td><td>${data.id}</td></tr>`
+			+ `<tr><td align=right>TSIG Algorithm :</td><td>${data.algorithm.toUpperCase()}</td></tr>`
+			+ `<tr onClick=\"clickTSIG('${data.key}','Key');\" class=dataRow><td align=right>TSIG Key :</td><td>${data.key}</td></tr>`
+			+ "<tr><td><div style='height: 10px;'></div></td></tr>"
+			+ "<tr><td class=btmBtnBar colspan=2>"
 			+ btn("loadTsigList()","Back","Go back to the list of TSIGs")
 			+ btn(`regenTSIG('${data.id}','${data.algorithm}')`,"Rollover","Replace this TSIG Key, keeping the name")
 			+ btn(`deleteTSIG('${data.id}')`,"Delete","Delete this TSIG Key")
 			+ "</td></tr></table>";
 
-		gbl.bot.innerHTML = x;
+		gbl.bot.innerHTML = gbl.sp + x;
 		topLine();
 		});
 }
@@ -2305,35 +2399,35 @@ function showTSIG(tsig)
 
 function showTsigList(data)
 {
+	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>"
+		+ "<colgroup><col width=100%/><col/></colgroup><tr><Td>";
+
 	if (data.length <= 0) {
-		popMsg("No TSIGs found");
-		return;
+		x = x + "<tr><td><table align=center><tr><td>No TSIGs found</td></tr>";
+	} else {
+		data.sort((a,b) => {
+			if (a.id < b.id) return -1;
+			if (a.id > b.id) return 1;
+			return 0;
+			});
+
+		if (("param" in gbl)&&("tsig" in gbl.param)&&(typeof(gbl.param.tsig) != "boolean"))
+			return showTSIG(gbl.param.tsig);
+
+		x = x + "<table align=center border=0 cellspacing=2 cellpadding=2>"
+			+ "<tr><th>TSIG Name</td><th>Algorithm</td></tr>";
+
+		for(let i of data)
+			x += `<tr class=dataRow onClick="showTSIG('${i.id}');"><td>${i.id}</td>`
+				+ `<td>${i.algorithm.toUpperCase()}</td></tr>`;
 		}
 
-	data.sort((a,b) => {
-		if (a.id < b.id) return -1;
-		if (a.id > b.id) return 1;
-		return 0;
-		});
-
-	if (("param" in gbl)&&("tsig" in gbl.param)&&(typeof(gbl.param.tsig) != "boolean"))
-		return showTSIG(gbl.param.tsig);
+	x += "</table></td><td>" + btn("addTSIG(true)","Add TSIG","Add a TSIG Key") + "</td></tr></table>";
 
 	setState(`${gbl.server}: TSIGs`, { state: "tsig", server: gbl.server, tsig: true });
 	ctx = {}; topLine();
 
-	let x = "<table width=100% border=0 cellspacing=0 cellpadding=0>"
-		+ "<colgroup><col width=100%/><col/></colgroup><tr><Td>"
-		+ "<table align=center border=0 cellspacing=2 cellpadding=2>"
-		+ "<tr><th>TSIG Name</td><th>Algorithm</td></tr>";
-
-	for(let i of data)
-		x += `<tr class=dataRow onClick="showTSIG('${i.id}');"><td>${i.id}</td>`
-			+ `<td>${i.algorithm.toUpperCase()}</td></tr>`;
-
-	x += "</table></td><td>" + btn("addTSIG(true)","Add TSIG","Add a TSIG Key") + "</td></tr></table>";
-
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 }
 
 
@@ -2357,7 +2451,12 @@ function doMakeZone(data)
 function doNewZone()
 {
 	let name = document.newZoneForm.zoneName.value;
+
+	let as_puny = toASCII(name);
+	if ((as_puny != name)&&(hasIDN(as_puny))) name = as_puny;
+
 	if (name.substr(name.length-1)!=".") name += ".";
+
 	if (!fqdnCheck.test(name)) {
 		errMsg("Invalid domain name");
 		document.newZoneForm.zoneName.focus();
@@ -2369,7 +2468,7 @@ function doNewZone()
 
 	let ns = [];
 	let ip = [];
-	for(let i=0;i<4;i++) {
+	for(let i=0;i<6;i++) {
 		let x = document.newZoneForm[`ns${i}`];
 		let v = x.value;
 
@@ -2377,7 +2476,7 @@ function doNewZone()
 			if (v.substr(v.length-1)!=".") v += ".";
 
 			if (!fqdnCheck.test(v)) {
-				errMsg(`Invalid Host Name: ${v}`);
+				errMsg(`Invalid Record Name: ${v}`);
 				x.focus(); x.select();
 				return false;
 				}
@@ -2439,8 +2538,12 @@ function zoneListDetails(data)
 	let x = "<table border=0 cellspacing=0 cellpadding=0 width=100%><colgroup><col width=100%/><col/></colgroup>"
 	x += "<tr><td><table width=100% border=0 cellspacing=0 cellpadding=0>";
 	for(let i of data) {
+
+		let idn_name = i.name,idn_col="";
+		if (hasIDN(idn_name)) idn_col = idn_name = toUnicode(idn_name);
+
 		x += `<tr class=dataRow onClick='zoneDetailsLoad("${i.name}")'>`
-			+ `<td>${i.name}</td><td>${i.kind}</td>`;
+			+ `<td title="${idn_name}">${i.name}</td><td>${idn_col}</td><td>${i.kind}</td>`;
 
 		t = "";
 		hlp = "Zone is NOT dnssec signed";
@@ -2467,7 +2570,7 @@ function zoneListDetails(data)
 	x += "</td></tr></table>";
 
 	topLine();
-	gbl.bot.innerHTML = x;
+	gbl.bot.innerHTML = gbl.sp + x;
 }
 
 
@@ -2525,13 +2628,21 @@ function goLogin()
 }
 
 
+
+function topLink(fn,name,help)
+{
+	return `<span class="topLink">&nbsp;/&nbsp;<a href=# onClick="${fn}; return false;" title="${help}">${name}</a></span>`;
+}
+
+
+
 function topLine()
 {
 	if (!("zoneList" in ctx)) return;
 
 	gbl.forms.forEach(i => i.style.display = "none");
 
-	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1 class=dataRow>"
+	let y = "<table style='margin-top:10px;' border=0 cellspacing=0 cellpadding=0 width=100%><tr><td width=1>"
 		+ `<font size=+1><a title='Open this page in a new window' target=_blank href='${window.origin}${gbl.pathname}?`;
 
 	let x = `'>${gbl.page}</a></font></td><td>`
@@ -2544,7 +2655,11 @@ function topLine()
 	if ("searchTerm" in ctx) delete ctx.searchTerm;
 
 	if ("zone" in ctx) {
-		x += btn('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),`Reload all records in ${ctx.zone}`);
+
+		let idn_name = ctx.zone;
+		if (hasIDN(idn_name)) idn_name = toUnicode(idn_name);
+
+		x += topLink('loadThisZone()',ctx.zone.substr(0,ctx.zone.length-1),`Reload all records in ${idn_name}`);
 
 		if ("rec" in ctx) {
 			let name = "@";
@@ -2552,7 +2667,8 @@ function topLine()
 				name = ctx.rec.name.substr(0,ctx.rec.name.length - ctx.zone.length - 1);
 
 			ctx.rec.showName = name;
-			x += btn('getZoneRecord()',`${name}/${ctx.rec.type}`,`Reload the ${ctx.rec.type} recods for ${name}`);
+			idn_rec_name = toUnicode(name);
+			x += topLink('getZoneRecord()',`${name} [${ctx.rec.type}]`,`Reload the ${ctx.rec.type} recods for ${idn_rec_name}`);
 			}
 		else if (gbl.state.state == "meta") {
 				x += btn('zoneMeta()',"META",`Reload the META data for ${ctx.zone}`);
@@ -2598,7 +2714,7 @@ function topLine()
 
 	x += "</td><td width=1 align=right><form name=searchForm onSubmit='return searchFormSubmit();'>"
 		+ "<input placeholder='Search' size=30 name=searchTerm></form></td>"
-		+ "</tr><table><hr>";
+		+ "</tr><table>";
 
 	gbl.top.innerHTML = y + btoa(JSON.stringify(gbl.state)) + x;
 }
@@ -2625,6 +2741,8 @@ function loadCookies()
 	if ("pdns_server" in ckobj) f.server.value = ckobj["pdns_server"];
 	if ("pdns_with_https" in ckobj) f.with_https.checked = (ckobj["pdns_with_https"] == "true");
 	if ("pdns_fast_zone_list" in ckobj) f.fast_zone_list.checked = (ckobj["pdns_fast_zone_list"] == "true");
+	if ("pdns_theme" in ckobj) f.theme.value = ckobj["pdns_theme"];
+	changeTheme(f.theme.value);
 }
 
 
@@ -2637,6 +2755,7 @@ function startUp()
 	if (f.server.value == "") f.server.value = window.location.host;
 	f.with_https.checked = (window.location.protocol == "https:");
 	f.fast_zone_list.checked = gbl.fast_zone_list;
+	f.theme.value = gbl.theme;
 
 	loadCookies()
 
@@ -2678,6 +2797,14 @@ function startUp()
 
 
 
+function changeTheme(theme_name)
+{
+	gbl.theme = theme_name;
+	document.querySelector("style").innerText = theme_css(theme_name);
+}
+
+
+
 function initialLogin()
 {
 	let f = document.loginForm;
@@ -2685,10 +2812,12 @@ function initialLogin()
 	gbl.apikey = f.apikey.value;
 	gbl.with_https = f.with_https.checked;
 	gbl.fast_zone_list = f.fast_zone_list.checked;
+	gbl.theme = f.theme.value;
 
 	gbl.pdns_server = gbl.server;
 	gbl.pdns_with_https = gbl.with_https;
 	gbl.pdns_fast_zone_list = gbl.fast_zone_list;
+	gbl.pdns_theme = gbl.theme;
 
 	if (gbl.pdns_fast_zone_list) gbl.zone_list = "zones?dnssec=false"; else gbl.zone_list="zones";
 
@@ -2795,27 +2924,26 @@ function keyEsc(e) {
 //=============================================================================================
 </script>
 
-
-
-<head>
-	<title>PowerDNS WebUI - Login</title>
-</head>
 <body onLoad="startUp();">
 
 <div id="topSpan">
+<div style='height: 10px;'></div>
 <table border=0 cellspacing=0 cellpadding=0 width=100%>
-<tr><td><h1 style="text-align:center">PowerDNS WebUI</h1></td></tr>
+<tr><td><h1 style="text-align:center">PowerDNS Admin WebUI</h1></td></tr>
 </table>
 </div>
 
 <div id="lowerSpan">
+	<div style='height: 10px;'></div>
 	<table align=center>
 	<form action="/" onSubmit="return initialLogin()" name=loginForm>
-		<tr><td class=formPrompt>Server:</td><td><input title="PowerDNS RestAPI, can include optional :[port] and sub-directory" name=server size=40 value=""></td></tr>
-		<tr><td class=formPrompt>API-Key:</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
-		<tr><td class=formPrompt>HTTPS (SSL/TLS):</td><td><input title="Connect to API over HTTPS, not HTTP" type=checkbox name=with_https></td></tr>
-		<tr><td class=formPrompt>Fast Zone List:</td><td><input title="Fast load long zone lists by excluding some information" type=checkbox name=fast_zone_list></td></tr>
-		<tr><td align=center colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
+		<tr><td class=formPrompt>Server :</td><td><input autofocus title="PowerDNS RestAPI, can include optional :[port] and sub-directory" name=server size=40 value=""></td></tr>
+		<tr><td class=formPrompt>API-Key :</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
+		<tr><td align=right>HTTPS (SSL/TLS) :</td><td><input title="Connect to API over HTTPS, not HTTP" type=checkbox name=with_https></td></tr>
+		<tr><td align=right>Fast Zone List :</td><td><input title="Fast load long zone lists by excluding some information" type=checkbox name=fast_zone_list></td></tr>
+		<tr><td class=formPrompt>Theme :</td><td><select onChange="changeTheme(this.value);" name="theme"><option value="blue">Blue<option value="red">Red<option value="dark">Dark<option value="light">Light</select></td></tr>
+		<tr><td><div style='height: 10px;'></div></td></tr>
+		<tr><td class=btmBtnBar colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
@@ -2827,27 +2955,34 @@ function keyEsc(e) {
 
 
 <div id=addZone style="display: none;">
+	<div style='height: 10px;'></div>
 	<table width=40% align=center><tbody id="startBody">
 	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New Zone</h2></td></tr>
+	<tr><td colspan=2><h2>Add a New Zone</h2></td></tr>
 	<form method=post action="/" name=newZoneForm onSubmit="return doNewZone();">
 		<tr><td class=formPrompt>Name :</td><td><input onkeydown="keyEsc(event);" name=zoneName></td></tr>
 		<tr><td class=formPrompt>Type :</td><td><select onChange="zoneKindChange(this);" name=zoneKind><option>Master<option>Slave<option>Native</select></td></tr>
 		</tbody><tbody id="asMaster">
-			<tr><td class=formPrompt>Name Servers :</td><td>
+			<tr><td align=right>Name Servers :</td><td>
 				<input size=40 name=ns0><br>
 				<input size=40 name=ns1><br>
 				<input size=40 name=ns2><br>
-				<input size=40 name=ns3><br></td></tr>
+				<input size=40 name=ns3><br>
+				<input size=40 name=ns4><br>
+				<input size=40 name=ns5><br>
+				</td></tr>
 		</tbody><tbody id="asSlave" style="display: none;">
-			<tr><td class=formPrompt>Master's IPs :</td><td>
+			<tr><td align=right>Master's IPs :</td><td>
 				<input size=40 name=ip0><br>
 				<input size=40 name=ip1><br>
 				<input size=40 name=ip2><br>
-				<input size=40 name=ip3><br></td></tr>
+				<input size=40 name=ip3><br>
+				<input size=40 name=ip4><br>
+				<input size=40 name=ip5><br>
+				</td></tr>
 		</tbody>
-		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span title="Cancel adding zone" class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone" class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
+		<tr><td><div style='height: 10px;'></div></td></tr>
+		<tr><td class=btmBtnBar colspan=2><span title="Cancel adding zone" class=myBtn onClick="zoneList();">Cancel</span><span title="Add new zone" class=myBtn onClick="doNewZone();">Add Zone</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
@@ -2857,11 +2992,12 @@ function keyEsc(e) {
 
 
 <div id=addName style="display: none;">
-	<table width=40% align=center>
+	<div style='height: 10px;'></div>
+	<table width=35% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New Host</h2></td></tr>
+	<tr><td colspan=2><h2>Add a New Record</h2></td></tr>
 	<form method=post action="/" name=newNameForm onSubmit="return doNewName();">
-		<tr><td class=formPrompt>Host name:</td><td><input onkeydown="keyEsc(event);" name=rrName></td></tr>
+		<tr><td class=formPrompt>Record Name:</td><td><input onkeydown="keyEsc(event);" name=rrName></td></tr>
 		<tr><td class=formPrompt>RR Type:</td><td><select name=rrType>
 			<option>A<option>AAAA<option>MX<option>NS<option>TXT
 			<option value=CATALOG>Add Zone to Catalog
@@ -2879,8 +3015,8 @@ function keyEsc(e) {
 
 		</select></td></tr>
 		<tr><td class=formPrompt>TTL:</td><td><input value=86400 name=rrTTL></td></tr>
-		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding RR" onClick="loadThisZone();">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
+		<tr><td><div style='height: 10px;'></div></td></tr>
+		<tr><td class=btmBtnBar colspan=2><span class=myBtn title="Cancel adding RR" onClick="loadThisZone();">Cancel</span><span title="Add this RR" class=myBtn onClick="doNewName();">Add Record</span></td></tr>
 		</tr>
 	<input type=submit style="display: none;">
 	</form>
@@ -2889,9 +3025,10 @@ function keyEsc(e) {
 
 
 <div id=addTsig style="display: none;">
+	<div style='height: 10px;'></div>
 	<table width=40% align=center>
 	<colgroup><col width=35%/><col width=65%/></colgroup>
-	<tr><td colspan=2 align=center><h2>Add a New TSIG Key</h2></td></tr>
+	<tr><td colspan=2><h2>Add a New TSIG Key</h2></td></tr>
 	<form method=post action="/" name=newTsigForm onSubmit="return formAddTsig();">
 		<tr><Td class=formPrompt>TSIG Name: </td><td><input size=50 name=tsigName></td></tr>
 		<tr><td class=formPrompt>TSIG Algrythm: </td><td><select name=tsigAlg>
@@ -2899,12 +3036,433 @@ function keyEsc(e) {
 			<option value="hmac-sha224">HMAC-SHA224<option value="hmac-sha1">HMAC-SHA1<option value="hmac-md5">HMAC-MD5
 		</select></td></tr>
 		<tr><Td class=formPrompt>TSIG Key: </td><td><input placeholder='Leave blank, for auto-generated key' size=100 name=tsigKey></td></tr>
-		<tr><td colspan=2><hr></td></tr>
-		<tr><td align=center colspan=2><span class=myBtn title="Cancel adding a TSIG Key" onClick="loadTsigList();">Cancel</span><span title="Add this TSIG Key" class=myBtn onClick="formAddTsig();">Add TSIG</span></td></tr>
+		<tr><td><div style='height: 10px;'></div></td></tr>
+		<tr><td class=btmBtnBar colspan=2><span class=myBtn title="Cancel adding a TSIG Key" onClick="loadTsigList();">Cancel</span><span title="Add this TSIG Key" class=myBtn onClick="formAddTsig();">Add TSIG</span></td></tr>
 	<input type=submit style="display: none;">
 	</form>
 	</table>
 </div>
 
-<div id=myMsgPop class='msgPop msgPopNo'></div>
+<div id=myMsgPop style="visibility: hidden;" class='msgPop msgPopNo'></div>
+
+<script language="Javascript">
+
+/*
+The rest of this file is a very slightly modified version of the `punycode.js` module by Mathias Bynens
+https://github.com/mathiasbynens/punycode.js
+*/
+
+/** Highest positive signed 32-bit float value */
+const maxInt = 2147483647; // aka. 0x7FFFFFFF or 2^31-1
+
+/** Bootstring parameters */
+const base = 36;
+const tMin = 1;
+const tMax = 26;
+const skew = 38;
+const damp = 700;
+const initialBias = 72;
+const initialN = 128; // 0x80
+const delimiter = '-'; // '\x2D'
+
+/** Regular expressions */
+const regexPunycode = /^xn--/;
+const regexNonASCII = /[^\0-\x7E]/; // non-ASCII chars
+const regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g; // RFC 3490 separators
+
+/** Error messages */
+const errors = {
+	'overflow': 'Overflow: input needs wider integers to process',
+	'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
+	'invalid-input': 'Invalid input'
+};
+
+/** Convenience shortcuts */
+const baseMinusTMin = base - tMin;
+const floor = Math.floor;
+const stringFromCharCode = String.fromCharCode;
+
+/*--------------------------------------------------------------------------*/
+
+/**
+ * A generic error utility function.
+ * @private
+ * @param {String} type The error type.
+ * @returns {Error} Throws a `RangeError` with the applicable error message.
+ */
+function error(type) {
+	throw new RangeError(errors[type]);
+}
+
+/**
+ * A generic `Array#map` utility function.
+ * @private
+ * @param {Array} array The array to iterate over.
+ * @param {Function} callback The function that gets called for every array
+ * item.
+ * @returns {Array} A new array of values returned by the callback function.
+ */
+function map(array, fn) {
+	const result = [];
+	let length = array.length;
+	while (length--) {
+		result[length] = fn(array[length]);
+	}
+	return result;
+}
+
+/**
+ * A simple `Array#map`-like wrapper to work with domain name strings or email
+ * addresses.
+ * @private
+ * @param {String} domain The domain name or email address.
+ * @param {Function} callback The function that gets called for every
+ * character.
+ * @returns {Array} A new string of characters returned by the callback
+ * function.
+ */
+function mapDomain(string, fn) {
+	const parts = string.split('@');
+	let result = '';
+	if (parts.length > 1) {
+		// In email addresses, only the domain name should be punycoded. Leave
+		// the local part (i.e. everything up to `@`) intact.
+		result = parts[0] + '@';
+		string = parts[1];
+	}
+	// Avoid `split(regex)` for IE8 compatibility. See #17.
+	string = string.replace(regexSeparators, '\x2E');
+	const labels = string.split('.');
+	const encoded = map(labels, fn).join('.');
+	return result + encoded;
+}
+
+/**
+ * Creates an array containing the numeric code points of each Unicode
+ * character in the string. While JavaScript uses UCS-2 internally,
+ * this function will convert a pair of surrogate halves (each of which
+ * UCS-2 exposes as separate characters) into a single code point,
+ * matching UTF-16.
+ * @see `punycode.ucs2.encode`
+ * @see <https://mathiasbynens.be/notes/javascript-encoding>
+ * @memberOf punycode.ucs2
+ * @name decode
+ * @param {String} string The Unicode input string (UCS-2).
+ * @returns {Array} The new array of code points.
+ */
+function ucs2decode(string) {
+	const output = [];
+	let counter = 0;
+	const length = string.length;
+	while (counter < length) {
+		const value = string.charCodeAt(counter++);
+		if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+			// It's a high surrogate, and there is a next character.
+			const extra = string.charCodeAt(counter++);
+			if ((extra & 0xFC00) == 0xDC00) { // Low surrogate.
+				output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+			} else {
+				// It's an unmatched surrogate; only append this code unit, in case the
+				// next code unit is the high surrogate of a surrogate pair.
+				output.push(value);
+				counter--;
+			}
+		} else {
+			output.push(value);
+		}
+	}
+	return output;
+}
+
+/**
+ * Creates a string based on an array of numeric code points.
+ * @see `punycode.ucs2.decode`
+ * @memberOf punycode.ucs2
+ * @name encode
+ * @param {Array} codePoints The array of numeric code points.
+ * @returns {String} The new Unicode string (UCS-2).
+ */
+const ucs2encode = array => String.fromCodePoint(...array);
+
+/**
+ * Converts a basic code point into a digit/integer.
+ * @see `digitToBasic()`
+ * @private
+ * @param {Number} codePoint The basic numeric code point value.
+ * @returns {Number} The numeric value of a basic code point (for use in
+ * representing integers) in the range `0` to `base - 1`, or `base` if
+ * the code point does not represent a value.
+ */
+const basicToDigit = function(codePoint) {
+	if (codePoint - 0x30 < 0x0A) {
+		return codePoint - 0x16;
+	}
+	if (codePoint - 0x41 < 0x1A) {
+		return codePoint - 0x41;
+	}
+	if (codePoint - 0x61 < 0x1A) {
+		return codePoint - 0x61;
+	}
+	return base;
+};
+
+/**
+ * Converts a digit/integer into a basic code point.
+ * @see `basicToDigit()`
+ * @private
+ * @param {Number} digit The numeric value of a basic code point.
+ * @returns {Number} The basic code point whose value (when used for
+ * representing integers) is `digit`, which needs to be in the range
+ * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
+ * used; else, the lowercase form is used. The behavior is undefined
+ * if `flag` is non-zero and `digit` has no uppercase form.
+ */
+const digitToBasic = function(digit, flag) {
+	//  0..25 map to ASCII a..z or A..Z
+	// 26..35 map to ASCII 0..9
+	return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
+};
+
+/**
+ * Bias adaptation function as per section 3.4 of RFC 3492.
+ * https://tools.ietf.org/html/rfc3492#section-3.4
+ * @private
+ */
+const adapt = function(delta, numPoints, firstTime) {
+	let k = 0;
+	delta = firstTime ? floor(delta / damp) : delta >> 1;
+	delta += floor(delta / numPoints);
+	for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
+		delta = floor(delta / baseMinusTMin);
+	}
+	return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+};
+
+/**
+ * Converts a Punycode string of ASCII-only symbols to a string of Unicode
+ * symbols.
+ * @memberOf punycode
+ * @param {String} input The Punycode string of ASCII-only symbols.
+ * @returns {String} The resulting string of Unicode symbols.
+ */
+const decode = function(input) {
+	// Don't use UCS-2.
+	const output = [];
+	const inputLength = input.length;
+	let i = 0;
+	let n = initialN;
+	let bias = initialBias;
+
+	// Handle the basic code points: let `basic` be the number of input code
+	// points before the last delimiter, or `0` if there is none, then copy
+	// the first basic code points to the output.
+
+	let basic = input.lastIndexOf(delimiter);
+	if (basic < 0) {
+		basic = 0;
+	}
+
+	for (let j = 0; j < basic; ++j) {
+		// if it's not a basic code point
+		if (input.charCodeAt(j) >= 0x80) {
+			error('not-basic');
+		}
+		output.push(input.charCodeAt(j));
+	}
+
+	// Main decoding loop: start just after the last delimiter if any basic code
+	// points were copied; start at the beginning otherwise.
+
+	for (let index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
+
+		// `index` is the index of the next character to be consumed.
+		// Decode a generalized variable-length integer into `delta`,
+		// which gets added to `i`. The overflow checking is easier
+		// if we increase `i` as we go, then subtract off its starting
+		// value at the end to obtain `delta`.
+		let oldi = i;
+		for (let w = 1, k = base; /* no condition */; k += base) {
+
+			if (index >= inputLength) {
+				error('invalid-input');
+			}
+
+			const digit = basicToDigit(input.charCodeAt(index++));
+
+			if (digit >= base || digit > floor((maxInt - i) / w)) {
+				error('overflow');
+			}
+
+			i += digit * w;
+			const t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+
+			if (digit < t) {
+				break;
+			}
+
+			const baseMinusT = base - t;
+			if (w > floor(maxInt / baseMinusT)) {
+				error('overflow');
+			}
+
+			w *= baseMinusT;
+
+		}
+
+		const out = output.length + 1;
+		bias = adapt(i - oldi, out, oldi == 0);
+
+		// `i` was supposed to wrap around from `out` to `0`,
+		// incrementing `n` each time, so we'll fix that now:
+		if (floor(i / out) > maxInt - n) {
+			error('overflow');
+		}
+
+		n += floor(i / out);
+		i %= out;
+
+		// Insert `n` at position `i` of the output.
+		output.splice(i++, 0, n);
+
+	}
+
+	return String.fromCodePoint(...output);
+};
+
+/**
+ * Converts a string of Unicode symbols (e.g. a domain name label) to a
+ * Punycode string of ASCII-only symbols.
+ * @memberOf punycode
+ * @param {String} input The string of Unicode symbols.
+ * @returns {String} The resulting Punycode string of ASCII-only symbols.
+ */
+const encode = function(input) {
+	const output = [];
+
+	// Convert the input in UCS-2 to an array of Unicode code points.
+	input = ucs2decode(input);
+
+	// Cache the length.
+	let inputLength = input.length;
+
+	// Initialize the state.
+	let n = initialN;
+	let delta = 0;
+	let bias = initialBias;
+
+	// Handle the basic code points.
+	for (const currentValue of input) {
+		if (currentValue < 0x80) {
+			output.push(stringFromCharCode(currentValue));
+		}
+	}
+
+	let basicLength = output.length;
+	let handledCPCount = basicLength;
+
+	// `handledCPCount` is the number of code points that have been handled;
+	// `basicLength` is the number of basic code points.
+
+	// Finish the basic string with a delimiter unless it's empty.
+	if (basicLength) {
+		output.push(delimiter);
+	}
+
+	// Main encoding loop:
+	while (handledCPCount < inputLength) {
+
+		// All non-basic code points < n have been handled already. Find the next
+		// larger one:
+		let m = maxInt;
+		for (const currentValue of input) {
+			if (currentValue >= n && currentValue < m) {
+				m = currentValue;
+			}
+		}
+
+		// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
+		// but guard against overflow.
+		const handledCPCountPlusOne = handledCPCount + 1;
+		if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
+			error('overflow');
+		}
+
+		delta += (m - n) * handledCPCountPlusOne;
+		n = m;
+
+		for (const currentValue of input) {
+			if (currentValue < n && ++delta > maxInt) {
+				error('overflow');
+			}
+			if (currentValue == n) {
+				// Represent delta as a generalized variable-length integer.
+				let q = delta;
+				for (let k = base; /* no condition */; k += base) {
+					const t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+					if (q < t) {
+						break;
+					}
+					const qMinusT = q - t;
+					const baseMinusT = base - t;
+					output.push(
+						stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
+					);
+					q = floor(qMinusT / baseMinusT);
+				}
+
+				output.push(stringFromCharCode(digitToBasic(q, 0)));
+				bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
+				delta = 0;
+				++handledCPCount;
+			}
+		}
+
+		++delta;
+		++n;
+
+	}
+	return output.join('');
+};
+
+/**
+ * Converts a Punycode string representing a domain name or an email address
+ * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
+ * it doesn't matter if you call it on a string that has already been
+ * converted to Unicode.
+ * @memberOf punycode
+ * @param {String} input The Punycoded domain name or email address to
+ * convert to Unicode.
+ * @returns {String} The Unicode representation of the given Punycode
+ * string.
+ */
+const toUnicode = function(input) {
+	return mapDomain(input, function(string) {
+		return regexPunycode.test(string)
+			? decode(string.slice(4).toLowerCase())
+			: string;
+	});
+};
+
+/**
+ * Converts a Unicode string representing a domain name or an email address to
+ * Punycode. Only the non-ASCII parts of the domain name will be converted,
+ * i.e. it doesn't matter if you call it with a domain that's already in
+ * ASCII.
+ * @memberOf punycode
+ * @param {String} input The domain name or email address to convert, as a
+ * Unicode string.
+ * @returns {String} The Punycode representation of the given domain name or
+ * email address.
+ */
+const toASCII = function(input) {
+	return mapDomain(input, function(string) {
+		return regexNonASCII.test(string)
+			? 'xn--' + encode(string)
+			: string;
+	});
+};
+
+/*--------------------------------------------------------------------------*/
+</script>
+
 </body></html>
