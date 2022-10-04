@@ -170,7 +170,7 @@ or whatever you chose in the Apache conf, and request the URL `https://<server-i
 
 If it worked correctly, you should see a screen like this.
 
-![Frist Screen](/first.png)
+![Frist Screen](/first2.png)
 
 Because it prompts you for a server name, you can use one copy of this webapp to access any PowerDNS RestAPI
 you can reach, subject to the browser restrictions described above.
