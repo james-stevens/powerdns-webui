@@ -11,9 +11,28 @@
 const debugAPI = false;
 
 const theme_colours = {
-	"blue": [ "000000","383855","4f4f6f","555577","666688","666699",
-		"777799","8888aa","9999bb","a0a0cc","aaaacc","b0b0ff","c0c0e0",
-		"d0d0ff","ddddff","ffd0d0","ffffff"
+	"blue": [
+		"000000","383855","4f4f6f","555577","666688",
+		"666699","777799","8888aa","9999bb","a0a0cc",
+		"aaaacc","b0b0ff","c0c0e0","d0d0ff","ddddff",
+		"ffd0d0","ffffff","8888aa"
+		],
+	"red": [
+		"000000","553838","6f4f4f","775555","886666",
+		"996666","997777","aa8888","bb9999","cca0a0",
+		"ccaaaa","ffb0b0","e0c0c0","ffd0d0","ffdddd",
+		"d0d0ff","ffffff","aa8888"
+		],
+	"light": [
+		"000000","555555","F0F2F4","F6F8FA","ffffff",
+		"999999","F6F8FA","aaaaaa","F0F2F4","cccccc",
+		"cccccc","9898ff","e0e0e0","cccccc","ffffff",
+		],
+	"dark": [
+		"C9D1D9","555555","262B32","010409","0D1117",
+		"999999","262B32","464B52","31363D","464B52",
+		"464B52","9898ff","e0e0e0","767B92","ffffff",
+		"ffd0d0","C9D1D9","21262D"
 		]
 	};
 
@@ -62,7 +81,7 @@ html {
 th {
 	color: #${theme_colours[theme][0]};
 	font-family: inherit;
-	font-size: inherit;
+	font-size: 18px;
 	background-color: #${theme_colours[theme][9]};
 	font-weight: bold;
 	padding-left: 6px;
@@ -89,10 +108,6 @@ input {
 	border-radius: 6px;
 	border: 1px solid;
 	border-color: #${theme_colours[theme][7]};
-	}
-
-input:focus {
-	border-color: #${theme_colours[theme][16]};
 	}
 
 .inputBad {
@@ -131,7 +146,7 @@ form {
 .myBtn {
 	text-align: center;
 	display: inline-block;
-	background-color: #${theme_colours[theme][7]};
+	background-color: #${theme_colours[theme][17]};
 	color: #${theme_colours[theme][16]};
 	font-family: inherit;
 	font-size: 14px;
@@ -2727,6 +2742,7 @@ function loadCookies()
 	if ("pdns_with_https" in ckobj) f.with_https.checked = (ckobj["pdns_with_https"] == "true");
 	if ("pdns_fast_zone_list" in ckobj) f.fast_zone_list.checked = (ckobj["pdns_fast_zone_list"] == "true");
 	if ("pdns_theme" in ckobj) f.theme.value = ckobj["pdns_theme"];
+	changeTheme(f.theme.value);
 }
 
 
@@ -2742,8 +2758,6 @@ function startUp()
 	f.theme.value = gbl.theme;
 
 	loadCookies()
-
-	changeTheme(f.theme.value);
 
 	window.addEventListener('popstate', e => {
 		if (e.state == null) goLogin();
@@ -2927,7 +2941,7 @@ function keyEsc(e) {
 		<tr><td class=formPrompt>API-Key :</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
 		<tr><td align=right>HTTPS (SSL/TLS) :</td><td><input title="Connect to API over HTTPS, not HTTP" type=checkbox name=with_https></td></tr>
 		<tr><td align=right>Fast Zone List :</td><td><input title="Fast load long zone lists by excluding some information" type=checkbox name=fast_zone_list></td></tr>
-		<tr><td class=formPrompt>Theme :</td><td><select onChange="changeTheme(this.value);" name="theme"><option value="blue">Blue<option value="blue">Dark<option value="blue">Light</select></td></tr>
+		<tr><td class=formPrompt>Theme :</td><td><select onChange="changeTheme(this.value);" name="theme"><option value="blue">Blue<option value="red">Red<option value="dark">Dark<option value="light">Light</select></td></tr>
 		<tr><td><div style='height: 10px;'></div></td></tr>
 		<tr><td class=btmBtnBar colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
