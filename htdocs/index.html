@@ -50,13 +50,14 @@ const theme_colours = {
 
 
 function theme_css(theme) {
+	let cols = theme_colours[theme];
 	return `
 .fullvis { font-family:inherit; font-size:14pt; visibility: visible; opacity: 1; text-align: center; }
 .fadein  { font-family:inherit; font-size:14pt; visibility: visible; opacity: 1; transition: opacity 0.5s linear; }
 .fadeout { font-family:inherit; font-size:14pt; visibility: hidden; opacity: 0; transition: visibility 0s 1s, opacity 1s linear; }
 
 ::placeholder {
-	color: #${theme_colours[theme][12]};
+	color: #${cols[12]};
 	opacity: 1; }
 
 .topLink { font-size: 20px; }
@@ -67,12 +68,12 @@ h2 { text-align: center; }
 	padding-top: 10px;
 	padding-bottom: 10px;
 	border: 1px solid;
-	border-color: #${theme_colours[theme][7]};
+	border-color: #${cols[7]};
 	border-radius: 6px;
 	}
 
 #topSpan{
-	background-color: #${theme_colours[theme][6]};
+	background-color: #${cols[6]};
 	height: 55px;
 	line-height: 55px;
 	margin-top: 0px;
@@ -82,19 +83,19 @@ h2 { text-align: center; }
 	}
 
 html {
-	color: #${theme_colours[theme][16]};
+	color: #${cols[16]};
 	font-family:Verdana,Arial,Helvetica,sans-serif;
 	font-size: 14px;
-	background-color: #${theme_colours[theme][4]};
-	scrollbar-base-color: #${theme_colours[theme][5]};
-	scrollbar-arrow-color: #${theme_colours[theme][14]};
+	background-color: #${cols[4]};
+	scrollbar-base-color: #${cols[5]};
+	scrollbar-arrow-color: #${cols[14]};
 	}
 
 th {
-	color: #${theme_colours[theme][0]};
+	color: #${cols[0]};
 	font-family: inherit;
 	font-size: 18px;
-	background-color: #${theme_colours[theme][9]};
+	background-color: #${cols[9]};
 	font-weight: bold;
 	padding-left: 6px;
 	padding-right: 6px;
@@ -102,48 +103,48 @@ th {
 
 select {
 	padding: 5px 12px;
-	background-color: #${theme_colours[theme][3]};
-	color: #${theme_colours[theme][16]};
+	background-color: #${cols[3]};
+	color: #${cols[16]};
 	font-family: inherit;
 	font-size: 14px;
 	border-radius: 6px;
 	border: 1px solid;
-	border-color: #${theme_colours[theme][7]};
+	border-color: #${cols[7]};
 }
 
 input {
 	padding: 5px 12px;
-	background-color: #${theme_colours[theme][3]};
-	color: #${theme_colours[theme][16]};
+	background-color: #${cols[3]};
+	color: #${cols[16]};
 	font-family: inherit;
 	font-size: 14px;
 	border-radius: 6px;
 	border: 1px solid;
-	border-color: #${theme_colours[theme][7]};
+	border-color: #${cols[7]};
 	}
 
 .inputBad {
-	color: #${theme_colours[theme][0]};
-	background-color: #${theme_colours[theme][15]};
+	color: #${cols[0]};
+	background-color: #${cols[15]};
 	font-family: inherit;
 	font-size: 14px;
 	}
 
 body {
-	color: #${theme_colours[theme][16]};
+	color: #${cols[16]};
 	font-family: inherit;
 	font-size: inherit;
 	margin-top: 0px;
 	margin-left: 0px;
 	margin-right: 0px;
-	background-color: #${theme_colours[theme][4]};
-	scrollbar-base-color: #${theme_colours[theme][5]};
-	scrollbar-arrow-color: #${theme_colours[theme][14]};
+	background-color: #${cols[4]};
+	scrollbar-base-color: #${cols[5]};
+	scrollbar-arrow-color: #${cols[14]};
 	}
 
 
 a {
-	color: #${theme_colours[theme][11]};
+	color: #${cols[11]};
 	text-decoration:none;
 	}
 
@@ -158,13 +159,13 @@ form {
 .myBtn {
 	text-align: center;
 	display: inline-block;
-	background-color: #${theme_colours[theme][17]};
-	color: #${theme_colours[theme][16]};
+	background-color: #${cols[17]};
+	color: #${cols[16]};
 	font-family: inherit;
 	font-size: 14px;
 	border-radius: 6px;
 	border: 1px solid;
-	border-color: #${theme_colours[theme][10]};
+	border-color: #${cols[10]};
 	padding: 5px 16px;
 	cursor: pointer;
 	margin-top: 0px;
@@ -174,8 +175,8 @@ form {
 	}
 
 .myBtn:hover {
-	border-color: #${theme_colours[theme][13]};
-	background-color: #${theme_colours[theme][8]};
+	border-color: #${cols[13]};
+	background-color: #${cols[8]};
 	}
 
 .myBtn:active {
@@ -187,7 +188,7 @@ form {
 	}
 
 .dnskey {
-	color: #${theme_colours[theme][1]};
+	color: #${cols[1]};
 	}
 
 td {
@@ -214,19 +215,19 @@ td {
 	font-family: inherit;
 	font-size: 14px;
 	cursor: pointer;
-	color: #${theme_colours[theme][16]};
-	background-color: #${theme_colours[theme][4]};
+	color: #${cols[16]};
+	background-color: #${cols[4]};
 	}
 
 .dataRow:hover {
-	background-color: #${theme_colours[theme][2]};
+	background-color: #${cols[2]};
 	}
 
 
 .formPrompt {
 	font-family:inherit;
 	font-size: 14px;
-	color: #${theme_colours[theme][16]};
+	color: #${cols[16]};
 	text-align: right;
 	padding-top: 8px;
 	}
@@ -239,9 +240,9 @@ td {
 	font-family:inherit;
 	font-size:16pt;
 	width: 95%;
-	background: #${theme_colours[theme][15]};
+	background: #${cols[15]};
 	text-align: center;
-	color: #${theme_colours[theme][0]};
+	color: #${cols[0]};
 	padding: 5px;
 	border-radius: 6px;
 	}
