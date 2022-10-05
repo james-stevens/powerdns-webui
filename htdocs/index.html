@@ -23,12 +23,24 @@ const theme_colours = {
 		"ccaaaa","ffb0b0","e0c0c0","ffd0d0","ffdddd",
 		"d0d0ff","ffffff","aa8888"
 		],
+	"green": [
+		"000000","385538","4f6f4f","557755","668866",
+		"669966","779977","88aa88","99bb99","a0cca0",
+		"aaccaa","b0ffb0","c0e0c0","d0ffd0","ddffdd",
+		"d0d0ff","ffffff","88aa88"
+		],
 	"light": [
 		"000000","555555","F0F2F4","F6F8FA","ffffff",
 		"999999","F6F8FA","aaaaaa","F0F2F4","cccccc",
 		"cccccc","9898ff","e0e0e0","cccccc","ffffff",
 		],
 	"dark": [
+		"C9D1D9","555555","25303B","010409","15202B",
+		"999999","25303B","464B52","35404B","464B52",
+		"464B52","9898ff","e0e0e0","767B92","ffffff",
+		"ffd0d0","C9D1D9","25303B"
+		],
+	"custom": [
 		"C9D1D9","555555","25303B","010409","15202B",
 		"999999","25303B","464B52","35404B","464B52",
 		"464B52","9898ff","e0e0e0","767B92","ffffff",
@@ -2941,7 +2953,15 @@ function keyEsc(e) {
 		<tr><td class=formPrompt>API-Key :</td><td><input autocomplete="current-password" type=password size=40 name=apikey value=""></td></tr>
 		<tr><td align=right>HTTPS (SSL/TLS) :</td><td><input title="Connect to API over HTTPS, not HTTP" type=checkbox name=with_https></td></tr>
 		<tr><td align=right>Fast Zone List :</td><td><input title="Fast load long zone lists by excluding some information" type=checkbox name=fast_zone_list></td></tr>
-		<tr><td class=formPrompt>Theme :</td><td><select onChange="changeTheme(this.value);" name="theme"><option value="blue">Blue<option value="red">Red<option value="dark">Dark<option value="light">Light</select></td></tr>
+		<tr><td class=formPrompt>Theme :</td>
+			<td><select onChange="changeTheme(this.value);" name="theme">
+				<option value="blue">Blue
+				<option value="red">Red
+				<option value="green">Green
+				<option value="dark">Dark
+				<option value="light">Light
+				<option value="custom">Custom
+			</select></td></tr>
 		<tr><td><div style='height: 10px;'></div></td></tr>
 		<tr><td class=btmBtnBar colspan=2><span title="Load zone list" class=myBtn onClick="initialLogin()">Load Zone List</span></td></tr>
 		</tr>
