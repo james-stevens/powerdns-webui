@@ -1356,7 +1356,7 @@ function editRRButtons()
 		x += btn("addNewRR()","Add RR",`Add another ${ctx.rec.type} record to ${ctx.rec.name}`);
 
 		if ("needSave" in ctx) {
-			x += btn(`${ctx.needSave}(false)`,"Cancel","Abandom all changes")
+			x += btn(`${ctx.needSave}(false)`,"Cancel","Abandon ALL Changes")
 			x += btn(`${ctx.needSave}(true)`,"Save","Save your changes to the zone file");
 			}
 		}
