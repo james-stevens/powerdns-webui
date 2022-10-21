@@ -76,6 +76,13 @@ Where you have 1000s of zones, or a server a long way away, this can significant
 When reporting an issue, please also include any messages in your browser console (in Chrome press F12, in FireFox Ctrl-Shift-J).
 
 
+# Themes
+
+There are five built-in colour schemes, called themes, plus one called "Custom", which ships as the same as "Dark".
+The app should remember which theme you chose and return to that one. This means you can customise the "Custom" theme,
+if you want, & it will then return to your custom colour scheme without affecting the default themes.
+
+
 
 # Browser Security Restrictions
 
