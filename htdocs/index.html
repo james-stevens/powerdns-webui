@@ -935,7 +935,12 @@ function zoneMetaDetails(data)
 			}
 		}
 
-	x += "</table>";
+	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
+	x += "<tr><td class=btmBtnBar colspan=2>";
+	x += btn('clickAddMeta()',"Add Metadata",`Add a META data record to ${ctx.zone}`);
+
+	x += "</tr></table>";
+
 	gbl.bot.innerHTML = gbl.sp + x;
 	topLine();
 }
@@ -986,7 +991,6 @@ function patchRRdata()
 function saveRRChanges(withSave)
 {
 	delete ctx.edit;
-	topLine();
 
 	if (withSave)
 		callApi(`zones/${ctx.zone}`,madeChange,
@@ -997,8 +1001,9 @@ function saveRRChanges(withSave)
 			json: patchRRdata()
 			}
 		 );
-	else
-		getZoneRecord();
+	else {
+		if (ctx.rec.loadedRows == 0) loadThisZone(); else getZoneRecord();
+	}
 }
 
 
@@ -1040,7 +1045,7 @@ function changeRR()
 		}
 
 	delete ctx.edit;
-	topLine();
+	editRRButtons();
 
 	return false; // cancel the form submit
 }
@@ -1107,8 +1112,10 @@ function clickData(idx)
 
 	ctx.edit = { dta: idx };
 
-	topLine();
 	s.innerHTML = x;
+
+	editRRButtons();
+
 	document.rrForm.new.focus();
 }
 
@@ -1227,7 +1234,7 @@ function cancelAllEdits()
 		}
 
 	delete ctx.edit;
-	topLine();
+	editRRButtons();
 }
 
 
@@ -1297,24 +1304,67 @@ function drawOneRecord(rrs)
 
 	setState(`${x}/${ctx.rec.type}`, { state: "record", server: gbl.server, zone: ctx.zone, name:ctx.rec.name, type: ctx.rec.type });
 
-	x = "<table width=100% border=0 cellspacing=1 cellpadding=0>";
-	x += '<colgroup><col width="10%" /><col width="25%" /><col width="99px" /><col /><col width="75%" /></colgroup>'
+	let idn_name = ctx.rec.name;
+	if (hasIDN(idn_name)) idn_name = toUnicode(idn_name);
+
+	x = "<table width=50% align=center cellspacing=4 cellpadding=4 border=0>";
+	x += '<colgroup><col width="35%" /><col width="5%" /><col width=60%/></colgroup>'
+
+	x += '<tr class=dataRow><td align=right>Record Name: </td>'
+	x += `<td colspan=2 title="${idn_name} - click to change" onClick='clickRecName(1);'><span id=nme1>${ctx.rec.name}</span></td></tr>`
+
+	x += '<tr class=dataRow><td align=right>Record Type: </td>'
+	x += `<td colspan=2 >${ctx.rec.rrs.type}</td></tr>`
+
+	x += '<tr class=dataRow><td align=right>Record TTL: </td>'
+	x += `<td colspan=2 title="Click to change TTL" onClick='clickTTL(1);'><span id=ttl1>${ctx.rec.rrs.ttl}</span></td></tr>`
+
+	let label = "RR Data: "
 	for(let idx in ctx.rec.rrs.records) {
 		let i = ctx.rec.rrs.records[idx];
+		x += `<tr class=dataRow><td align=right>${label}</td>`
+		x += `<td title="Click to delete this RR data" onClick='deleteRRitem(${idx});' align=center>${gbl.bin}</td>`
+		x += `<td title="Click to edit this RR data" class=dataCell onClick='clickData(${idx});'><span id=rrs${idx}>${i.content}</span></td>`;
+		x += '</tr>';
 
-		let idn_name = ctx.rec.name;
-		if (hasIDN(idn_name)) idn_name = toUnicode(idn_name);
-
-		x += "<tr class=dataRow>"
-			+ `<td onClick='deleteRRitem(${idx});' align=center>${gbl.bin}</td>`
-			+ `<td title="${idn_name}" onClick='clickRecName(${idx});'><span id=nme${idx}>${ctx.rec.name}</span></td>`
-			+ `<td align=right onClick='clickTTL(${idx});'><span id=ttl${idx}>${ctx.rec.rrs.ttl}</span></td>`
-			+ `<td>${ctx.rec.rrs.type}</td>`
-			+ `<td class=dataCell onClick='clickData(${idx});'><span id=rrs${idx}>${i.content}</span></td></tr>`;
+		label = "";
 		}
+
+	x += "</table><div id=buttonDiv></div>"
 	gbl.bot.innerHTML = gbl.sp + `${x}</table>`;
-	topLine();
+
+	editRRButtons();
 }
+
+
+
+function editRRButtons()
+{
+	let k = document.getElementById("buttonDiv");
+	if (!k) return;
+
+	let x = "<table width=50% align=center cellspacing=4 cellpadding=4 border=0>";
+	x += "<tr><td><div style='height: 15px;'></div></td></tr>"
+	x += "<tr><td class=btmBtnBar colspan=3>";
+
+	if ("edit" in ctx) {
+		if ("needCancel" in ctx.edit)
+			x += btn(`${ctx.edit.needCancel}(false)`,"Cancel","Cancel this edit");
+		else
+				x += btn("cancelAllEdits()","Cancel","Cancel this edit");
+	} else {
+		x += btn("addNewRR()","Add RR",`Add another ${ctx.rec.type} record to ${ctx.rec.name}`);
+
+		if ("needSave" in ctx) {
+			x += btn(`${ctx.needSave}(false)`,"Cancel","Abandom all changes")
+			x += btn(`${ctx.needSave}(true)`,"Save","Save your changes to the zone file");
+			}
+		}
+
+	x += "</tr>"
+	k.innerHTML = x;
+}
+
 
 
 
@@ -2014,12 +2064,15 @@ function clickAddZone(isFresh)
 
 function dropZone()
 {
-	let x = "<table align=center><tr><td align=center><h3>Are you sure you want to delete"
-		+ `<br>the zone '${ctx.zone}' and all its records ?</h3></td></tr>`
-		+ "<tr><td align=center>"
-		+ btn("loadThisZone();","Cancel",`Do not delete the zone ${ctx.zone}`)
-		+ "&nbsp;"
-		+ btn("doDropZone()",`Drop '${ctx.zone}'`,`Delete the zone ${ctx.zone} and ALL its records`);
+	let x = "<table width=35% align=center><tr><td align=center><h3>Are you sure you want to delete";
+	x += `<br>the zone '${ctx.zone}' and all its records ?</h3></td></tr>`;
+	x += "<tr><td><div style='height: 15px;'></div></td></tr>";
+	x += "<tr><td class=btmBtnBar colspan=2>";
+	x += btn("loadThisZone();","Cancel",`Do not delete the zone ${ctx.zone}`);
+	x += "&nbsp;";
+	x += btn("doDropZone()",`Drop '${ctx.zone}'`,`Delete the zone ${ctx.zone} and ALL its records`);
+	x += "</td></tr></table>";
+
 	gbl.bot.innerHTML = gbl.sp + x;
 }
 
@@ -2697,27 +2750,6 @@ function topLine()
 		}
 
 	x += "</td><td width=100% align=center><span class='fullvis' id='showMsg'></span></td><td>";
-
-	if ("zone" in ctx) {
-		if ("edit" in ctx) {
-			if ("needCancel" in ctx.edit)
-				x += btn(`${ctx.edit.needCancel}(false)`,"Cancel","Cancel this edit");
-			else
-				x += btn("cancelAllEdits()","Cancel","Cancel this edit");
-			}
-		else {
-			if ("rec" in ctx)
-				x += btn("addNewRR()","Add RR",`Add another ${ctx.rec.type} record to ${ctx.rec.name}`);
-
-			if ("needSave" in ctx)
-				x += btn(`${ctx.needSave}(false)`,"Cancel","Abandom all changes")
-					+ btn(`${ctx.needSave}(true)`,"Save","Save your changes to the zone file");
-
-			if (gbl.state.state == "meta")
-				x += btn('clickAddMeta()',"Add Meta",`Add a META data record to ${ctx.zone}`);
-			}
-
-		}
 
 	if (gbl.state.state == "zonelist") {
 		x += btn("loadTsigList()","TSIGs","Show the list of TSIGs")
