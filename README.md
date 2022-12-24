@@ -34,9 +34,9 @@ If you are using this webapp for slave / native, please let me know if there are
 When minified, using `python -m jsmin index.html > min.html`, the savings are not great (~10%), so I've chosen to no longer provide this minified file.
 This is probably largely because I use TAB indents (see CONTRIBUTING.md).
 
-Becuase of the security limitations of the PowerDNS Rest/API, this is intended as a SysAdmin tool only - see the **Security** Section below.
+Because of the security limitations of the PowerDNS Rest/API, this is intended as a SysAdmin tool only - see the **Security** Section below.
 
-A critial design goal was to ensure that the data you see has come live from the server, and you have a single
+A critical design goal was to ensure that the data you see has come live from the server, and you have a single
 click button in the navigation bar that will reload the data you are seeing.
 
 The only exception to this is occasionally when the `NSEC3PARAM` value is displayed on the DNSSEC page.
