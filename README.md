@@ -12,7 +12,7 @@ If this doesn't meet your needs, you might want to try [some of these](https://g
 
 If you find this code useful, I would absolutely appreciate it if you could make a donation, no matter how small.
 
-- [Donate by PayPal](https://www.paypal.com/donate/?hosted_button_id=L8ABXW4X8W6BW)
+- [Donate by PayPal](https://www.paypal.com/donate/?hosted_button_id=QVFND645E299A)
 - Donate by BTC - 357ynBdTQiVKybo93bP2cYbrkLbpGmQCj6
 - Donate by ETH - 0x20fbf9555F09a8579540970488dcB8245244b683 (Etherium Network ONLY)
 
