@@ -8,6 +8,21 @@ It is an independently funded & maintained development effort.
 If this doesn't meet your needs, you might want to try [some of these](https://github.com/PowerDNS/pdns/wiki/WebFrontends).
 
 
+# Help with this effort
+
+If you find this code useful, I would absolutely appreciate it if you could make a donation, no matter how small.
+
+- [Donate by PayPal](https://www.paypal.com/donate/?hosted_button_id=L8ABXW4X8W6BW)
+- Donate by BTC - 357ynBdTQiVKybo93bP2cYbrkLbpGmQCj6
+- Donate by ETH - 0x20fbf9555F09a8579540970488dcB8245244b683 (Etherium Network ONLY)
+
+Donations are paid into a UK Limited Company, so if you want a trade invoice / recipt, just ask.
+
+Or you can sponsor me [through GitHub](https://github.com/sponsors/james-stevens) - Also see `Sponsor this project`
+
+
+
+
 # Discussions
 
 Github now has a `discussions` feature, so I have enabled it on this project. Please use this to leave
