@@ -330,7 +330,7 @@ const validateMeta = {
 	"SOA-EDIT": /^(INCREMENT-WEEKS|INCEPTION-EPOCH|INCEPTION-INCREMENT|INCEPTION)$/i,
 	"SOA-EDIT-API": /^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,
 	"SOA-EDIT-DNSUPDATE": /^(DEFAULT|INCREASE|EPOCH|SOA-EDIT|SOA-EDIT-INCREASE)$/i,
-	"KIND": /^(Master|Slave|Native)$/i,
+	"KIND": /^(Master|Slave|Native|Producer|Consumer)$/i,
 	};
 
 
@@ -349,7 +349,7 @@ const metaPickLists = {
 	"SOA-EDIT" : [ "INCREMENT-WEEKS","INCEPTION-EPOCH","INCEPTION-INCREMENT","INCEPTION" ],
 	"SOA-EDIT-API": [ "DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE" ],
 	"SOA-EDIT-DNSUPDATE": [ "DEFAULT","INCREASE","EPOCH","SOA-EDIT","SOA-EDIT-INCREASE" ],
-	"KIND": [ "Master", "Slave", "Native" ],
+	"KIND": [ "Master", "Slave", "Native", "Producer", "Consumer" ],
 	};
 
 
