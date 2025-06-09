@@ -1481,34 +1481,14 @@ function addAlg(formName)
 
 function setNSEC3(delnsec3)
 {
-	let nsec3 = "1 0 5 ";
+	let nsec3 = "1 0 0 -";
 	let nxtFn = function() {
-		gbl.params = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
-		gbl.state = gbl.params;
-		loadThisZone();
+		gbl.param = { state: "keys", server: gbl.server, zone: ctx.zone, keys:true };
+		gbl.state = gbl.param;
+		callApi(`zones/${ctx.zone}`,zoneDetails);
 		}
 
-	if (delnsec3 == null) {
-		let old = "0000000000";
-		let sfx="";
-
-		if (ctx.zoneDetails.nsec3param != "") {
-			i = ctx.zoneDetails.nsec3param.split(" ");
-			nsec3 = `${i[0]} ${i[1]} ${i[2]}`
-			old = i[3];
-			}
-
-		while(sfx.length < old.length)
-			sfx = sfx + Math.floor(Math.random() * 256).toString(16)
-
-		nsec3 = `${nsec3} ${sfx}`;
-
-		nxtFn = function() {
-				ctx.zoneDetails.nsec3param = nsec3;
-				callApi(`zones/${ctx.zone}/rectify`, zoneKeys, { method: "PUT" });
-				}
-		}
-	else nsec3 = "";
+	if (delnsec3) nsec3 = "";
 
 	callApi(`zones/${ctx.zone}`, nxtFn,
 		{ method: "PUT", okResp: 204, json: JSON.stringify({ nsec3param: nsec3 }) } );
@@ -1887,7 +1867,7 @@ function showKeys(data)
 	let sz = 100;
 
 	x += "</table></td><td>"
-		+ btn('clickAddKey()',"Add Key",`Add a DNSSEC Key to ${ctx.zone}`,sz) + gbl.sp;
+		+ btn('clickAddKey()',"Add Key",`Add a DNSSEC Key to ${ctx.zone}`,sz) + gbl.sp
 		+ btn('deleteAllKeys()',"Unsign",`Remove all DNSSEC on ${ctx.zone}`,sz) + gbl.sp;
 
 	if (("nsec3param" in ctx.zoneDetails)&&(ctx.zoneDetails.nsec3param != "")) {
@@ -2207,9 +2187,9 @@ function zoneDetails(data)
 
 	ctx.zoneDetails = data;
 
-	if (("param" in gbl)&&("zone" in gbl.param)) {
-		if ("meta" in gbl.param) return zoneMeta();
-		if ("keys" in gbl.param) return zoneKeys();
+	if ((gbl.param)&&(gbl.param.zone)) {
+		if (gbl.param.meta) return zoneMeta();
+		if (gbl.param.keys) return zoneKeys();
 		if ((data.kind != "Slave")&&("name" in gbl.param)&&("type" in gbl.param)) {
 			return clickZoneRecord(gbl.param.name,gbl.param.type);
 			}
